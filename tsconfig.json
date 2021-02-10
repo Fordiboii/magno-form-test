@@ -3,7 +3,11 @@
     "target": "esnext",
     "module": "CommonJS" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false,
   },
-  "include": ["./src/index.ts", "./types/*.d.ts"]
+  "include": [
+    "./src/index.ts",
+    "./types/*.d.ts"
+  ]
 }

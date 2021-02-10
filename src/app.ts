@@ -1,18 +1,15 @@
 import * as PIXI from 'pixi.js';
-// import { loadGameAssets } from '../assets/assetLoader';
-// import { MotionWorld } from './motion/MotionWorld';
-// import { Dot } from './objects/Dot';
-
-// type WorldObjects = Dot | MotionWorld;
+import { MotionWorld } from './motion/MotionWorld';
+import { Dot } from './objects/Dot';
+import MainLoop from 'mainloop.js';
 
 export class GameApp {
-    private renderer: PIXI.Renderer;
-    private stage: PIXI.Container;
-    private state: Function;
-    // private activeGameObjects: Array<WorldObjects> = [];
-    private activeRenderers: Array<any> = [];
+    public renderer: PIXI.Renderer;
+    public stage: PIXI.Container;
+    private activeGameObjects: Array<Dot | MotionWorld> = [];
 
-    constructor(parent: HTMLElement, width: number, height: number) {
+    constructor(width: number, height: number) {
+        // create root container and renderer
         this.stage = new PIXI.Container();
         this.renderer = PIXI.autoDetectRenderer({
             width: width,
@@ -21,64 +18,77 @@ export class GameApp {
             autoDensity: true, // for retina display devices
         });
 
-        parent.appendChild(this.renderer.view)
-        // parent.replaceChild(this.renderer.view, parent.lastElementChild); // Hack for parcel HMR
+        // add renderer view to document body
+        window.document.body.appendChild(this.renderer.view)
 
-        // resize function
-        const resize = (): void => {
-            this.renderer.resize(window.innerWidth, window.innerHeight);
+        // set timestep (in ms) the app should simulate between each frame.
+        MainLoop.setSimulationTimestep(20);
+        // set max fps.
+        MainLoop.setMaxAllowedFPS(100);
+
+        // warn if the browser doesn't support the Page Visibility API and revert to onblur and onfocus events.
+        if (document.hidden === undefined) {
+            console.log("This website requires a browser, such as Google Chrome or Firefox, that supports the Page Visibility API.")
+            window.onblur = () => MainLoop.stop();
+            window.onfocus = () => MainLoop.start();
+        } else {
+            // stop running if the tab is hidden and start if made visible.
+            window.addEventListener("visibilitychange", () => {
+                if (window.document.visibilityState == "hidden") {
+                    MainLoop.stop();
+                } else if (window.document.visibilityState == "visible") {
+                    MainLoop.start();
+                }
+            })
         }
 
         // add resize event listener
-        window.addEventListener('resize', resize);
+        window.addEventListener('resize', this.resize);
 
         // load assets
         const loader = PIXI.Loader.shared;
         loader.onError.add((err, _loader, resource) => { console.log(err, resource) });
-        loader
-            .add('dot', './assets/dot.png')
-            .load()
         loader.onComplete.once(() => {
             // initialize game
             this.setup();
-
-            // create ticker
-            const ticker = new PIXI.Ticker();
-            ticker.add(delta => {
-                this.gameLoop(delta);
-            });
-            ticker.start();
+            // start game loop
+            MainLoop.start();
         });
+        loader
+            .add('dot', './assets/dot.png')
+            .load()
     }
 
-    private setup(): void {
-        // const sceneContainer: PIXI.Container = new PIXI.Container();
+    private setup = (): void => {
+        // set update and render methods.
+        MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
+        MainLoop.setDraw(this.render);
 
-        // this.stage.addChild(sceneContainer);
-        // const motionWorld: MotionWorld = new MotionWorld();
-        // this.stage.addChild(motionWorld);
-        // // const motionRenderer: MotionRenderer = new MotionRenderer(sceneContainer, motionWorld);
-        // this.activeGameObjects.push(motionWorld);
-
-        // const texture = PIXI.Texture.from('assets/images/dot.png');
-        // const dotSprite: PIXI.Sprite = PIXI.Sprite.from(texture); //TODO: Proper asset loading.
-        // sceneContainer.addChild(dotSprite);
+        // add motion world to stage and model
+        const motionWorld: MotionWorld = new MotionWorld();
+        this.stage.addChild(motionWorld);
+        this.activeGameObjects.push(motionWorld);
     }
 
-    private gameLoop(delta: number): void {
-        console.log("gamelooping!")
-
-        this.stage.addChild(new PIXI.Sprite(PIXI.Loader.shared.resources['dot'].texture))
-
+    private gameLoop = (delta: number): void => {
         // update model
-        // this.activeGameObjects.forEach(gameObject => {
-        //     gameObject.update(delta);
-        // });
+        this.activeGameObjects.forEach(gameObject => {
+            gameObject.update(delta / 10);
+        });
+
+        // log FPS
+        let fps = Math.round(MainLoop.getFPS());
+        console.log(fps);
 
         // update current game state
         // this.state();
+    }
 
-        // render stage
+    private render = (): void => {
         this.renderer.render(this.stage);
+    }
+
+    private resize = (): void => {
+        this.renderer.resize(window.innerWidth, window.innerHeight);
     }
 }
