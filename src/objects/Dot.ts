@@ -39,9 +39,9 @@ export class Dot extends PIXI.Sprite {
         this.aliveTimer = aliveTime;
         this.maxAliveTimer = aliveTime;
 
-        this.horMaxTime = 30; // TODO: get from settings
-        this.ranMaxTime = 30; // TODO: get from settings
-        this.speed = 0.2; // TODO: get from settings
+        this.horMaxTime = 572; // TODO: get from settings
+        this.ranMaxTime = 572; // TODO: get from settings
+        this.speed = 0.03; // TODO: get from settings
 
         // calculate initial velocity vector
         if (this.direction === Direction.LEFT) {

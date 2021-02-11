@@ -73,7 +73,7 @@ export class GameApp {
     private gameLoop = (delta: number): void => {
         // update model
         this.activeGameObjects.forEach(gameObject => {
-            gameObject.update(delta / 10);
+            gameObject.update(delta);
         });
 
         // log FPS

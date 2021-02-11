@@ -56,7 +56,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.dotRadius = 1; // TODO: move to settings
         this.dotSpacing = 1; // TODO: move to settings
         this.maxRunTime = 5; // TODO: move to settings
-        this.dotMaxAliveTime = 8.5; // TODO: move to settings
+        this.dotMaxAliveTime = 85; // TODO: move to settings
     }
 
     abstract update(delta: number): void;
