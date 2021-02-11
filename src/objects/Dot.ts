@@ -9,8 +9,8 @@ export class Dot extends PIXI.Sprite {
     private direction: Direction;
 
     private directionTimer: number;
-    private aliveTimer: number;
-    private maxAliveTimer: number;
+    public aliveTimer: number;
+    public maxAliveTimer: number;
 
     private horMaxTime: number;
     private ranMaxTime: number;
@@ -84,6 +84,10 @@ export class Dot extends PIXI.Sprite {
     updatePosition = (delta: number) => {
         this.x += delta * this.velocity[0];
         this.y += delta * this.velocity[1];
+    }
+
+    setPosition = (x: number, y: number): void => {
+        this.position.set(x, y);
     }
 
     /**
@@ -186,44 +190,7 @@ export class Dot extends PIXI.Sprite {
         }
     }
 
-    // detectDotCollisions = (dots: Array<Dot>, delta: number): void => {
-    //     dots.forEach(dot => {
-    //         if (dot != this && euclideanDistance(this.x, this.y, dot.x, dot.y) <= (this.radius + dot.radius)) {
-    //             this.updateVelocityAfterDotCollision(dot, delta);
-    //         }
-    //     })
-    // }
-
-    // /**
-    //  * Updates dots' velocities after colliding.
-    //  * Separate behavior for colliding with coherently-moving dots and randomly moving dots.
-    //  * @param dot the dot collided with
-    //  * @param delta time between each frame in ms
-    //  */
-    // updateVelocityAfterDotCollision = (dot: Dot, delta: number): void => {
-    //     const newVelX1: number = dot.velocity[0];
-    //     const newVelY1: number = dot.velocity[1];
-    //     const newVelX2: number = this.velocity[0];
-    //     const newVelY2: number = this.velocity[1];
-
-    //     if (this.isRandom && !dot.isRandom) {
-    //         this.velocity = [newVelX1, newVelY1]
-    //         this.updatePosition(delta);
-    //     } else if (!this.isRandom && dot.isRandom) {
-    //         dot.velocity = rotateVector(dot.velocity, 180);
-    //         dot.updatePosition(delta);
-    //     } else if (this.isRandom && dot.isRandom) {
-    //         this.velocity = [newVelX1, newVelY1];
-    //         dot.velocity = [newVelX2, newVelY2];
-    //         this.updatePosition(delta);
-    //         dot.updatePosition(delta);
-    //         // if overlapping after update
-    //         if (euclideanDistance(this.x, this.y, dot.x, dot.y) < 2 * dot.radius) {
-    //             this.handleWallCollision("VERTICAL", delta);
-    //             this.handleWallCollision("HORIZONTAL", delta);
-    //             dot.handleWallCollision("VERTICAL", delta);
-    //             dot.handleWallCollision("HORIZONTAL", delta);
-    //         }
-    //     }
-    // }
+    resetAliveTimer = (): void => {
+        this.aliveTimer = this.maxAliveTimer;
+    }
 }

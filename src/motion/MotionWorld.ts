@@ -71,34 +71,36 @@ export class MotionWorld extends AbstractMotionWorld {
      * One of the patches will be set to have coherently moving dots moving left and right.
      */
     createDots = (): void => {
-        const leftMinX: number = this.leftMinWidth + this.dotRadius;
-        const leftMaxX: number = this.leftMaxWidth - this.dotRadius;
-        const rightMinX: number = this.rightMinWidth + this.dotRadius;
-        const rightMaxX: number = this.rightMaxWidth - this.dotRadius;
-        const minY: number = this.patchMinHeight + this.dotRadius;
-        const maxY: number = this.patchMaxHeight - this.dotRadius;
-
-        let x: number;
-        let y: number;
+        const dotsToKill: number = (this.dotKillPercentage * this.numberOfDots) / 100;
+        let maxAliveTimeMultiplier: number = 1;
         let numberOfCoherentDots: number = 0;
+        let currentCoherencePercent: number;
+        let dotPosition: [number, number];
 
         // randomly choose patch to contain coherent dots
         this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
         // randomly choose direction of coherent moving dots
         const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
         for (let i = 0; i < this.numberOfDots; i++) {
+            // 
+            if (i == dotsToKill * maxAliveTimeMultiplier) {
+                maxAliveTimeMultiplier++;
+            }
             // get current coherent dots percentage
-            let currentCoherencePercent: number = (numberOfCoherentDots / this.numberOfDots) * 100;
-
-            // generate dots in left patch
-            do {
-                x = rando() * (leftMaxX - leftMinX) + leftMinX;
-                y = rando() * (maxY - minY) + minY;
-            } while (!this.freeSpot(x, y, this.dotsLeft))
-
+            currentCoherencePercent = (numberOfCoherentDots / this.numberOfDots) * 100;
+            // find a vacant spot to place the dot
+            dotPosition =
+                this.getFreeSpotInPatch(
+                    this.leftMinX + this.dotRadius,
+                    this.patchMinY + this.dotRadius,
+                    this.leftMaxX - this.dotRadius,
+                    this.patchMaxY - this.dotRadius,
+                    this.dotsLeft
+                )
+            // add dot to left patch
             if (this.coherentPatchSide == "LEFT" && currentCoherencePercent < this.coherencePercent) {
                 const dotSprite =
-                    new Dot(x, y, this.dotRadius, coherentDirection, this.dotMaxAliveTime, PIXI.Loader.shared.resources['dot'].texture);
+                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, coherentDirection, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
                 // add to model
                 this.dotsLeft.push(dotSprite);
                 // add to stage
@@ -106,22 +108,25 @@ export class MotionWorld extends AbstractMotionWorld {
                 numberOfCoherentDots++;
             } else {
                 const dotSprite =
-                    new Dot(x, y, this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime, PIXI.Loader.shared.resources['dot'].texture);
+                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
                 // add to model
                 this.dotsLeft.push(dotSprite);
                 // add to stage
                 this.dotsLeftContainer.addChild(dotSprite);
             }
-
-            // generate dots in right patch
-            do {
-                x = rando() * (rightMaxX - rightMinX) + rightMinX;
-                y = rando() * (maxY - minY) + minY;
-            } while (!this.freeSpot(x, y, this.dotsRight))
-
+            // find a vacant spot to place the dot
+            dotPosition =
+                this.getFreeSpotInPatch(
+                    this.rightMinX + this.dotRadius,
+                    this.patchMinY + this.dotRadius,
+                    this.rightMaxX - this.dotRadius,
+                    this.patchMaxY - this.dotRadius,
+                    this.dotsLeft
+                )
+            // add dot to right patch
             if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
                 const dotSprite =
-                    new Dot(x, y, this.dotRadius, coherentDirection, this.dotMaxAliveTime, PIXI.Loader.shared.resources['dot'].texture);
+                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, coherentDirection, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
                 // add to model
                 this.dotsRight.push(dotSprite);
                 // add to stage
@@ -129,7 +134,7 @@ export class MotionWorld extends AbstractMotionWorld {
                 numberOfCoherentDots++;
             } else {
                 const dotSprite: Dot =
-                    new Dot(x, y, this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime, PIXI.Loader.shared.resources['dot'].texture);
+                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
                 // add to model
                 this.dotsRight.push(dotSprite);
                 // add to stage
