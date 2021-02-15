@@ -1,6 +1,6 @@
-import { GAME_WIDTH, GAME_HEIGHT } from './utils/Constants';
 import { GameApp } from './app';
+import { Settings } from './utils/Settings';
 
 window.onload = () => {
-  new GameApp(GAME_WIDTH, GAME_HEIGHT);
+  new GameApp(Settings.WINDOW_WIDTH_PX, Settings.WINDOW_HEIGHT_PX);
 };

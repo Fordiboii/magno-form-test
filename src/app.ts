@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { MotionWorld } from './motion/MotionWorld';
 import { Dot } from './objects/Dot';
 import MainLoop from 'mainloop.js';
+import { DEVICE_PIXEL_RATIO } from './utils/Constants';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
@@ -14,7 +15,7 @@ export class GameApp {
         this.renderer = PIXI.autoDetectRenderer({
             width: width,
             height: height,
-            resolution: window.devicePixelRatio, // for retina display devices
+            resolution: DEVICE_PIXEL_RATIO, // for retina display devices
             autoDensity: true, // for retina display devices
         });
 

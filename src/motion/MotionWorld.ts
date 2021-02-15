@@ -4,6 +4,8 @@ import { AbstractMotionWorld } from './AbstractMotionWorld';
 import { rando } from '@nastyox/rando.js';
 import { Dot } from '../objects/Dot';
 import { QuadTree } from '../utils/QuadTree';
+import { Psychophysics } from '../utils/Psychophysics';
+import { Settings } from '../utils/Settings';
 
 export class MotionWorld extends AbstractMotionWorld {
     constructor() {
@@ -33,12 +35,12 @@ export class MotionWorld extends AbstractMotionWorld {
      * Creates the left and right patches for placing dots
      */
     createPatches = (): void => {
-        this.patchGap = 100; // TODO: calculate in utils/Psychophysics.ts
-        const patchWidth: number = 200; // TODO: calculate in utils/Psychophysics.ts
-        const patchHeight: number = 500; // TODO: calculate in utils/Psychophysics.ts
+        this.patchGap = Psychophysics.getPatchGapInPixels();
+        const patchWidth: number = Psychophysics.getPatchWidthInPixels();
+        const patchHeight: number = Psychophysics.getPatchHeightInPixels();
 
-        const screenXCenter: number = window.innerWidth / 2; // TODO: get from utils/Settings.ts
-        const screenYCenter: number = window.innerHeight / 2; // TODO: get from utils/Settings.ts
+        const screenXCenter: number = Settings.WINDOW_WIDTH_PX / 2;
+        const screenYCenter: number = Settings.WINDOW_HEIGHT_PX / 2;
 
         const patchLeftX: number = screenXCenter - patchWidth - (this.patchGap / 2);
         const patchRightX: number = screenXCenter + (this.patchGap / 2);
