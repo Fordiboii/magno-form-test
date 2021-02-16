@@ -104,7 +104,8 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsLeft.push(dotSprite);
                 // add to stage
-                this.dotsLeftContainer.addChild(dotSprite);
+                // this.dotsLeftContainer.addChild(dotSprite);
+                this.dotsLeftParticleContainer.addChild(dotSprite);
                 numberOfCoherentDots++;
             } else {
                 const dotSprite =
@@ -112,7 +113,8 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsLeft.push(dotSprite);
                 // add to stage
-                this.dotsLeftContainer.addChild(dotSprite);
+                // this.dotsLeftContainer.addChild(dotSprite);
+                this.dotsLeftParticleContainer.addChild(dotSprite);
             }
             // find a vacant spot to place the dot
             dotPosition =
@@ -130,7 +132,8 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsRight.push(dotSprite);
                 // add to stage
-                this.dotsRightContainer.addChild(dotSprite);
+                // this.dotsRightContainer.addChild(dotSprite);
+                this.dotsRightParticleContainer.addChild(dotSprite);
                 numberOfCoherentDots++;
             } else {
                 const dotSprite: Dot =
@@ -138,7 +141,8 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsRight.push(dotSprite);
                 // add to stage
-                this.dotsRightContainer.addChild(dotSprite);
+                // this.dotsRightContainer.addChild(dotSprite);
+                this.dotsRightParticleContainer.addChild(dotSprite);
             }
         }
     }

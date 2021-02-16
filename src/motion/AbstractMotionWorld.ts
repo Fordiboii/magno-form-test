@@ -12,6 +12,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     public dotsLeftContainer: PIXI.Container = new PIXI.Container();
     public dotsRightContainer: PIXI.Container = new PIXI.Container();
+    public dotsLeftParticleContainer: PIXI.ParticleContainer = new PIXI.ParticleContainer();
+    public dotsRightParticleContainer: PIXI.ParticleContainer = new PIXI.ParticleContainer();
     public dotsLeft: Array<Dot>;
     public dotsRight: Array<Dot>;
 
@@ -62,6 +64,10 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.dotSpacing = 1; // TODO: move to settings
         this.maxRunTime = 5000; // TODO: move to settings
         this.dotMaxAliveTime = 85; // TODO: move to settings
+
+        // use particle container for faster rendering. 
+        this.dotsLeftContainer.addChild(this.dotsLeftParticleContainer);
+        this.dotsRightContainer.addChild(this.dotsRightParticleContainer);
     }
 
     abstract update(delta: number): void;

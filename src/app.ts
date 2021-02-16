@@ -1,13 +1,12 @@
 import * as PIXI from 'pixi.js';
 import { MotionWorld } from './motion/MotionWorld';
-import { Dot } from './objects/Dot';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO } from './utils/Constants';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
-    private activeGameObjects: Array<Dot | MotionWorld> = [];
+    private activeGameObjects: Array<MotionWorld> = [];
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -22,10 +21,10 @@ export class GameApp {
         // add renderer view to document body
         window.document.body.appendChild(this.renderer.view)
 
-        // set timestep (in ms) the app should simulate between each frame.
-        MainLoop.setSimulationTimestep(20);
-        // set max fps.
-        MainLoop.setMaxAllowedFPS(100);
+        // // set timestep (in ms) the app should simulate between each frame.
+        // MainLoop.setSimulationTimestep(20);
+        // // set max fps.
+        // MainLoop.setMaxAllowedFPS(100);
 
         // warn if the browser doesn't support the Page Visibility API and revert to onblur and onfocus events.
         if (document.hidden === undefined) {

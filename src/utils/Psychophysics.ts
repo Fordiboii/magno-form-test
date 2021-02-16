@@ -30,7 +30,6 @@ export abstract class Psychophysics {
      * @returns the width in pixels.
      */
     public static getPatchWidthInPixels = (): number => {
-        console.log(Settings.WINDOW_WIDTH_PX, Settings.WINDOW_WIDTH_MM, window.devicePixelRatio)
         return Psychophysics.visualAngleToPixels(Settings.PATCH_WIDTH, Settings.SCREEN_VIEWING_DISTANCE_MM, Settings.WINDOW_WIDTH_PX, Settings.WINDOW_WIDTH_MM)
     }
     /**
