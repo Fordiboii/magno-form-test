@@ -1,9 +1,11 @@
 import { Dot } from "../objects/Dot";
+import { Patch } from "../objects/Patch";
 import * as PIXI from "pixi.js";
 import { euclideanDistance } from "../utils/EuclideanDistance";
 import { QuadTree } from "../utils/QuadTree";
 import { rando } from "@nastyox/rando.js";
 import { WorldStates } from "../utils/Enums";
+import { PATCH_OUTLINE_THICKNESS } from "../utils/Constants";
 
 export abstract class AbstractMotionWorld extends PIXI.Container {
     protected currentState: WorldStates;
@@ -13,12 +15,13 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     public dotsLeft: Array<Dot>;
     public dotsRight: Array<Dot>;
 
-    public patchLeft: PIXI.Graphics;
-    public patchRight: PIXI.Graphics;
+    // public patchLeft: PIXI.Graphics;
+    // public patchRight: PIXI.Graphics;
+    public patchLeft: Patch;
+    public patchRight: Patch;
     public patchLeftMask: PIXI.Graphics;
     public patchRightMask: PIXI.Graphics;
     public patchGap: number;
-    public patchLineThickness: number;
 
     protected leftMinX: number;
     protected leftMaxX: number;
@@ -48,7 +51,6 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         super();
         this.currentState = WorldStates.RUNNING;
 
-        this.patchLineThickness = 1; //TODO: move to settings
         this.runTime = 0;
 
         this.dotsLeft = new Array<Dot>();
@@ -69,6 +71,16 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     abstract createPatches(): void;
 
     abstract createDots(): void;
+
+    reset = (): void => {
+        this.runTime = 0;
+        this.dotsLeft.forEach(dot => dot.destroy());
+        this.dotsRight.forEach(dot => dot.destroy());
+        this.dotsLeft = new Array<Dot>();
+        this.dotsRight = new Array<Dot>();
+        this.createDots();
+        this.currentState = WorldStates.RUNNING;
+    }
 
     paused = (): void => {
         if (this.runTime >= this.maxRunTime) {
@@ -165,17 +177,17 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     }
 
     calculateMaxMin = (): void => {
-        this.leftMinX = this.patchLeft.x + this.patchLineThickness;
-        this.leftMaxX = (this.leftMinX + this.patchLeft.width) - (3 * this.patchLineThickness);
+        this.leftMinX = this.patchLeft.x + PATCH_OUTLINE_THICKNESS;
+        this.leftMaxX = (this.leftMinX + this.patchLeft.width) - (3 * PATCH_OUTLINE_THICKNESS);
 
-        this.patchMinY = this.patchLeft.y + this.patchLineThickness;
-        this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - this.patchLineThickness;
+        this.patchMinY = this.patchLeft.y + PATCH_OUTLINE_THICKNESS;
+        this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - PATCH_OUTLINE_THICKNESS;
 
-        this.rightMinX = this.patchRight.x + this.patchLineThickness;
-        this.rightMaxX = (this.patchRight.x + this.patchRight.width) - (3 * this.patchLineThickness);
+        this.rightMinX = this.patchRight.x + PATCH_OUTLINE_THICKNESS;
+        this.rightMaxX = (this.patchRight.x + this.patchRight.width) - (3 * PATCH_OUTLINE_THICKNESS);
     }
 
-    createMasks = () => {
+    createDotContainerMasks = () => {
         this.patchLeftMask = new PIXI.Graphics()
             .beginFill(0)
             .drawRect(

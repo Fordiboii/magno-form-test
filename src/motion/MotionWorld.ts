@@ -6,6 +6,8 @@ import { Dot } from '../objects/Dot';
 import { QuadTree } from '../utils/QuadTree';
 import { Psychophysics } from '../utils/Psychophysics';
 import { Settings } from '../utils/Settings';
+import { Patch } from '../objects/Patch';
+import { PATCH_OUTLINE_COLOR, PATCH_OUTLINE_THICKNESS } from '../utils/Constants';
 
 export class MotionWorld extends AbstractMotionWorld {
     constructor() {
@@ -13,7 +15,7 @@ export class MotionWorld extends AbstractMotionWorld {
         this.createPatches();
         this.createQuadTree();
         this.calculateMaxMin();
-        this.createMasks();
+        this.createDotContainerMasks();
         this.createDots();
     }
     /**
@@ -52,23 +54,13 @@ export class MotionWorld extends AbstractMotionWorld {
         const patchRightX: number = screenXCenter + (this.patchGap / 2);
         const patchY: number = screenYCenter - (patchHeight / 2);
 
-        // draw left patch
-        this.patchLeft = new PIXI.Graphics();
-        this.patchLeft.position.set(patchLeftX, patchY)
-        this.patchLeft
-            .lineStyle(this.patchLineThickness, 0xFFFFFF)
-            .beginFill()
-            .drawRect(0, 0, patchWidth, patchHeight)
-            .endFill();
+        // create patches
+        this.patchLeft = new Patch(patchLeftX, patchY, patchWidth, patchHeight, PATCH_OUTLINE_THICKNESS, PATCH_OUTLINE_COLOR);
+        this.patchRight = new Patch(patchRightX, patchY, patchWidth, patchHeight, PATCH_OUTLINE_THICKNESS, PATCH_OUTLINE_COLOR);
 
-        // draw right patch
-        this.patchRight = new PIXI.Graphics();
-        this.patchRight.position.set(patchRightX, patchY);
-        this.patchRight
-            .lineStyle(this.patchLineThickness, 0xFFFFFF)
-            .beginFill()
-            .drawRect(0, 0, patchWidth, patchHeight)
-            .endFill();
+        // add event handlers
+        this.patchLeft.on("pointerdown", () => this.reset());
+        this.patchRight.on("pointerdown", () => this.reset());
 
         // add patches to container
         this.addChild(this.patchLeft, this.patchRight);
