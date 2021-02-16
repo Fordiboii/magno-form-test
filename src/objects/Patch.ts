@@ -9,5 +9,6 @@ export class Patch extends PIXI.Graphics {
             .drawRect(0, 0, width, height)
             .endFill();
         this.interactive = true;
+        this.buttonMode = true;
     }
 }
