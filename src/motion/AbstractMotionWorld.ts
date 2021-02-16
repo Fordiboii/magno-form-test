@@ -15,8 +15,6 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     public dotsLeft: Array<Dot>;
     public dotsRight: Array<Dot>;
 
-    // public patchLeft: PIXI.Graphics;
-    // public patchRight: PIXI.Graphics;
     public patchLeft: Patch;
     public patchRight: Patch;
     public patchLeftMask: PIXI.Graphics;
