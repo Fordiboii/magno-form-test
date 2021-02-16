@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { Settings } from "../utils/Settings";
 import { Direction } from "../utils/Enums";
 import { rotateVector } from '../utils/RotateVector';
 import { rando } from '@nastyox/rando.js';
@@ -39,10 +40,9 @@ export class Dot extends PIXI.Sprite {
         this.aliveTimer = aliveTime;
         this.maxAliveTimer = aliveTime;
 
-        this.horMaxTime = 572; // TODO: get from settings
-        this.ranMaxTime = 572; // TODO: get from settings
-
-        this.speed = 0.02; // TODO: get from settings
+        this.horMaxTime = Settings.DOT_HORIZONTAL_REVERSAL_TIME;
+        this.ranMaxTime = Settings.DOT_RANDOM_DIRECTION_TIME;
+        this.speed = Settings.DOT_VELOCITY;
 
         // calculate initial velocity vector
         if (this.direction === Direction.LEFT) {

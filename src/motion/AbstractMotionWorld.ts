@@ -6,6 +6,7 @@ import { QuadTree } from "../utils/QuadTree";
 import { rando } from "@nastyox/rando.js";
 import { WorldStates } from "../utils/Enums";
 import { PATCH_OUTLINE_THICKNESS } from "../utils/Constants";
+import { Settings } from "../utils/Settings";
 
 export abstract class AbstractMotionWorld extends PIXI.Container {
     protected currentState: WorldStates;
@@ -56,14 +57,14 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.dotsLeft = new Array<Dot>();
         this.dotsRight = new Array<Dot>();
 
-        this.coherencePercent = 75; // TODO: move to settings
-        this.dotKillPercentage = 10; // TODO: move to settings
+        this.coherencePercent = Settings.DOT_COHERENCE_PERCENTAGE;
+        this.dotKillPercentage = Settings.DOT_KILL_PERCENTAGE;
 
-        this.numberOfDots = 300; // TODO: move to settings
-        this.dotRadius = 1; // TODO: move to settings
-        this.dotSpacing = 1; // TODO: move to settings
-        this.maxRunTime = 5000; // TODO: move to settings
-        this.dotMaxAliveTime = 85; // TODO: move to settings
+        this.numberOfDots = Settings.DOT_TOTAL_AMOUNT;
+        this.dotRadius = Settings.DOT_RADIUS;
+        this.dotSpacing = Settings.DOT_SPACING;
+        this.maxRunTime = Settings.DOT_MAX_ANIMATION_TIME;
+        this.dotMaxAliveTime = Settings.DOT_MAX_ALIVE_TIME;
 
         // use particle container for faster rendering. 
         this.dotsLeftContainer.addChild(this.dotsLeftParticleContainer);
