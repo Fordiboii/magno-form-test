@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { Direction } from '../utils/Enums';
+import { Direction, WorldStates } from '../utils/Enums';
 import { AbstractMotionWorld } from './AbstractMotionWorld';
 import { rando } from '@nastyox/rando.js';
 import { Dot } from '../objects/Dot';
@@ -21,7 +21,13 @@ export class MotionWorld extends AbstractMotionWorld {
      * @param delta time between each frame in ms
      */
     update = (delta: number): void => {
-        this.updateDots(delta);
+        if (this.currentState == WorldStates.RUNNING) {
+            this.updateDots(delta);
+        } else if (this.currentState == WorldStates.PAUSED) {
+            this.paused();
+        } else if (this.currentState == WorldStates.FINISHED) {
+            return;
+        }
     }
 
     createQuadTree = (): void => {

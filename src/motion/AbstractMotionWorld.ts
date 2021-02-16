@@ -3,8 +3,11 @@ import * as PIXI from "pixi.js";
 import { euclideanDistance } from "../utils/EuclideanDistance";
 import { QuadTree } from "../utils/QuadTree";
 import { rando } from "@nastyox/rando.js";
+import { WorldStates } from "../utils/Enums";
 
 export abstract class AbstractMotionWorld extends PIXI.Container {
+    protected currentState: WorldStates;
+
     public dotsLeftContainer: PIXI.Container = new PIXI.Container();
     public dotsRightContainer: PIXI.Container = new PIXI.Container();
     public dotsLeft: Array<Dot>;
@@ -43,6 +46,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     constructor() {
         super();
+        this.currentState = WorldStates.RUNNING;
+
         this.patchLineThickness = 1; //TODO: move to settings
         this.runTime = 0;
 
@@ -55,7 +60,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.numberOfDots = 300; // TODO: move to settings
         this.dotRadius = 1; // TODO: move to settings
         this.dotSpacing = 1; // TODO: move to settings
-        this.maxRunTime = 5; // TODO: move to settings
+        this.maxRunTime = 5000; // TODO: move to settings
         this.dotMaxAliveTime = 85; // TODO: move to settings
     }
 
@@ -65,7 +70,23 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     abstract createDots(): void;
 
+    paused = (): void => {
+        if (this.runTime >= this.maxRunTime) {
+            this.runTime = 0;
+            this.dotsLeft.forEach(dot => dot.destroy());
+            this.dotsRight.forEach(dot => dot.destroy());
+            this.dotsLeft = new Array<Dot>();
+            this.dotsRight = new Array<Dot>();
+        }
+    }
+
     updateDots = (delta: number): void => {
+        this.runTime += delta;
+        if (this.runTime >= this.maxRunTime) {
+            this.currentState = WorldStates.PAUSED;
+            return;
+        }
+
         // clear quadtree
         this.quadTree.clear()
 
