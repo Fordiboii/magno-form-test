@@ -104,7 +104,6 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsLeft.push(dotSprite);
                 // add to stage
-                // this.dotsLeftContainer.addChild(dotSprite);
                 this.dotsLeftParticleContainer.addChild(dotSprite);
                 numberOfCoherentDots++;
             } else {
@@ -113,7 +112,6 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsLeft.push(dotSprite);
                 // add to stage
-                // this.dotsLeftContainer.addChild(dotSprite);
                 this.dotsLeftParticleContainer.addChild(dotSprite);
             }
             // find a vacant spot to place the dot
@@ -132,7 +130,6 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsRight.push(dotSprite);
                 // add to stage
-                // this.dotsRightContainer.addChild(dotSprite);
                 this.dotsRightParticleContainer.addChild(dotSprite);
                 numberOfCoherentDots++;
             } else {
@@ -141,7 +138,6 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to model
                 this.dotsRight.push(dotSprite);
                 // add to stage
-                // this.dotsRightContainer.addChild(dotSprite);
                 this.dotsRightParticleContainer.addChild(dotSprite);
             }
         }
