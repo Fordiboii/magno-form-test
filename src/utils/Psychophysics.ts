@@ -46,4 +46,23 @@ export abstract class Psychophysics {
     public static getPatchGapInPixels = (): number => {
         return Psychophysics.visualAngleToPixels(Settings.PATCH_GAP, Settings.SCREEN_VIEWING_DISTANCE_MM, Settings.WINDOW_WIDTH_PX, Settings.WINDOW_WIDTH_MM)
     }
+
+    /**
+     * Convert amplitude ratio/fctor to decibel.
+     * @param factor The amplitude ratio to be converted.
+     * @returns the decibel value for given amplitude ratio.
+     */
+    public static factorToDecibel = (factor: number): number => {
+        let squared: number = factor * factor;
+        return 10 * Math.log10(squared);
+    }
+
+    /**
+     * Converts decibel to amplitude ratio/factor.
+     * @param decibel The decibel to be converted.
+     * @returns the amplitude ratio for the given decibel.
+     */
+    public static decibelToFactor = (decibel: number): number => {
+        return Math.pow(10, (decibel / 20));
+    }
 }

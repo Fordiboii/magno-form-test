@@ -10,6 +10,9 @@ import { Patch } from '../objects/Patch';
 import { PATCH_OUTLINE_COLOR, PATCH_OUTLINE_THICKNESS } from '../utils/Constants';
 
 export class MotionWorld extends AbstractMotionWorld {
+    private correctAnswerCount: number = 0;
+    private wrongAnswerCount: number = 0;
+
     constructor() {
         super();
         this.createPatches();
@@ -59,8 +62,14 @@ export class MotionWorld extends AbstractMotionWorld {
         this.patchRight = new Patch(patchRightX, patchY, patchWidth, patchHeight, PATCH_OUTLINE_THICKNESS, PATCH_OUTLINE_COLOR);
 
         // add event handlers
-        this.patchLeft.on("pointerdown", () => this.reset());
-        this.patchRight.on("pointerdown", () => this.reset());
+        this.patchLeft.on("pointerdown", () => {
+            this.coherentPatchSide == "LEFT" ? this.updateCoherencyAndCounters(this.correctAnswerFactor, true) : this.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
+            this.reset();
+        });
+        this.patchRight.on("pointerdown", () => {
+            this.coherentPatchSide == "RIGHT" ? this.updateCoherencyAndCounters(this.correctAnswerFactor, true) : this.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
+            this.reset();
+        });
 
         // add patches to container
         this.addChild(this.patchLeft, this.patchRight);
@@ -140,6 +149,37 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to stage
                 this.dotsRightParticleContainer.addChild(dotSprite);
             }
+        }
+    }
+
+    /**
+     * Updates the coherency percentage by a decibel factor and the correct and wrong answer counters. 
+     * Decreases coherency if answer is correct, increases otherwise.
+     * @param factor decibel factor used to increase or decrease coherency level.
+     * @param isCorrectAnswer if the user chose the patch with coherent dots.
+     */
+    updateCoherencyAndCounters = (factor: number, isCorrectAnswer: boolean): void => {
+        let temp: number = this.coherencePercent * factor;
+
+        if (isCorrectAnswer) {
+            if (factor > 1) {
+                temp -= this.coherencePercent;
+                this.coherencePercent -= temp;
+            } else {
+                this.coherencePercent = temp;
+            }
+            this.correctAnswerCount++;
+        } else {
+            if (factor > 1) {
+                this.coherencePercent = temp;
+            } else {
+                temp -= this.coherencePercent;
+                this.coherencePercent -= temp;
+            }
+            if (this.coherencePercent > 100) {
+                this.coherencePercent = 100;
+            }
+            this.wrongAnswerCount++;
         }
     }
 }

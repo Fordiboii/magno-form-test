@@ -7,6 +7,7 @@ import { rando } from "@nastyox/rando.js";
 import { WorldStates } from "../utils/Enums";
 import { PATCH_OUTLINE_THICKNESS } from "../utils/Constants";
 import { Settings } from "../utils/Settings";
+import { Psychophysics } from "../utils/Psychophysics";
 
 export abstract class AbstractMotionWorld extends PIXI.Container {
     protected currentState: WorldStates;
@@ -46,6 +47,9 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     protected maxRunTime: number;
     protected runTime: number;
 
+    protected correctAnswerFactor: number;
+    protected wrongAnswerFactor: number;
+
     protected quadTree: QuadTree;
 
     constructor() {
@@ -66,6 +70,9 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.maxRunTime = Settings.DOT_MAX_ANIMATION_TIME;
         this.dotMaxAliveTime = Settings.DOT_MAX_ALIVE_TIME;
 
+        this.correctAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_CORRECT_ANSWER_DB);
+        this.wrongAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_WRONG_ANSWER_DB);
+
         // use particle container for faster rendering. 
         this.dotsLeftContainer.addChild(this.dotsLeftParticleContainer);
         this.dotsRightContainer.addChild(this.dotsRightParticleContainer);
@@ -76,6 +83,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     abstract createPatches(): void;
 
     abstract createDots(): void;
+
+    abstract updateCoherencyAndCounters(factor: number, isCorrectAnswer: boolean): void;
 
     reset = (): void => {
         this.runTime = 0;

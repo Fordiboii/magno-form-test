@@ -8,7 +8,7 @@ export abstract class Settings {
     public static WINDOW_WIDTH_PX: number = window.innerWidth; // in pixels.
     public static WINDOW_HEIGHT_PX: number = window.innerHeight; // in pixels.
     public static WINDOW_WIDTH_MM: number = (window.innerWidth / (window.devicePixelRatio * DEFAULT_DPI)) * MM_PER_INCH; // in millimeters.
-    public static WINDOW_HEIGHT_MM: number = (window.innerHeight / (window.devicePixelRatio * DEFAULT_DPI) * MM_PER_INCH); // in millimeters.
+    public static WINDOW_HEIGHT_MM: number = (window.innerHeight / (window.devicePixelRatio * DEFAULT_DPI)) * MM_PER_INCH; // in millimeters.
 
     // Patch settings
     public static PATCH_GAP: number = 5; // in degrees.
@@ -22,8 +22,15 @@ export abstract class Settings {
     public static DOT_RADIUS = 1; // in pixels.
     public static DOT_SPACING = 1; // in pixels.
     public static DOT_COHERENCE_PERCENTAGE = 50; // in percentage.
-    public static DOT_TOTAL_AMOUNT = 300; // number of dots to display.
+    public static DOT_TOTAL_AMOUNT = 300; // total number of dots to display.
     public static DOT_KILL_PERCENTAGE = 10; // in percentage.
     public static DOT_MAX_ANIMATION_TIME = 5000; // in milliseconds.
     public static DOT_MAX_ALIVE_TIME = 85; // in milliseconds.
+
+    // Staircase settings
+    public static STAIRCASE_CORRECT_ANSWER_DB = 1; // in decibel.
+    public static STAIRCASE_WRONG_ANSWER_DB = 3; // in decibel.
+    public static STAIRCASE_MAX_ATTEMPTS = 100; // max number of attempts.
+    public static STAIRCASE_REVERSAL_POINTS = 10; // total number of reversal points.
+    public static STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8; // number of reversal points to use when calculating the test score in geometric mean.
 }
