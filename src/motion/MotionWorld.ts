@@ -62,11 +62,11 @@ export class MotionWorld extends AbstractMotionWorld {
         this.patchRight = new Patch(patchRightX, patchY, patchWidth, patchHeight, PATCH_OUTLINE_THICKNESS, PATCH_OUTLINE_COLOR);
 
         // add event handlers
-        this.patchLeft.on("pointerdown", () => {
+        this.patchLeft.on("mousedown", () => {
             this.coherentPatchSide == "LEFT" ? this.updateCoherencyAndCounters(this.correctAnswerFactor, true) : this.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
             this.reset();
         });
-        this.patchRight.on("pointerdown", () => {
+        this.patchRight.on("mouseup", () => {
             this.coherentPatchSide == "RIGHT" ? this.updateCoherencyAndCounters(this.correctAnswerFactor, true) : this.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
             this.reset();
         });
