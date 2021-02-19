@@ -25,14 +25,14 @@ export class MotionScreen extends AbstractScreen {
     }
 
     setup = (): void => {
+        // add motion world to this container
+        this.motionWorld = new MotionWorld();
+        this.addChild(this.motionWorld);
+
         // add event listeners
         window.addEventListener("keydown", this.keyDown);
         this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDown("LEFT"));
         this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDown("RIGHT"));
-
-        // add motion world to this container
-        this.motionWorld = new MotionWorld();
-        this.addChild(this.motionWorld);
     }
 
     update = (delta: number): void => {
