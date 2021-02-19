@@ -5,3 +5,6 @@ export const DEFAULT_DPI: number = 96;
 export const MM_PER_INCH: number = 25.4;
 export const PATCH_OUTLINE_THICKNESS: number = 1;
 export const PATCH_OUTLINE_COLOR: number = 0xFFFFFF;
+export const KEY_LEFT: string = "ArrowLeft";
+export const KEY_RIGHT: string = "ArrowRight";
+export const KEY_BACKSPACE: string = "Backspace";

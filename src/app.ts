@@ -2,11 +2,12 @@ import * as PIXI from 'pixi.js';
 import { MotionWorld } from './motion/MotionWorld';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO } from './utils/Constants';
+import { MotionScreen } from './screens/MotionScreen';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
-    private activeGameObjects: Array<MotionWorld> = [];
+    private activeGameObjects: Array<MotionScreen> = [];
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -17,6 +18,9 @@ export class GameApp {
             resolution: DEVICE_PIXEL_RATIO, // for retina display devices
             autoDensity: true, // for retina display devices
         });
+
+        // For using pixijs inspection dev tool.
+        (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__ && (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
 
         // add renderer view to document body
         window.document.body.appendChild(this.renderer.view)
@@ -64,10 +68,10 @@ export class GameApp {
         MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
         MainLoop.setDraw(this.render);
 
-        // add motion world to stage and model
-        const motionWorld: MotionWorld = new MotionWorld();
-        this.stage.addChild(motionWorld);
-        this.activeGameObjects.push(motionWorld);
+        // add motion screen to stage and model
+        const motionScreen: MotionScreen = new MotionScreen();
+        this.stage.addChild(motionScreen);
+        this.activeGameObjects.push(motionScreen);
     }
 
     private gameLoop = (delta: number): void => {

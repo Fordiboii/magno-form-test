@@ -4,13 +4,12 @@ import * as PIXI from "pixi.js";
 import { euclideanDistance } from "../utils/EuclideanDistance";
 import { QuadTree } from "../utils/QuadTree";
 import { rando } from "@nastyox/rando.js";
-import { WorldStates } from "../utils/Enums";
+import { WorldState } from "../utils/Enums";
 import { PATCH_OUTLINE_THICKNESS } from "../utils/Constants";
 import { Settings } from "../utils/Settings";
-import { Psychophysics } from "../utils/Psychophysics";
 
 export abstract class AbstractMotionWorld extends PIXI.Container {
-    protected currentState: WorldStates;
+    protected currentState: WorldState;
 
     public dotsLeftContainer: PIXI.Container = new PIXI.Container();
     public dotsRightContainer: PIXI.Container = new PIXI.Container();
@@ -54,7 +53,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     constructor() {
         super();
-        this.currentState = WorldStates.RUNNING;
+        this.currentState = WorldState.RUNNING;
 
         this.runTime = 0;
 
@@ -70,9 +69,6 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.maxRunTime = Settings.DOT_MAX_ANIMATION_TIME;
         this.dotMaxAliveTime = Settings.DOT_MAX_ALIVE_TIME;
 
-        this.correctAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_CORRECT_ANSWER_DB);
-        this.wrongAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_WRONG_ANSWER_DB);
-
         // use particle container for faster rendering. 
         this.dotsLeftContainer.addChild(this.dotsLeftParticleContainer);
         this.dotsRightContainer.addChild(this.dotsRightParticleContainer);
@@ -86,21 +82,25 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     abstract updateCoherencyAndCounters(factor: number, isCorrectAnswer: boolean): void;
 
-    reset = (): void => {
-        this.runTime = 0;
+    destroyDots = (): void => {
         this.dotsLeft.forEach(dot => dot.destroy());
         this.dotsRight.forEach(dot => dot.destroy());
+    }
+
+    reset = (): void => {
+        this.runTime = 0;
+        if (this.dotsLeft.length > 0 && this.dotsRight.length > 0) {
+            this.destroyDots();
+        }
         this.dotsLeft = new Array<Dot>();
         this.dotsRight = new Array<Dot>();
         this.createDots();
-        this.currentState = WorldStates.RUNNING;
     }
 
     paused = (): void => {
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
-            this.dotsLeft.forEach(dot => dot.destroy());
-            this.dotsRight.forEach(dot => dot.destroy());
+            this.destroyDots();
             this.dotsLeft = new Array<Dot>();
             this.dotsRight = new Array<Dot>();
         }
@@ -109,7 +109,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     updateDots = (delta: number): void => {
         this.runTime += delta;
         if (this.runTime >= this.maxRunTime) {
-            this.currentState = WorldStates.PAUSED;
+            this.currentState = WorldState.PAUSED;
             return;
         }
 
@@ -290,5 +290,21 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         } else if (dot.y + dot.radius >= this.patchMaxY) {
             dot.collideWithWall(dot.x, this.patchMaxY);
         }
+    }
+
+    getCoherentPatchSide = (): string => {
+        return this.coherentPatchSide;
+    }
+
+    getState = (): WorldState => {
+        return this.currentState;
+    }
+
+    setState = (state: WorldState) => {
+        this.currentState = state;
+    }
+
+    getCoherencePercent = (): number => {
+        return this.coherencePercent;
     }
 }

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { Direction, WorldStates } from '../utils/Enums';
+import { Direction, WorldState } from '../utils/Enums';
 import { AbstractMotionWorld } from './AbstractMotionWorld';
 import { rando } from '@nastyox/rando.js';
 import { Dot } from '../objects/Dot';
@@ -10,9 +10,6 @@ import { Patch } from '../objects/Patch';
 import { PATCH_OUTLINE_COLOR, PATCH_OUTLINE_THICKNESS } from '../utils/Constants';
 
 export class MotionWorld extends AbstractMotionWorld {
-    private correctAnswerCount: number = 0;
-    private wrongAnswerCount: number = 0;
-
     constructor() {
         super();
         this.createPatches();
@@ -26,11 +23,11 @@ export class MotionWorld extends AbstractMotionWorld {
      * @param delta time between each frame in ms
      */
     update = (delta: number): void => {
-        if (this.currentState == WorldStates.RUNNING) {
+        if (this.currentState == WorldState.RUNNING) {
             this.updateDots(delta);
-        } else if (this.currentState == WorldStates.PAUSED) {
+        } else if (this.currentState == WorldState.PAUSED) {
             this.paused();
-        } else if (this.currentState == WorldStates.FINISHED) {
+        } else if (this.currentState == WorldState.FINISHED) {
             return;
         }
     }
@@ -61,16 +58,6 @@ export class MotionWorld extends AbstractMotionWorld {
         this.patchLeft = new Patch(patchLeftX, patchY, patchWidth, patchHeight, PATCH_OUTLINE_THICKNESS, PATCH_OUTLINE_COLOR);
         this.patchRight = new Patch(patchRightX, patchY, patchWidth, patchHeight, PATCH_OUTLINE_THICKNESS, PATCH_OUTLINE_COLOR);
 
-        // add event handlers
-        this.patchLeft.on("mousedown", () => {
-            this.coherentPatchSide == "LEFT" ? this.updateCoherencyAndCounters(this.correctAnswerFactor, true) : this.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
-            this.reset();
-        });
-        this.patchRight.on("mouseup", () => {
-            this.coherentPatchSide == "RIGHT" ? this.updateCoherencyAndCounters(this.correctAnswerFactor, true) : this.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
-            this.reset();
-        });
-
         // add patches to container
         this.addChild(this.patchLeft, this.patchRight);
     }
@@ -91,7 +78,7 @@ export class MotionWorld extends AbstractMotionWorld {
         // randomly choose direction of coherent moving dots
         const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
         for (let i = 0; i < this.numberOfDots; i++) {
-            // 
+            // Multiplier to give dots different respawn rate
             if (i == dotsToKill * maxAliveTimeMultiplier) {
                 maxAliveTimeMultiplier++;
             }
@@ -168,7 +155,6 @@ export class MotionWorld extends AbstractMotionWorld {
             } else {
                 this.coherencePercent = temp;
             }
-            this.correctAnswerCount++;
         } else {
             if (factor > 1) {
                 this.coherencePercent = temp;
@@ -179,7 +165,6 @@ export class MotionWorld extends AbstractMotionWorld {
             if (this.coherencePercent > 100) {
                 this.coherencePercent = 100;
             }
-            this.wrongAnswerCount++;
         }
     }
 }
