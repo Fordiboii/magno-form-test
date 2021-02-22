@@ -107,12 +107,15 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     }
 
     updateDots = (delta: number): void => {
+        // stop the animation if runtime exceeds max runtime.
         this.runTime += delta;
         if (this.runTime >= this.maxRunTime) {
             this.currentState = WorldState.PAUSED;
             return;
         }
 
+        // variable for holding possible collisions
+        let possibleCollisions: Array<Dot> = new Array<Dot>();
         // clear quadtree
         this.quadTree.clear()
 
@@ -128,7 +131,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
         for (let i = 0; i < this.dotsLeft.length; i++) {
             let dot: Dot = this.dotsLeft[i];
-            let possibleCollisions: Array<Dot> = new Array<Dot>();
+            possibleCollisions = [];
             possibleCollisions = this.quadTree.retrieve(possibleCollisions, dot);
             possibleCollisions.forEach(otherDot => {
                 dot.collideWithDot(otherDot);
@@ -166,7 +169,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
         for (let i = 0; i < this.dotsRight.length; i++) {
             let dot: Dot = this.dotsRight[i];
-            let possibleCollisions: Array<Dot> = new Array<Dot>();
+            possibleCollisions = [];
             possibleCollisions = this.quadTree.retrieve(possibleCollisions, dot);
             possibleCollisions.forEach(otherDot => {
                 dot.collideWithDot(otherDot);

@@ -117,7 +117,7 @@ export class MotionWorld extends AbstractMotionWorld {
                     this.patchMinY + this.dotRadius,
                     this.rightMaxX - this.dotRadius,
                     this.patchMaxY - this.dotRadius,
-                    this.dotsLeft
+                    this.dotsRight
                 )
             // add dot to right patch
             if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
