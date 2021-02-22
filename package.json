@@ -7,12 +7,15 @@
     "code-coverage": "jest --coverage",
     "dev": "parcel ./src/index.html --port=8080 --open ",
     "prebuild": "npx del-cli ./dist",
-    "build": "parcel build ./src/index.html"
+    "build": "cross-env NODE_ENV=production parcel build ./src/index.html --public-url .",
+    "deploy": "gh-pages -d dist"
   },
   "author": "bySabi Files",
   "license": "MIT",
   "dependencies": {
     "@nastyox/rando.js": "^2.0.5",
+    "cross-env": "^7.0.3",
+    "gh-pages": "^3.1.0",
     "mainloop.js": "^1.0.4",
     "pixi.js": "^5.3.0"
   },
