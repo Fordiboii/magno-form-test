@@ -186,7 +186,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
                         this.patchMinY + this.dotRadius,
                         this.rightMaxX - this.dotRadius,
                         this.patchMaxY - this.dotRadius,
-                        this.dotsLeft
+                        this.dotsRight
                     )
                 dot.setPosition(dotPosition[0], dotPosition[1]);
             }
