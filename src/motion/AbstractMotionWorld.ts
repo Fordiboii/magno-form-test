@@ -92,8 +92,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         if (this.dotsLeft.length > 0 && this.dotsRight.length > 0) {
             this.destroyDots();
         }
-        this.dotsLeft = new Array<Dot>();
-        this.dotsRight = new Array<Dot>();
+        this.dotsLeft = [];
+        this.dotsRight = [];
         this.createDots();
     }
 
@@ -101,8 +101,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
             this.destroyDots();
-            this.dotsLeft = new Array<Dot>();
-            this.dotsRight = new Array<Dot>();
+            this.dotsLeft = [];
+            this.dotsRight = [];
         }
     }
 
@@ -116,6 +116,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
         // variable for holding possible collisions
         let possibleCollisions: Array<Dot> = new Array<Dot>();
+
         // clear quadtree
         this.quadTree.clear()
 
