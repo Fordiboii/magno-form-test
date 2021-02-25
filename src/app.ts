@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import { MotionWorld } from './motion/MotionWorld';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
@@ -58,7 +57,6 @@ export class GameApp {
             // start game loop
             MainLoop.start();
         });
-        loader.onProgress.add((msg) => console.log("progress!", msg));
         loader
             .add('dot', './assets/sprites/dot.png')
             .add('helvetica', './assets/fonts/helvetica-bitmap.fnt')
