@@ -1,11 +1,15 @@
+import * as PIXI from 'pixi.js';
 import { AbstractScreen } from "./AbstractScreen";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
-import { KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT } from "../utils/Constants";
+import { FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, PATCH_LABEL_COLOR } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 
 export class MotionScreen extends AbstractScreen {
+    patchLeftLabel: PIXI.BitmapText;
+    patchRightLabel: PIXI.BitmapText;
+
     constructor() {
         super();
         this.reversalPoints = Settings.STAIRCASE_REVERSAL_POINTS;
@@ -25,9 +29,22 @@ export class MotionScreen extends AbstractScreen {
     }
 
     setup = (): void => {
-        // add motion world to this container
+        // create motion world and add to container
         this.motionWorld = new MotionWorld();
         this.addChild(this.motionWorld);
+
+        // create patch labels and add to container
+        this.patchLeftLabel = new PIXI.BitmapText("1", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3 })
+        this.patchLeftLabel.anchor = 0.5;
+        this.patchLeftLabel.x = this.motionWorld.patchLeft.x + this.motionWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.motionWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.addChild(this.patchLeftLabel);
+
+        this.patchRightLabel = new PIXI.BitmapText("2", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3 })
+        this.patchRightLabel.anchor = 0.5;
+        this.patchRightLabel.x = this.motionWorld.patchRight.x + this.motionWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.motionWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.addChild(this.patchRightLabel);
 
         // add event listeners
         window.addEventListener("keydown", this.keyDown);
