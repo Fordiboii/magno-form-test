@@ -63,10 +63,10 @@ export class MotionScreen extends AbstractScreen {
 
         if (event.code == KEY_LEFT) {
             if (coherentPatchSide == "LEFT") {
-                this.motionWorld.updateCoherencyAndCounters(this.correctAnswerFactor, true);
+                this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
                 this.correctAnswerCounter++;
             } else {
-                this.motionWorld.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
+                this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
                 this.wrongAnswerCounter++;
                 currentStep = false;
             }
@@ -86,10 +86,10 @@ export class MotionScreen extends AbstractScreen {
             }
         } else if (event.code == KEY_RIGHT) {
             if (coherentPatchSide == "RIGHT") {
-                this.motionWorld.updateCoherencyAndCounters(this.correctAnswerFactor, true);
+                this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
                 this.correctAnswerCounter++;
             } else {
-                this.motionWorld.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
+                this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
                 this.wrongAnswerCounter++;
                 currentStep = false;
             }
@@ -118,10 +118,10 @@ export class MotionScreen extends AbstractScreen {
         let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
 
         if (patch == coherentPatchSide) {
-            this.motionWorld.updateCoherencyAndCounters(this.correctAnswerFactor, true);
+            this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
             this.correctAnswerCounter++;
         } else {
-            this.motionWorld.updateCoherencyAndCounters(this.wrongAnswerFactor, false);
+            this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
             this.wrongAnswerCounter++;
             currentStep = false;
         }

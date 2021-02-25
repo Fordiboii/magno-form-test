@@ -140,12 +140,12 @@ export class MotionWorld extends AbstractMotionWorld {
     }
 
     /**
-     * Updates the coherency percentage by a decibel factor and the correct and wrong answer counters. 
+     * Updates the coherency percentage by a decibel factor.
      * Decreases coherency if answer is correct, increases otherwise.
      * @param factor decibel factor used to increase or decrease coherency level.
      * @param isCorrectAnswer if the user chose the patch with coherent dots.
      */
-    updateCoherencyAndCounters = (factor: number, isCorrectAnswer: boolean): void => {
+    updateCoherency = (factor: number, isCorrectAnswer: boolean): void => {
         let temp: number = this.coherencePercent * factor;
 
         if (isCorrectAnswer) {
