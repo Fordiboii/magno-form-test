@@ -58,8 +58,10 @@ export class GameApp {
             // start game loop
             MainLoop.start();
         });
+        loader.onProgress.add((msg) => console.log("progress!", msg));
         loader
-            .add('dot', './assets/dot.png')
+            .add('dot', './assets/sprites/dot.png')
+            .add('helvetica', './assets/fonts/helvetica-bitmap.fnt')
             .load()
     }
 
@@ -82,7 +84,7 @@ export class GameApp {
 
         // log FPS
         let fps = Math.round(MainLoop.getFPS());
-        // console.log(fps);
+        console.log(fps);
 
         // update current game state
         // this.state();
