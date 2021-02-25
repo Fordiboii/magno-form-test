@@ -137,12 +137,12 @@ export class Dot extends PIXI.Sprite {
         const dist: number = Math.sqrt((n[0] ** 2) + (n[1] ** 2));
 
         // Return if dots are not colliding
-        if (dist > 2 * this.radius) { //TODO: Get radius from global constant.
+        if (dist > 2 * Settings.DOT_RADIUS) {
             return;
         }
 
         // Find minimum translation distance
-        const distScalar: number = (2 * this.radius - dist) / dist;
+        const distScalar: number = (2 * Settings.DOT_RADIUS - dist) / dist;
         const mtd: [number, number] = [n[0] * distScalar, n[1] * distScalar];
 
         // Find unit normal vector
