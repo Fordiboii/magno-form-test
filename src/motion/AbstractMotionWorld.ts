@@ -106,6 +106,29 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         }
     }
 
+    /**
+     * Draws the bounds of a quadtree and all its nodes. For debugging purposes.
+     * @param quadTree the quadtree to draw.
+     */
+    debugQuadTree = (quadTree: QuadTree): void => {
+        let bounds: PIXI.Rectangle = quadTree.getBounds();
+        let nodes: Array<QuadTree | null> = quadTree.getNodes();
+
+        const rect: PIXI.Graphics = new PIXI.Graphics();
+        rect.position.set(bounds.x, bounds.y)
+        rect.lineStyle(1, 0xFF00FF)
+            .lineTo(bounds.width, 0)
+            .lineTo(bounds.width, bounds.height)
+            .lineTo(0, bounds.height)
+            .lineTo(0, 0)
+            .endFill();
+        this.addChild(rect)
+
+        nodes.forEach(node => {
+            node !== null ? this.debugQuadTree(node) : null;
+        })
+    }
+
     updateDots = (delta: number): void => {
         // stop the animation if runtime exceeds max runtime.
         this.runTime += delta;
@@ -124,12 +147,12 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         for (let i = 0; i < this.dotsLeft.length; i++) {
             let dot: Dot = this.dotsLeft[i];
             this.quadTree.insert(dot);
-            dot.update(delta);
             if (dot.isRandom) {
                 this.checkWallCollisionLeftPatch(dot);
             }
         }
 
+        // checks for dot collisions and updates velocity if collision is detected.
         for (let i = 0; i < this.dotsLeft.length; i++) {
             let dot: Dot = this.dotsLeft[i];
             possibleCollisions = [];
@@ -139,8 +162,9 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             });
         }
 
+        // update dot timers and position, check if alive timer is exceeded.
         this.dotsLeft.forEach(dot => {
-            dot.updatePosition(delta);
+            dot.update(delta);
             if (dot.aliveTimer <= 0) {
                 dot.resetAliveTimer();
                 let dotPosition: [number, number] =
@@ -162,12 +186,12 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         for (let i = 0; i < this.dotsRight.length; i++) {
             let dot: Dot = this.dotsRight[i];
             this.quadTree.insert(dot);
-            dot.update(delta);
             if (dot.isRandom) {
                 this.checkWallCollisionRightPatch(dot);
             }
         }
 
+        // checks for dot collisions and updates velocity if collision is detected.
         for (let i = 0; i < this.dotsRight.length; i++) {
             let dot: Dot = this.dotsRight[i];
             possibleCollisions = [];
@@ -177,8 +201,9 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             });
         }
 
+        // update dot timers and position, check if alive timer is exceeded.
         this.dotsRight.forEach(dot => {
-            dot.updatePosition(delta);
+            dot.update(delta);
             if (dot.aliveTimer <= 0) {
                 dot.resetAliveTimer();
                 let dotPosition: [number, number] =

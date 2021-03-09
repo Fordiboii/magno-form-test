@@ -132,4 +132,8 @@ export class QuadTree {
 
         return returnObjects;
     }
+
+    getBounds = (): PIXI.Rectangle => this.bounds;
+
+    getNodes = (): Array<QuadTree | null> => this.nodes;
 }
