@@ -91,6 +91,31 @@ export class Dot extends PIXI.Sprite {
         this.position.set(x, y);
     }
 
+    setDirection = (direction: Direction) => {
+        this.direction = direction;
+    }
+
+    setTimers = (time: number) => {
+        this.maxAliveTimer = time;
+        this.aliveTimer = time;
+    }
+
+    resetVelocity = (): void => {
+        if (this.direction === Direction.LEFT) {
+            this.velocity = [-this.speed, 0];
+        } else {
+            this.velocity = [this.speed, 0];
+        }
+        if (this.direction === Direction.RANDOM) {
+            this.velocity = rotateVector(this.velocity, rando() * 360);
+            this.directionTimer = rando() * this.ranMaxTime;
+            this.isRandom = true;
+        } else {
+            this.directionTimer = 0;
+            this.isRandom = false;
+        }
+    }
+
     /**
      * Handles wall collision. 
      * @param wallX x position of the wall

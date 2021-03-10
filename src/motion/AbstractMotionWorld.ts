@@ -82,6 +82,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     abstract createDots(): void;
 
+    abstract createNewTrial(): void;
+
     abstract updateCoherency(factor: number, isCorrectAnswer: boolean): void;
 
     destroyDots = (): void => {
@@ -90,21 +92,19 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     }
 
     reset = (): void => {
+        this.dotsLeftParticleContainer.visible = false;
+        this.dotsRightParticleContainer.visible = false;
         this.runTime = 0;
-        if (this.dotsLeft.length > 0 && this.dotsRight.length > 0) {
-            this.destroyDots();
-        }
-        this.dotsLeft = [];
-        this.dotsRight = [];
-        this.createDots();
+        this.createNewTrial();
+        this.dotsLeftParticleContainer.visible = true;
+        this.dotsRightParticleContainer.visible = true;
     }
 
     paused = (): void => {
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
-            this.destroyDots();
-            this.dotsLeft = [];
-            this.dotsRight = [];
+            this.dotsLeftParticleContainer.visible = false;
+            this.dotsRightParticleContainer.visible = false;
         }
     }
 

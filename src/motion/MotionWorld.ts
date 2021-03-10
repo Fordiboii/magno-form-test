@@ -163,6 +163,75 @@ export class MotionWorld extends AbstractMotionWorld {
     }
 
     /**
+     * Updates patches and dots when the user has chosen a patch.
+     * Chooses a new random and coherent patch. 
+     * Randomly places dots and updates their direction, timers and velocity. 
+     */
+    createNewTrial = (): void => {
+        const dotsToKill: number = (this.dotKillPercentage * this.numberOfDots) / 100;
+        let maxAliveTimeMultiplier: number = 1;
+        let numberOfCoherentDots: number = 0;
+        let currentCoherencePercent: number;
+        let dotPosition: [number, number];
+        let dot: Dot;
+
+        // shuffle grid points. Used to get random dot positions.
+        let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
+        let shuffledRightGridPoints = randoSequence(this.rightGridPoints);
+
+        // randomly choose patch to contain coherent dots
+        this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
+
+        // randomly choose direction of coherent moving dots
+        const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
+
+        for (let i = 0; i < this.numberOfDots; i++) {
+            // multiplier to give dots different respawn rate
+            if (i == dotsToKill * maxAliveTimeMultiplier) {
+                maxAliveTimeMultiplier++;
+            }
+            // get current coherent dots percentage
+            currentCoherencePercent = (numberOfCoherentDots / this.numberOfDots) * 100;
+
+            // get new position
+            dotPosition = shuffledLeftGridPoints[i].value;
+
+            // update dot position and reset direction, timers and velocity.
+            dot = this.dotsLeft[i];
+            if (this.coherentPatchSide == "LEFT" && currentCoherencePercent < this.coherencePercent) {
+                dot.setPosition(dotPosition[0], dotPosition[1])
+                dot.setDirection(coherentDirection);
+                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
+                dot.resetVelocity();
+                numberOfCoherentDots++;
+            } else {
+                dot.setPosition(dotPosition[0], dotPosition[1])
+                dot.setDirection(Direction.RANDOM);
+                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
+                dot.resetVelocity();
+            }
+
+            // get new position
+            dotPosition = shuffledRightGridPoints[i].value;
+
+            // update dot position and reset direction, timers and velocity.
+            dot = this.dotsRight[i];
+            if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
+                dot.setPosition(dotPosition[0], dotPosition[1])
+                dot.setDirection(coherentDirection);
+                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
+                dot.resetVelocity();
+                numberOfCoherentDots++;
+            } else {
+                dot.setPosition(dotPosition[0], dotPosition[1])
+                dot.setDirection(Direction.RANDOM);
+                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
+                dot.resetVelocity();
+            }
+        }
+    }
+
+    /**
      * Updates the coherency percentage by a decibel factor.
      * Decreases coherency if answer is correct, increases otherwise.
      * @param factor decibel factor used to increase or decrease coherency level.
