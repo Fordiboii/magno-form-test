@@ -1,7 +1,6 @@
 import { Dot } from "../objects/Dot";
 import { Patch } from "../objects/Patch";
 import * as PIXI from "pixi.js";
-import { euclideanDistance } from "../utils/EuclideanDistance";
 import { QuadTree } from "../utils/QuadTree";
 import { rando } from "@nastyox/rando.js";
 import { WorldState } from "../utils/Enums";
@@ -51,9 +50,12 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     protected quadTree: QuadTree;
 
+    protected leftGridPoints: Array<[number, number]>;
+    protected rightGridPoints: Array<[number, number]>;
+
     constructor() {
         super();
-        this.currentState = WorldState.RUNNING;
+        this.currentState = WorldState.PAUSED;
 
         this.runTime = 0;
 
@@ -130,6 +132,10 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     }
 
     updateDots = (delta: number): void => {
+        let possibleCollisions: Array<Dot> = new Array<Dot>();
+        let dot: Dot;
+        let dotPosition: [number, number];
+
         // stop the animation if runtime exceeds max runtime.
         this.runTime += delta;
         if (this.runTime >= this.maxRunTime) {
@@ -137,43 +143,37 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             return;
         }
 
-        // variable for holding possible collisions
-        let possibleCollisions: Array<Dot> = new Array<Dot>();
-
         // clear quadtree
         this.quadTree.clear()
 
-        // insert dots into quadtree and check random dots for wall collision. 
+        // insert dots into quadtree
+        this.dotsLeft.forEach(dot => this.quadTree.insert(dot));
+
+        // check for collisions and update velocity if collision detected
         for (let i = 0; i < this.dotsLeft.length; i++) {
-            let dot: Dot = this.dotsLeft[i];
-            this.quadTree.insert(dot);
+            dot = this.dotsLeft[i];
+            possibleCollisions = [];
+
             if (dot.isRandom) {
                 this.checkWallCollisionLeftPatch(dot);
             }
-        }
 
-        // checks for dot collisions and updates velocity if collision is detected.
-        for (let i = 0; i < this.dotsLeft.length; i++) {
-            let dot: Dot = this.dotsLeft[i];
-            possibleCollisions = [];
             possibleCollisions = this.quadTree.retrieve(possibleCollisions, dot);
             possibleCollisions.forEach(otherDot => {
                 dot.collideWithDot(otherDot);
             });
         }
 
-        // update dot timers and position, check if alive timer is exceeded.
         this.dotsLeft.forEach(dot => {
             dot.update(delta);
             if (dot.aliveTimer <= 0) {
                 dot.resetAliveTimer();
-                let dotPosition: [number, number] =
-                    this.getFreeSpotInPatch(
+                dotPosition =
+                    this.getRandomPosition(
                         this.leftMinX + this.dotRadius,
                         this.patchMinY + this.dotRadius,
                         this.leftMaxX - this.dotRadius,
-                        this.patchMaxY - this.dotRadius,
-                        this.dotsLeft
+                        this.patchMaxY - this.dotRadius
                     )
                 dot.setPosition(dotPosition[0], dotPosition[1]);
             }
@@ -182,19 +182,18 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         // clear quadtree
         this.quadTree.clear()
 
-        // insert dots into quadtree and check random dots for wall collision. 
+        // insert dots into quadtree
+        this.dotsRight.forEach(dot => this.quadTree.insert(dot));
+
+        // check for collisions and update velocity if collision detected
         for (let i = 0; i < this.dotsRight.length; i++) {
-            let dot: Dot = this.dotsRight[i];
-            this.quadTree.insert(dot);
+            dot = this.dotsRight[i];
+            possibleCollisions = [];
+
             if (dot.isRandom) {
                 this.checkWallCollisionRightPatch(dot);
             }
-        }
 
-        // checks for dot collisions and updates velocity if collision is detected.
-        for (let i = 0; i < this.dotsRight.length; i++) {
-            let dot: Dot = this.dotsRight[i];
-            possibleCollisions = [];
             possibleCollisions = this.quadTree.retrieve(possibleCollisions, dot);
             possibleCollisions.forEach(otherDot => {
                 dot.collideWithDot(otherDot);
@@ -206,13 +205,12 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             dot.update(delta);
             if (dot.aliveTimer <= 0) {
                 dot.resetAliveTimer();
-                let dotPosition: [number, number] =
-                    this.getFreeSpotInPatch(
+                dotPosition =
+                    this.getRandomPosition(
                         this.rightMinX + this.dotRadius,
                         this.patchMinY + this.dotRadius,
                         this.rightMaxX - this.dotRadius,
-                        this.patchMaxY - this.dotRadius,
-                        this.dotsRight
+                        this.patchMaxY - this.dotRadius
                     )
                 dot.setPosition(dotPosition[0], dotPosition[1]);
             }
@@ -221,7 +219,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     calculateMaxMin = (): void => {
         this.leftMinX = this.patchLeft.x + PATCH_OUTLINE_THICKNESS;
-        this.leftMaxX = (this.leftMinX + this.patchLeft.width) - (3 * PATCH_OUTLINE_THICKNESS);
+        this.leftMaxX = (this.patchLeft.x + this.patchLeft.width) - (3 * PATCH_OUTLINE_THICKNESS);
 
         this.patchMinY = this.patchLeft.y + PATCH_OUTLINE_THICKNESS;
         this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - PATCH_OUTLINE_THICKNESS;
@@ -257,35 +255,17 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     }
 
     /**
-     * Checks if there already is a dot at location
-     * @param x new dot's x position
-     * @param y new dot's y position
-     * @param dots the array containing dots to compare with
-     * @return true if spot is free
+     * Gets a random position within a rectangular area.
+     * @param xMin left bound of area. Float.
+     * @param yMin left bound of area. Float.
+     * @param xMax left bound of area. Float.
+     * @param yMax left bound of area. Float.
+     * @returns array with x and y coordinates.
      */
-    freeSpot = (x: number, y: number, dots: Array<Dot>): boolean => {
-        for (let i = 0; i < dots.length; i++) {
-            if (euclideanDistance(x, y, dots[i].x, dots[i].y) <= (this.dotSpacing + 2 * this.dotRadius)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Finds a vacant spot within a patch to place a new dot.
-     * @param minX min x of patch
-     * @param minY min y of patch
-     * @param maxX max x of patch
-     * @param maxY max y of patch
-     * @param dots dots in patch
-     */
-    getFreeSpotInPatch = (minX: number, minY: number, maxX: number, maxY: number, dots: Array<Dot>): [number, number] => {
+    getRandomPosition = (xMin: number, yMin: number, xMax: number, yMax: number): [number, number] => {
         let x, y: number;
-        do {
-            x = rando() * (maxX - minX) + minX;
-            y = rando() * (maxY - minY) + minY;
-        } while (!this.freeSpot(x, y, dots))
+        x = rando() * (xMax - xMin) + xMin;
+        y = rando() * (yMax - yMin) + yMin;
         return [x, y]
     }
 

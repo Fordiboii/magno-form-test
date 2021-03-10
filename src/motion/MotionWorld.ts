@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Direction, WorldState } from '../utils/Enums';
 import { AbstractMotionWorld } from './AbstractMotionWorld';
-import { rando } from '@nastyox/rando.js';
+import { rando, randoSequence } from '@nastyox/rando.js';
 import { Dot } from '../objects/Dot';
 import { QuadTree } from '../utils/QuadTree';
 import { Psychophysics } from '../utils/Psychophysics';
@@ -13,11 +13,34 @@ export class MotionWorld extends AbstractMotionWorld {
     constructor() {
         super();
         this.createPatches();
-        this.createQuadTree();
+
+        this.quadTree = this.createQuadTree(this.patchLeft.x, this.patchLeft.y, this.patchLeft.width * 2 + this.patchGap, this.patchLeft.height);
+
         this.calculateMaxMin();
         this.createDotContainerMasks();
+
+        this.leftGridPoints =
+            this.createGridPoints(
+                this.leftMinX + this.dotRadius,
+                this.leftMaxX - this.dotRadius,
+                this.patchMinY + this.dotRadius,
+                this.patchMaxY - this.dotRadius,
+                2 * this.dotRadius + this.dotSpacing
+            );
+        this.rightGridPoints =
+            this.createGridPoints(
+                this.rightMinX + this.dotRadius,
+                this.rightMaxX - this.dotRadius,
+                this.patchMinY + this.dotRadius,
+                this.patchMaxY - this.dotRadius,
+                2 * this.dotRadius + this.dotSpacing
+            );
+
         this.createDots();
+
+        this.currentState = WorldState.RUNNING;
     }
+
     /**
      * Updates dots.
      * @param delta time between each frame in ms
@@ -32,11 +55,16 @@ export class MotionWorld extends AbstractMotionWorld {
         }
     }
 
-    createQuadTree = (): void => {
-        this.quadTree =
-            new QuadTree(
-                0, new PIXI.Rectangle(this.patchLeft.x, this.patchLeft.y, this.patchLeft.width * 2 + this.patchGap, this.patchLeft.height)
-            );
+    /**
+     * Creates a new quadtree from the given rectangle bounds.
+     * @param x rectangle left bound
+     * @param y rectangle top bound
+     * @param width rectangle right bound
+     * @param height rectangle bottom bound
+     * @returns a new instance of QuadTree
+     */
+    createQuadTree = (x: number, y: number, width: number, height: number): QuadTree => {
+        return new QuadTree(0, new PIXI.Rectangle(x, y, width, height));
     }
 
     /**
@@ -73,10 +101,15 @@ export class MotionWorld extends AbstractMotionWorld {
         let currentCoherencePercent: number;
         let dotPosition: [number, number];
 
+        // shuffle grid points. Used to get initial dot positions.
+        let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
+        let shuffledRightGridPoints = randoSequence(this.rightGridPoints);
+
         // randomly choose patch to contain coherent dots
         this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
         // randomly choose direction of coherent moving dots
         const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
+
         for (let i = 0; i < this.numberOfDots; i++) {
             // Multiplier to give dots different respawn rate
             if (i == dotsToKill * maxAliveTimeMultiplier) {
@@ -84,15 +117,10 @@ export class MotionWorld extends AbstractMotionWorld {
             }
             // get current coherent dots percentage
             currentCoherencePercent = (numberOfCoherentDots / this.numberOfDots) * 100;
-            // find a vacant spot to place the dot
-            dotPosition =
-                this.getFreeSpotInPatch(
-                    this.leftMinX + this.dotRadius,
-                    this.patchMinY + this.dotRadius,
-                    this.leftMaxX - this.dotRadius,
-                    this.patchMaxY - this.dotRadius,
-                    this.dotsLeft
-                )
+
+            // get initial position
+            dotPosition = shuffledLeftGridPoints[i].value;
+
             // add dot to left patch
             if (this.coherentPatchSide == "LEFT" && currentCoherencePercent < this.coherencePercent) {
                 const dotSprite =
@@ -110,15 +138,10 @@ export class MotionWorld extends AbstractMotionWorld {
                 // add to stage
                 this.dotsLeftParticleContainer.addChild(dotSprite);
             }
-            // find a vacant spot to place the dot
-            dotPosition =
-                this.getFreeSpotInPatch(
-                    this.rightMinX + this.dotRadius,
-                    this.patchMinY + this.dotRadius,
-                    this.rightMaxX - this.dotRadius,
-                    this.patchMaxY - this.dotRadius,
-                    this.dotsRight
-                )
+
+            // get initial position
+            dotPosition = shuffledRightGridPoints[i].value;
+
             // add dot to right patch
             if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
                 const dotSprite =
@@ -166,5 +189,68 @@ export class MotionWorld extends AbstractMotionWorld {
                 this.coherencePercent = 100;
             }
         }
+    }
+
+    /**
+     * Creates a grid within a rectangle area with grid lines that are equally spaced.
+     * Creates the points found on intersecting grid lines.
+     * @param xMin left bound of area. Float.
+     * @param xMax right bound of area. Float.
+     * @param yMin top bound of area. Float.
+     * @param yMax bottom bound of area. Float.
+     * @param spacing distance between each grid line. Integer.
+     * @returns an array of points where grid lines intersect
+     */
+    createGridPoints = (xMin: number, xMax: number, yMin: number, yMax: number, spacing: number): Array<[number, number]> => {
+        let gridPoints: Array<[number, number]> = [];
+
+        const width: number = Math.floor(xMax - xMin);
+        const height: number = Math.floor(yMax - yMin);
+
+        const xLines: number = width / spacing;
+        const yLines: number = height / spacing;
+
+        if (xLines * yLines < this.numberOfDots) {
+            throw new Error("Cannot spawn dots with the current settings.\nEither there are too many dots, too much dot spacing or too small patches.");
+        }
+
+        const xOffset: number = width % spacing;
+        const yOffset: number = height % spacing;
+
+        const startX: number = Math.ceil(xMin + (xOffset / 2));
+        const startY: number = Math.ceil(yMin + (yOffset / 2));
+
+        for (let i = 0; i < xLines; i++) {
+            for (let j = 0; j < yLines; j++) {
+                gridPoints.push([startX + i * spacing, startY + j * spacing])
+            }
+        }
+
+        return gridPoints
+    }
+
+    /**
+     * Function that draws grid lines. For debugging purposes. 
+     */
+    debugGridPoints = (startX: number, startY: number, xLines: number, yLines: number, xOffset: number, yOffset: number, spacing: number): void => {
+        const lineThickness: number = 1;
+        const debugColor: number = 0xFF00FF;
+
+        const line: PIXI.Graphics = new PIXI.Graphics();
+        line.lineStyle(lineThickness, debugColor);
+
+        line.position.set(startX, startY)
+        for (let i = 0; i < xLines; i++) {
+            line.moveTo(i * spacing, 0)
+                .lineTo(i * spacing, yLines * spacing - yOffset)
+        }
+
+        line.position.set(startX, startY)
+        for (let i = 0; i < yLines; i++) {
+            line.moveTo(0, i * spacing)
+                .lineTo(xLines * spacing - xOffset, i * spacing)
+        }
+
+        this.addChild(line);
     }
 }
