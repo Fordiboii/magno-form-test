@@ -3,7 +3,7 @@ import { AbstractScreen } from "./AbstractScreen";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
-import { FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, PATCH_LABEL_COLOR } from "../utils/Constants";
+import { FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 
 export class MotionScreen extends AbstractScreen {
