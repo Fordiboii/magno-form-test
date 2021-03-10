@@ -57,6 +57,8 @@ export class MotionScreen extends AbstractScreen {
     }
 
     keyDown = (event: KeyboardEvent): void => {
+        if (event.repeat) return
+
         let currentStep: boolean = true;
         let reversalValue: number = this.motionWorld.getCoherencePercent();
         let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();

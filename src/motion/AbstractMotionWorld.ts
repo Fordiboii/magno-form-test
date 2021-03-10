@@ -164,6 +164,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             });
         }
 
+        // update position and check if it's time to respawn
         this.dotsLeft.forEach(dot => {
             dot.update(delta);
             if (dot.aliveTimer <= 0) {
@@ -200,7 +201,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             });
         }
 
-        // update dot timers and position, check if alive timer is exceeded.
+        // update position and check if it's time to respawn
         this.dotsRight.forEach(dot => {
             dot.update(delta);
             if (dot.aliveTimer <= 0) {
