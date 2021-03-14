@@ -1,3 +1,6 @@
+// Game constants
+export const SIMULATION_TIMESTEP: number = 1000 / 60; // Simulate test at 60 FPS. Means that each update will happen every 1000/60 milliseconds.
+
 // Screen constants
 
 export const DEVICE_PIXEL_RATIO: number = window.devicePixelRatio; // The ratio of one CSS-pixel to one physical pixel. Value of 1 means DPI = DEFAULT_DPI.
@@ -8,6 +11,7 @@ export const MM_PER_INCH: number = 25.4;
 
 export const PATCH_OUTLINE_THICKNESS: number = 1;
 export const PATCH_OUTLINE_COLOR: number = 0xFFFFFF;
+export const DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER: number = 1.5; // multiplier to increase initial dot spacing in order to reduce grid points.
 
 // Keyboard constants
 
