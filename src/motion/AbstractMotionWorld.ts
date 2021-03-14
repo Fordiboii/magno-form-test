@@ -36,6 +36,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     protected coherencePercent: number;
     protected dotKillPercentage: number;
+    protected dotsToKill: number;
+    protected dotSpawnSeparationDistance: number;
 
     protected numberOfDots: number;
     protected dotSpacing: number;
@@ -64,8 +66,10 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
         this.coherencePercent = Settings.DOT_COHERENCE_PERCENTAGE;
         this.dotKillPercentage = Settings.DOT_KILL_PERCENTAGE;
-
         this.numberOfDots = Settings.DOT_TOTAL_AMOUNT;
+        this.dotsToKill = (Settings.DOT_KILL_PERCENTAGE * Settings.DOT_TOTAL_AMOUNT) / 100;
+        this.dotSpawnSeparationDistance = 2 * Settings.DOT_RADIUS + Settings.DOT_SPACING;
+
         this.dotRadius = Settings.DOT_RADIUS;
         this.dotSpacing = Settings.DOT_SPACING;
         this.maxRunTime = Settings.DOT_MAX_ANIMATION_TIME;
