@@ -81,8 +81,8 @@ export class GameApp {
         });
 
         // log FPS
-        let fps = Math.round(MainLoop.getFPS());
-        console.log(fps);
+        // let fps = Math.round(MainLoop.getFPS());
+        // console.log(fps);
 
         // update current game state
         // this.state();
