@@ -7,7 +7,7 @@ import { QuadTree } from '../utils/QuadTree';
 import { Psychophysics } from '../utils/Psychophysics';
 import { Settings } from '../utils/Settings';
 import { Patch } from '../objects/Patch';
-import { PATCH_OUTLINE_COLOR, PATCH_OUTLINE_THICKNESS } from '../utils/Constants';
+import { DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER, PATCH_OUTLINE_COLOR, PATCH_OUTLINE_THICKNESS } from '../utils/Constants';
 
 export class MotionWorld extends AbstractMotionWorld {
     constructor() {
@@ -25,7 +25,7 @@ export class MotionWorld extends AbstractMotionWorld {
                 this.leftMaxX - this.dotRadius,
                 this.patchMinY + this.dotRadius,
                 this.patchMaxY - this.dotRadius,
-                2 * this.dotRadius + this.dotSpacing
+                DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER * this.dotSpawnSeparationDistance
             );
         this.rightGridPoints =
             this.createGridPoints(
@@ -33,7 +33,7 @@ export class MotionWorld extends AbstractMotionWorld {
                 this.rightMaxX - this.dotRadius,
                 this.patchMinY + this.dotRadius,
                 this.patchMaxY - this.dotRadius,
-                2 * this.dotRadius + this.dotSpacing
+                DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER * this.dotSpawnSeparationDistance
             );
 
         this.createDots();
@@ -95,11 +95,12 @@ export class MotionWorld extends AbstractMotionWorld {
      * One of the patches will be set to have coherently moving dots moving left and right.
      */
     createDots = (): void => {
-        const dotsToKill: number = (this.dotKillPercentage * this.numberOfDots) / 100;
         let maxAliveTimeMultiplier: number = 1;
         let numberOfCoherentDots: number = 0;
         let currentCoherencePercent: number;
         let dotPosition: [number, number];
+        let dotTexture: PIXI.Texture = PIXI.Loader.shared.resources['dot'].texture;
+        let dot: Dot;
 
         // shuffle grid points. Used to get initial dot positions.
         let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
@@ -111,8 +112,8 @@ export class MotionWorld extends AbstractMotionWorld {
         const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
 
         for (let i = 0; i < this.numberOfDots; i++) {
-            // Multiplier to give dots different respawn rate
-            if (i == dotsToKill * maxAliveTimeMultiplier) {
+            // multiplier to give dots different respawn rate
+            if (i == this.dotsToKill * maxAliveTimeMultiplier) {
                 maxAliveTimeMultiplier++;
             }
             // get current coherent dots percentage
@@ -123,20 +124,18 @@ export class MotionWorld extends AbstractMotionWorld {
 
             // add dot to left patch
             if (this.coherentPatchSide == "LEFT" && currentCoherencePercent < this.coherencePercent) {
-                const dotSprite =
-                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, coherentDirection, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
+                dot = new Dot(dotPosition[0], dotPosition[1], this.dotRadius, coherentDirection, this.dotMaxAliveTime * maxAliveTimeMultiplier, dotTexture);
                 // add to model
-                this.dotsLeft.push(dotSprite);
-                // add to stage
-                this.dotsLeftParticleContainer.addChild(dotSprite);
+                this.dotsLeft.push(dot);
+                // add to particle container
+                this.dotsLeftParticleContainer.addChild(dot);
                 numberOfCoherentDots++;
             } else {
-                const dotSprite =
-                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
+                dot = new Dot(dotPosition[0], dotPosition[1], this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime * maxAliveTimeMultiplier, dotTexture);
                 // add to model
-                this.dotsLeft.push(dotSprite);
-                // add to stage
-                this.dotsLeftParticleContainer.addChild(dotSprite);
+                this.dotsLeft.push(dot);
+                // add to particle container
+                this.dotsLeftParticleContainer.addChild(dot);
             }
 
             // get initial position
@@ -144,20 +143,18 @@ export class MotionWorld extends AbstractMotionWorld {
 
             // add dot to right patch
             if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
-                const dotSprite =
-                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, coherentDirection, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
+                dot = new Dot(dotPosition[0], dotPosition[1], this.dotRadius, coherentDirection, this.dotMaxAliveTime * maxAliveTimeMultiplier, dotTexture);
                 // add to model
-                this.dotsRight.push(dotSprite);
-                // add to stage
-                this.dotsRightParticleContainer.addChild(dotSprite);
+                this.dotsRight.push(dot);
+                // add to particle container
+                this.dotsRightParticleContainer.addChild(dot);
                 numberOfCoherentDots++;
             } else {
-                const dotSprite: Dot =
-                    new Dot(dotPosition[0], dotPosition[1], this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime * maxAliveTimeMultiplier, PIXI.Loader.shared.resources['dot'].texture);
+                dot = new Dot(dotPosition[0], dotPosition[1], this.dotRadius, Direction.RANDOM, this.dotMaxAliveTime * maxAliveTimeMultiplier, dotTexture);
                 // add to model
-                this.dotsRight.push(dotSprite);
-                // add to stage
-                this.dotsRightParticleContainer.addChild(dotSprite);
+                this.dotsRight.push(dot);
+                // add to particle container
+                this.dotsRightParticleContainer.addChild(dot);
             }
         }
     }
@@ -168,7 +165,6 @@ export class MotionWorld extends AbstractMotionWorld {
      * Randomly places dots and updates their direction, timers and velocity. 
      */
     createNewTrial = (): void => {
-        const dotsToKill: number = (this.dotKillPercentage * this.numberOfDots) / 100;
         let maxAliveTimeMultiplier: number = 1;
         let numberOfCoherentDots: number = 0;
         let currentCoherencePercent: number;
@@ -187,7 +183,7 @@ export class MotionWorld extends AbstractMotionWorld {
 
         for (let i = 0; i < this.numberOfDots; i++) {
             // multiplier to give dots different respawn rate
-            if (i == dotsToKill * maxAliveTimeMultiplier) {
+            if (i == this.dotsToKill * maxAliveTimeMultiplier) {
                 maxAliveTimeMultiplier++;
             }
             // get current coherent dots percentage
@@ -261,65 +257,53 @@ export class MotionWorld extends AbstractMotionWorld {
     }
 
     /**
-     * Creates a grid within a rectangle area with grid lines that are equally spaced.
-     * Creates the points found on intersecting grid lines.
-     * @param xMin left bound of area. Float.
-     * @param xMax right bound of area. Float.
-     * @param yMin top bound of area. Float.
-     * @param yMax bottom bound of area. Float.
-     * @param spacing distance between each grid line. Integer.
+     * Creates a grid within a rectangle area with equally spaced grid lines.
+     * Grid lines on both axes are sine waves. Sine waves are used to make the points appear more random.
+     * Returns the points found on intersecting grid lines.
+     * @param xMin left bound of area.
+     * @param xMax right bound of area.
+     * @param yMin top bound of area.
+     * @param yMax bottom bound of area.
+     * @param spacing distance between each grid line.
      * @returns an array of points where grid lines intersect
      */
     createGridPoints = (xMin: number, xMax: number, yMin: number, yMax: number, spacing: number): Array<[number, number]> => {
         let gridPoints: Array<[number, number]> = [];
+        let x, y: number;
 
         const width: number = Math.floor(xMax - xMin);
         const height: number = Math.floor(yMax - yMin);
 
-        const xLines: number = width / spacing;
-        const yLines: number = height / spacing;
-
-        if (xLines * yLines < this.numberOfDots) {
-            throw new Error("Cannot spawn dots with the current settings.\nEither there are too many dots, too much dot spacing or too small patches.");
-        }
-
         const xOffset: number = width % spacing;
         const yOffset: number = height % spacing;
 
-        const startX: number = Math.ceil(xMin + (xOffset / 2));
-        const startY: number = Math.ceil(yMin + (yOffset / 2));
+        const xLines: number = Math.floor((width - xOffset) / spacing);
+        const yLines: number = Math.floor((height - yOffset) / spacing);
+
+        if (xLines * yLines < this.numberOfDots) {
+            throw new Error(
+                "Cannot spawn dots with the current settings.\n" +
+                "Either there are too many dots, too much dot spacing or too small patches.\n" +
+                "Try adjusting the total number of dots or the dot spacing."
+            );
+        }
+
+        const startX: number = xMin + (xOffset / 2);
+        const startY: number = yMin + (yOffset / 2);
 
         for (let i = 0; i < xLines; i++) {
             for (let j = 0; j < yLines; j++) {
-                gridPoints.push([startX + i * spacing, startY + j * spacing])
+                x = startX + Math.sin(j) + i * spacing;
+                y = startY + Math.sin(i) + j * spacing;
+                if (x <= (xMax - (xOffset / 2)) &&
+                    x >= (xMin + (xOffset / 2)) &&
+                    y <= (yMax - (yOffset / 2)) &&
+                    y >= (yMin + (yOffset / 2))
+                ) {
+                    gridPoints.push([x, y])
+                }
             }
         }
-
         return gridPoints
-    }
-
-    /**
-     * Function that draws grid lines. For debugging purposes. 
-     */
-    debugGridPoints = (startX: number, startY: number, xLines: number, yLines: number, xOffset: number, yOffset: number, spacing: number): void => {
-        const lineThickness: number = 1;
-        const debugColor: number = 0xFF00FF;
-
-        const line: PIXI.Graphics = new PIXI.Graphics();
-        line.lineStyle(lineThickness, debugColor);
-
-        line.position.set(startX, startY)
-        for (let i = 0; i < xLines; i++) {
-            line.moveTo(i * spacing, 0)
-                .lineTo(i * spacing, yLines * spacing - yOffset)
-        }
-
-        line.position.set(startX, startY)
-        for (let i = 0; i < yLines; i++) {
-            line.moveTo(0, i * spacing)
-                .lineTo(xLines * spacing - xOffset, i * spacing)
-        }
-
-        this.addChild(line);
     }
 }
