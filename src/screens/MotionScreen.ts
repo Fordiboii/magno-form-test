@@ -148,7 +148,6 @@ export class MotionScreen extends AbstractScreen {
             this.reversalValues.push(reversalValue);
             this.reversalCounter++;
         }
-        console.log(this.reversalCounter)
 
         this.prevStep = currentStep;
     }
