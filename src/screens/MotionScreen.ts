@@ -76,6 +76,7 @@ export class MotionScreen extends AbstractScreen {
 
             // increment step counter and check if the test is completed
             this.stepCounter++;
+
             if (this.stepCounter - 1 == this.maxSteps || this.reversalCounter == this.reversalPoints) {
                 this.motionWorld.setState(WorldState.FINISHED);
             } else if (this.motionWorld.getState() == WorldState.PAUSED) {
@@ -86,6 +87,8 @@ export class MotionScreen extends AbstractScreen {
                 this.reversalValues.push(reversalValue);
                 this.reversalCounter++;
             }
+
+            this.prevStep = currentStep;
         } else if (event.code == KEY_RIGHT) {
             if (coherentPatchSide == "RIGHT") {
                 this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
@@ -99,6 +102,7 @@ export class MotionScreen extends AbstractScreen {
 
             // increment step counter and check if the test is completed
             this.stepCounter++;
+
             if (this.stepCounter - 1 == this.maxSteps || this.reversalCounter == this.reversalPoints) {
                 this.motionWorld.setState(WorldState.FINISHED);
             } else if (this.motionWorld.getState() == WorldState.PAUSED) {
@@ -109,6 +113,8 @@ export class MotionScreen extends AbstractScreen {
                 this.reversalValues.push(reversalValue);
                 this.reversalCounter++;
             }
+
+            this.prevStep = currentStep;
         } else if (event.code == KEY_BACKSPACE) {
             //TODO: Exit test if backspace is pressed
         }
@@ -131,6 +137,7 @@ export class MotionScreen extends AbstractScreen {
 
         // increment step counter and check if the test is completed
         this.stepCounter++;
+
         if (this.stepCounter - 1 == this.maxSteps || this.reversalCounter == this.reversalPoints) {
             this.motionWorld.setState(WorldState.FINISHED);
         } else if (this.motionWorld.getState() == WorldState.PAUSED) {
@@ -141,5 +148,8 @@ export class MotionScreen extends AbstractScreen {
             this.reversalValues.push(reversalValue);
             this.reversalCounter++;
         }
+        console.log(this.reversalCounter)
+
+        this.prevStep = currentStep;
     }
 }
