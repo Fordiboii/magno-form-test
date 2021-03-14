@@ -6,7 +6,7 @@
  */
 export const rotateVector = (vec: [number, number], ang: number): [number, number] => {
     ang = -ang * (Math.PI / 180);
-    var cos = Math.cos(ang);
-    var sin = Math.sin(ang);
-    return [Math.round(10000 * (vec[0] * cos - vec[1] * sin)) / 10000, Math.round(10000 * (vec[0] * sin + vec[1] * cos)) / 10000];
+    const cos = Math.cos(ang);
+    const sin = Math.sin(ang);
+    return [Math.trunc(10000 * (vec[0] * cos - vec[1] * sin)) / 10000, Math.trunc(10000 * (vec[0] * sin + vec[1] * cos)) / 10000];
 };

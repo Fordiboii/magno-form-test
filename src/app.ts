@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
-import { DEVICE_PIXEL_RATIO } from './utils/Constants';
+import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
 
 export class GameApp {
@@ -25,7 +25,7 @@ export class GameApp {
         window.document.body.appendChild(this.renderer.view)
 
         // // set timestep (in ms) the app should simulate between each frame.
-        // MainLoop.setSimulationTimestep(20);
+        MainLoop.setSimulationTimestep(SIMULATION_TIMESTEP);
         // // set max fps.
         // MainLoop.setMaxAllowedFPS(100);
 
