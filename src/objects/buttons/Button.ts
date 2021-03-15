@@ -43,7 +43,6 @@ export class Button extends PIXI.Graphics {
             this.on("mouseout", (): void => {
                 if (this.isMouseDown) {
                     text.y -= onClickTextOffset;
-
                 }
             })
 
@@ -64,15 +63,13 @@ export class Button extends PIXI.Graphics {
                 }
             })
 
-            this.on("touchcancel", (): void => {
-                if (this.isMouseDown) {
-                    text.y -= onClickTextOffset;
-
+            this.on("touchmove", (e: TouchEvent): void => {
+                if (e.target == null) {
+                    if (this.isMouseDown) {
+                        text.y -= onClickTextOffset;
+                        this.isMouseDown = false;
+                    }
                 }
-            })
-
-            this.on("touchendoutside", (): void => {
-                this.isMouseDown = false;
             })
         }
 
@@ -88,6 +85,20 @@ export class Button extends PIXI.Graphics {
                     .beginFill(color)
                     .drawRect(0, 0, width, height)
                     .endFill();
+            });
+            this.on("touchstart", (): void => {
+                this.clear()
+                    .beginFill(hoverColor)
+                    .drawRect(0, 0, width, height)
+                    .endFill();
+            });
+            this.on("touchmove", (e: TouchEvent): void => {
+                if (e.target == null) {
+                    this.clear()
+                        .beginFill(color)
+                        .drawRect(0, 0, width, height)
+                        .endFill();
+                }
             });
         }
     }

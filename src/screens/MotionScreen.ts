@@ -67,12 +67,25 @@ export class MotionScreen extends AbstractScreen {
             this.motionWorld.dotsRightContainer.visible = true;
             this.motionWorld.setState(WorldState.RUNNING);
         })
+        this.startButton.on("touchend", (): void => {
+            if (this.startButton.isMouseDown) {
+                this.startButton.visible = false;
+                this.motionWorld.patchLeft.interactive = true;
+                this.motionWorld.patchRight.interactive = true;
+                this.motionWorld.dotsLeftContainer.visible = true;
+                this.motionWorld.dotsRightContainer.visible = true;
+                this.motionWorld.setState(WorldState.RUNNING);
+            }
+            this.startButton.isMouseDown = false;
+        })
         this.addChild(this.startButton);
 
         // add event listeners
         window.addEventListener("keydown", this.keyDown);
         this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDown("LEFT"));
+        this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDown("LEFT"));
         this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDown("RIGHT"));
+        this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDown("RIGHT"));
     }
 
     update = (delta: number): void => {
