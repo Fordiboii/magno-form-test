@@ -78,6 +78,10 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         // use particle container for faster rendering. 
         this.dotsLeftContainer.addChild(this.dotsLeftParticleContainer);
         this.dotsRightContainer.addChild(this.dotsRightParticleContainer);
+
+        // make dot containers hidden
+        this.dotsLeftContainer.visible = false;
+        this.dotsRightContainer.visible = false;
     }
 
     abstract update(delta: number): void;

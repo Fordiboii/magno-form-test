@@ -37,8 +37,6 @@ export class MotionWorld extends AbstractMotionWorld {
             );
 
         this.createDots();
-
-        this.currentState = WorldState.RUNNING;
     }
 
     /**

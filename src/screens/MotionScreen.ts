@@ -3,12 +3,14 @@ import { AbstractScreen } from "./AbstractScreen";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
-import { FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT } from "../utils/Constants";
+import { BUTTON_TEXT_COLOR, FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, START_BUTTON_COLOR, START_BUTTON_HOVER_COLOR } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
+import { Button } from "../objects/buttons/Button";
 
 export class MotionScreen extends AbstractScreen {
     patchLeftLabel: PIXI.BitmapText;
     patchRightLabel: PIXI.BitmapText;
+    startButton: Button;
 
     constructor() {
         super();
@@ -45,6 +47,27 @@ export class MotionScreen extends AbstractScreen {
         this.patchRightLabel.x = this.motionWorld.patchRight.x + this.motionWorld.patchRight.width / 2;
         this.patchRightLabel.y = this.motionWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
+
+        this.startButton =
+            new Button(
+                Settings.WINDOW_WIDTH_PX / 2,
+                Settings.WINDOW_HEIGHT_PX / 2,
+                Settings.START_BUTTON_WIDTH,
+                Settings.START_BUTTON_HEIGHT,
+                START_BUTTON_COLOR,
+                "START TEST",
+                BUTTON_TEXT_COLOR,
+                START_BUTTON_HOVER_COLOR
+            );
+        this.startButton.on("click", (): void => {
+            this.startButton.visible = false;
+            this.motionWorld.patchLeft.interactive = true;
+            this.motionWorld.patchRight.interactive = true;
+            this.motionWorld.dotsLeftContainer.visible = true;
+            this.motionWorld.dotsRightContainer.visible = true;
+            this.motionWorld.setState(WorldState.RUNNING);
+        })
+        this.addChild(this.startButton);
 
         // add event listeners
         window.addEventListener("keydown", this.keyDown);

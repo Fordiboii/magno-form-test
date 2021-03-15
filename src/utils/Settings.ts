@@ -34,6 +34,10 @@ export abstract class Settings {
     public static STAIRCASE_REVERSAL_POINTS: number; // total number of reversal points.
     public static STAIRCASE_REVERSALS_TO_CALCULATE_MEAN: number; // number of reversal points to use when calculating the test score in geometric mean.
 
+    // Button settings
+    public static START_BUTTON_WIDTH: number;
+    public static START_BUTTON_HEIGHT: number;
+
     public static load = (): void => {
         // Screen settings
         Settings.SCREEN_VIEWING_DISTANCE_MM = 300;
@@ -67,6 +71,9 @@ export abstract class Settings {
         Settings.STAIRCASE_MAX_ATTEMPTS = 100; // max number of attempts.
         Settings.STAIRCASE_REVERSAL_POINTS = 10; // total number of reversal points.
         Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8; // number of reversal points to use when calculating the test score in geometric mean.
-    }
 
+        // Button settings
+        Settings.START_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5;
+        Settings.START_BUTTON_HEIGHT = Settings.WINDOW_HEIGHT_PX / 15;
+    }
 }
