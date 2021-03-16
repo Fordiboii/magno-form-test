@@ -54,23 +54,23 @@ export abstract class Settings {
         Settings.PATCH_HEIGHT = 14;
 
         // Dot settings
-        Settings.DOT_HORIZONTAL_REVERSAL_TIME = 572; // in milliseconds.
-        Settings.DOT_RANDOM_DIRECTION_TIME = 572; // in milliseconds.
-        Settings.DOT_VELOCITY = 0.05; // in pixels per millisecond. 
-        Settings.DOT_RADIUS = 1; // in pixels.
-        Settings.DOT_SPACING = 1; // in pixels.
-        Settings.DOT_COHERENCE_PERCENTAGE = 50; // in percentage.
-        Settings.DOT_TOTAL_AMOUNT = 300; // total number of dots to display.
-        Settings.DOT_KILL_PERCENTAGE = 10; // in percentage.
-        Settings.DOT_MAX_ANIMATION_TIME = 5000; // in milliseconds.
-        Settings.DOT_MAX_ALIVE_TIME = 85; // in milliseconds.
+        Settings.DOT_HORIZONTAL_REVERSAL_TIME = 572;
+        Settings.DOT_RANDOM_DIRECTION_TIME = 572;
+        Settings.DOT_VELOCITY = 0.05;
+        Settings.DOT_RADIUS = 1;
+        Settings.DOT_SPACING = 1;
+        Settings.DOT_COHERENCE_PERCENTAGE = 50;
+        Settings.DOT_TOTAL_AMOUNT = 300;
+        Settings.DOT_KILL_PERCENTAGE = 10;
+        Settings.DOT_MAX_ANIMATION_TIME = 5000;
+        Settings.DOT_MAX_ALIVE_TIME = 85;
 
         // Staircase settings
-        Settings.STAIRCASE_CORRECT_ANSWER_DB = 1; // in decibel.
-        Settings.STAIRCASE_WRONG_ANSWER_DB = 3; // in decibel.
-        Settings.STAIRCASE_MAX_ATTEMPTS = 100; // max number of attempts.
-        Settings.STAIRCASE_REVERSAL_POINTS = 10; // total number of reversal points.
-        Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8; // number of reversal points to use when calculating the test score in geometric mean.
+        Settings.STAIRCASE_CORRECT_ANSWER_DB = 1;
+        Settings.STAIRCASE_WRONG_ANSWER_DB = 3;
+        Settings.STAIRCASE_MAX_ATTEMPTS = 100;
+        Settings.STAIRCASE_REVERSAL_POINTS = 10;
+        Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8;
 
         // Button settings
         Settings.START_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5;
