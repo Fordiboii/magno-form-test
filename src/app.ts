@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
-import { Settings } from './utils/Settings';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
@@ -60,6 +59,7 @@ export class GameApp {
         });
         loader
             .add('dot', './assets/sprites/dot.png')
+            .add('backArrow', './assets/sprites/backArrow.png')
             .add('helvetica', './assets/fonts/helvetica-bitmap.fnt')
             .load()
     }

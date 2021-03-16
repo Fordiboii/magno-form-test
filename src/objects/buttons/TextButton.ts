@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { BUTTON_TEXT_COLOR } from "../../utils/Constants";
 
-export class Button extends PIXI.Graphics {
+export class TextButton extends PIXI.Graphics {
     isMouseDown: boolean = false;
 
     constructor(
@@ -14,15 +14,14 @@ export class Button extends PIXI.Graphics {
         buttonTextColor: number = BUTTON_TEXT_COLOR,
         hoverColor?: number,
         disabled: boolean = false,
-        texture?: PIXI.Texture,
     ) {
         super();
+        this.interactive = disabled ? false : true;
+        this.buttonMode = disabled ? false : true;
         this.position.set(x - width / 2, y - height / 2)
         this.beginFill(color)
             .drawRect(0, 0, width, height)
             .endFill();
-        this.interactive = disabled ? false : true;
-        this.buttonMode = disabled ? false : true;
 
         if (buttonText) {
             const onClickTextOffset: number = 3;

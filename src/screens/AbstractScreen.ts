@@ -21,11 +21,11 @@ export abstract class AbstractScreen extends PIXI.Container {
 
     protected abstract update(delta: number): void;
 
-    protected keyDown(event: KeyboardEvent): void { };
+    protected keyDownHandler(event: KeyboardEvent): void { };
 
     protected keyUp(event: KeyboardEvent): void { };
 
-    protected mouseDown(patch: string): void { };
+    protected mouseDownHandler(patch: string): void { };
 
     protected touchStart(patch: string): void { };
 }

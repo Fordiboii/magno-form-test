@@ -3,14 +3,16 @@ import { AbstractScreen } from "./AbstractScreen";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
-import { BUTTON_TEXT_COLOR, FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, START_BUTTON_COLOR, START_BUTTON_HOVER_COLOR } from "../utils/Constants";
+import { BACK_BUTTON_SCALING_FACTOR, BACK_BUTTON_X, BACK_BUTTON_Y, BUTTON_TEXT_COLOR, FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, START_BUTTON_COLOR, START_BUTTON_HOVER_COLOR } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
-import { Button } from "../objects/buttons/Button";
+import { TextButton } from "../objects/buttons/TextButton";
+import { SpriteButton } from "../objects/buttons/SpriteButton";
 
 export class MotionScreen extends AbstractScreen {
     patchLeftLabel: PIXI.BitmapText;
     patchRightLabel: PIXI.BitmapText;
-    startButton: Button;
+    startButton: TextButton;
+    backButton: SpriteButton;
 
     constructor() {
         super();
@@ -48,8 +50,9 @@ export class MotionScreen extends AbstractScreen {
         this.patchRightLabel.y = this.motionWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
 
+        // create start button and add to container
         this.startButton =
-            new Button(
+            new TextButton(
                 Settings.WINDOW_WIDTH_PX / 2,
                 Settings.WINDOW_HEIGHT_PX / 2,
                 Settings.START_BUTTON_WIDTH,
@@ -59,40 +62,33 @@ export class MotionScreen extends AbstractScreen {
                 BUTTON_TEXT_COLOR,
                 START_BUTTON_HOVER_COLOR
             );
-        this.startButton.on("click", (): void => {
-            this.startButton.visible = false;
-            this.motionWorld.patchLeft.interactive = true;
-            this.motionWorld.patchRight.interactive = true;
-            this.motionWorld.dotsLeftContainer.visible = true;
-            this.motionWorld.dotsRightContainer.visible = true;
-            this.motionWorld.setState(WorldState.RUNNING);
-        })
-        this.startButton.on("touchend", (): void => {
-            if (this.startButton.isMouseDown) {
-                this.startButton.visible = false;
-                this.motionWorld.patchLeft.interactive = true;
-                this.motionWorld.patchRight.interactive = true;
-                this.motionWorld.dotsLeftContainer.visible = true;
-                this.motionWorld.dotsRightContainer.visible = true;
-                this.motionWorld.setState(WorldState.RUNNING);
-            }
-            this.startButton.isMouseDown = false;
-        })
         this.addChild(this.startButton);
 
+        // create back button and add to container
+        const backButtonTexture = PIXI.Loader.shared.resources['backArrow'].texture;
+        this.backButton = new SpriteButton(BACK_BUTTON_X, BACK_BUTTON_Y, BACK_BUTTON_SCALING_FACTOR, backButtonTexture, BUTTON_TEXT_COLOR);
+        this.addChild(this.backButton)
+
         // add event listeners
-        window.addEventListener("keydown", this.keyDown);
-        this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDown("LEFT"));
-        this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDown("LEFT"));
-        this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDown("RIGHT"));
-        this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDown("RIGHT"));
+        window.addEventListener("keydown", this.keyDownHandler);
+
+        this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+
+        this.startButton.on("click", (): void => this.startButtonClickHandler());
+        this.startButton.on("touchend", (): void => this.startButtonTouchendHandler());
+
+        this.backButton.on("click", (): void => this.backButtonClickHandler());
+        this.backButton.on("touchend", (): void => this.backButtonTouchendHandler());
     }
 
     update = (delta: number): void => {
         this.motionWorld.update(delta);
     }
 
-    keyDown = (event: KeyboardEvent): void => {
+    keyDownHandler = (event: KeyboardEvent): void => {
         if (event.repeat) return
 
         let currentStep: boolean = true;
@@ -156,7 +152,7 @@ export class MotionScreen extends AbstractScreen {
         }
     }
 
-    mouseDown = (patch: string): void => {
+    mouseDownHandler = (patch: string): void => {
         let currentStep: boolean = true;
         let reversalValue: number = this.motionWorld.getCoherencePercent();
         let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
@@ -186,5 +182,37 @@ export class MotionScreen extends AbstractScreen {
         }
 
         this.prevStep = currentStep;
+    }
+
+    startButtonClickHandler = (): void => {
+        this.startButton.visible = false;
+        this.motionWorld.patchLeft.interactive = true;
+        this.motionWorld.patchRight.interactive = true;
+        this.motionWorld.dotsLeftContainer.visible = true;
+        this.motionWorld.dotsRightContainer.visible = true;
+        this.motionWorld.setState(WorldState.RUNNING);
+    }
+
+    startButtonTouchendHandler = (): void => {
+        if (this.startButton.isMouseDown) {
+            this.startButton.visible = false;
+            this.motionWorld.patchLeft.interactive = true;
+            this.motionWorld.patchRight.interactive = true;
+            this.motionWorld.dotsLeftContainer.visible = true;
+            this.motionWorld.dotsRightContainer.visible = true;
+            this.motionWorld.setState(WorldState.RUNNING);
+        }
+        this.startButton.isMouseDown = false;
+    }
+
+    backButtonClickHandler = (): void => {
+        console.log("yo, you just clicked it yo")
+    }
+
+    backButtonTouchendHandler = (): void => {
+        if (this.backButton.isMouseDown) {
+            console.log("yo, touchy touchy feely feely, this button just got touched yall")
+        }
+        this.backButton.isMouseDown = false;
     }
 }
