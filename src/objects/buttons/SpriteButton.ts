@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { SPRITE_BUTTON_CLICKED_TINT, SPRITE_BUTTON_DISABLE_TINT_COLOR } from "../../utils/Constants";
 
 export class SpriteButton extends PIXI.Sprite {
     isMouseDown: boolean = false;
@@ -17,39 +18,74 @@ export class SpriteButton extends PIXI.Sprite {
         this.position.set(x, y)
         this.scale.set(scale)
 
-        const disableTintColor: number = 0xFFFFFF;
-
-        this.on("touchstart", (): void => {
+        this.on("mousedown", (): void => {
             if (!this.isMouseDown) {
+                this.tint = SPRITE_BUTTON_CLICKED_TINT;
                 this.isMouseDown = true;
             }
-        });
+        })
 
-        this.on("touchmove", (e: TouchEvent): void => {
-            if (e.target == null) {
-                if (this.isMouseDown) {
-                    this.isMouseDown = false;
-                }
-            }
-        });
+        this.on("mouseupoutside", (): void => {
+            this.isMouseDown = false;
+        })
 
         this.on("touchend", (): void => {
-            this.tint = disableTintColor;
+            this.tint = SPRITE_BUTTON_DISABLE_TINT_COLOR;
         })
 
         if (hoverColor) {
+            this.on("mouseup", (): void => {
+                if (this.isMouseDown) {
+                    this.tint = hoverColor;
+                    this.isMouseDown = false;
+                }
+            })
             this.on("mouseover", (): void => {
-                this.tint = hoverColor;
+                if (this.isMouseDown) {
+                    this.tint = SPRITE_BUTTON_CLICKED_TINT;
+                } else {
+                    this.tint = hoverColor;
+                }
             });
             this.on("mouseout", (): void => {
-                this.tint = disableTintColor;
+                this.tint = SPRITE_BUTTON_DISABLE_TINT_COLOR;
             });
             this.on("touchstart", (): void => {
-                this.tint = hoverColor;
+                this.tint = SPRITE_BUTTON_CLICKED_TINT;
             });
             this.on("touchmove", (e: TouchEvent): void => {
                 if (e.target == null) {
-                    this.tint = disableTintColor;
+                    this.tint = SPRITE_BUTTON_DISABLE_TINT_COLOR;
+                }
+            });
+        } else {
+            this.on("mouseup", (): void => {
+                if (this.isMouseDown) {
+                    this.tint = SPRITE_BUTTON_DISABLE_TINT_COLOR;
+                    this.isMouseDown = false;
+                }
+            })
+            this.on("mouseover", (): void => {
+                if (this.isMouseDown) {
+                    this.tint = SPRITE_BUTTON_CLICKED_TINT;
+                }
+            })
+            this.on("mouseout", (): void => {
+                if (this.isMouseDown) {
+                    this.tint = SPRITE_BUTTON_DISABLE_TINT_COLOR;
+                }
+            })
+            this.on("touchstart", (): void => {
+                if (!this.isMouseDown) {
+                    this.tint = SPRITE_BUTTON_CLICKED_TINT;
+                    this.isMouseDown = true;
+                }
+            });
+            this.on("touchmove", (e: TouchEvent): void => {
+                if (e.target == null) {
+                    if (this.isMouseDown) {
+                        this.isMouseDown = false;
+                    }
                 }
             });
         }

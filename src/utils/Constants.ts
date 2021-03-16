@@ -27,8 +27,13 @@ export const FONT_SIZE: number = window.innerWidth * 20 / 1280; //TODO: calculat
 // Button constants
 
 export const BUTTON_TEXT_COLOR: number = 0x262626;
+export const SPRITE_BUTTON_DISABLE_TINT_COLOR: number = 0xFFFFFF;
+export const SPRITE_BUTTON_CLICKED_TINT: number = 0x262626;
+
 export const START_BUTTON_COLOR: number = 0x73C61A;
 export const START_BUTTON_HOVER_COLOR: number = 0x9BD855;
+
 export const BACK_BUTTON_X: number = 50;
 export const BACK_BUTTON_Y: number = 50;
 export const BACK_BUTTON_SCALING_FACTOR: number = 1 / 15;
+export const BACK_BUTTON_HOVER_COLOR: number = 0xCCCCCC;

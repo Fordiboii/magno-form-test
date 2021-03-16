@@ -3,7 +3,7 @@ import { AbstractScreen } from "./AbstractScreen";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
-import { BACK_BUTTON_SCALING_FACTOR, BACK_BUTTON_X, BACK_BUTTON_Y, BUTTON_TEXT_COLOR, FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, START_BUTTON_COLOR, START_BUTTON_HOVER_COLOR } from "../utils/Constants";
+import { BACK_BUTTON_HOVER_COLOR, BACK_BUTTON_SCALING_FACTOR, BACK_BUTTON_X, BACK_BUTTON_Y, BUTTON_TEXT_COLOR, FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, START_BUTTON_COLOR, START_BUTTON_HOVER_COLOR } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
 import { SpriteButton } from "../objects/buttons/SpriteButton";
@@ -66,7 +66,7 @@ export class MotionScreen extends AbstractScreen {
 
         // create back button and add to container
         const backButtonTexture = PIXI.Loader.shared.resources['backArrow'].texture;
-        this.backButton = new SpriteButton(BACK_BUTTON_X, BACK_BUTTON_Y, BACK_BUTTON_SCALING_FACTOR, backButtonTexture, BUTTON_TEXT_COLOR);
+        this.backButton = new SpriteButton(BACK_BUTTON_X, BACK_BUTTON_Y, BACK_BUTTON_SCALING_FACTOR, backButtonTexture, BACK_BUTTON_HOVER_COLOR);
         this.addChild(this.backButton)
 
         // add event listeners
