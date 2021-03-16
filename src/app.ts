@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
+import { Settings } from './utils/Settings';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
@@ -92,7 +93,8 @@ export class GameApp {
         this.renderer.render(this.stage);
     }
 
-    private resize = (): void => {
-        this.renderer.resize(window.innerWidth, window.innerHeight);
-    }
+    public resize = (): void => {
+        this.renderer.view.style.width = window.innerWidth + "px";
+        this.renderer.view.style.height = window.innerHeight + "px";
+    };
 }
