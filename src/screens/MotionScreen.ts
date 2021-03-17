@@ -1,18 +1,46 @@
 import * as PIXI from 'pixi.js';
-import { AbstractScreen } from "./AbstractScreen";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
-import { BACK_BUTTON_HOVER_COLOR, BACK_BUTTON_SCALING_FACTOR, BACK_BUTTON_X, BACK_BUTTON_Y, BUTTON_TEXT_COLOR, FONT_SIZE, KEY_BACKSPACE, KEY_LEFT, KEY_RIGHT, START_BUTTON_COLOR, START_BUTTON_HOVER_COLOR } from "../utils/Constants";
+import {
+    BACK_BUTTON_HOVER_COLOR,
+    BACK_BUTTON_SCALING_FACTOR,
+    BACK_BUTTON_X,
+    BACK_BUTTON_Y,
+    BUTTON_TEXT_COLOR,
+    FONT_SIZE,
+    KEY_BACKSPACE,
+    KEY_LEFT,
+    KEY_RIGHT,
+    START_BUTTON_COLOR,
+    START_BUTTON_HOVER_COLOR
+} from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
 import { SpriteButton } from "../objects/buttons/SpriteButton";
 
-export class MotionScreen extends AbstractScreen {
-    patchLeftLabel: PIXI.BitmapText;
-    patchRightLabel: PIXI.BitmapText;
-    startButton: TextButton;
-    backButton: SpriteButton;
+export class MotionScreen extends PIXI.Container {
+    protected motionWorld: MotionWorld;
+
+    protected reversalPoints: number;
+    protected maxSteps: number;
+
+    protected prevStep: boolean;
+
+    protected reversalCounter: number;
+    protected stepCounter: number;
+    protected correctAnswerCounter: number;
+    protected wrongAnswerCounter: number;
+
+    protected reversalValues: Array<number>;
+
+    protected correctAnswerFactor: number;
+    protected wrongAnswerFactor: number;
+
+    protected patchLeftLabel: PIXI.BitmapText;
+    protected patchRightLabel: PIXI.BitmapText;
+    protected startButton: TextButton;
+    protected backButton: SpriteButton;
 
     constructor() {
         super();
