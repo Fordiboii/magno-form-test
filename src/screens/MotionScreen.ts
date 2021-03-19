@@ -3,11 +3,11 @@ import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
 import {
-    BACK_BUTTON_HOVER_COLOR,
+    SPRITE_BUTTON_HOVER_COLOR,
     BACK_BUTTON_SCALING_FACTOR,
     BACK_BUTTON_X,
     BACK_BUTTON_Y,
-    BUTTON_TEXT_COLOR,
+    TEXT_COLOR,
     FONT_SIZE,
     KEY_BACKSPACE,
     KEY_LEFT,
@@ -83,18 +83,25 @@ export class MotionScreen extends PIXI.Container {
             new TextButton(
                 Settings.WINDOW_WIDTH_PX / 2,
                 Settings.WINDOW_HEIGHT_PX / 2,
-                Settings.START_BUTTON_WIDTH,
-                Settings.START_BUTTON_HEIGHT,
+                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_HEIGHT,
                 START_BUTTON_COLOR,
                 "START TEST",
-                BUTTON_TEXT_COLOR,
+                TEXT_COLOR,
                 START_BUTTON_HOVER_COLOR
             );
         this.addChild(this.startButton);
 
         // create back button and add to container
         const backButtonTexture = PIXI.Loader.shared.resources['backArrow'].texture;
-        this.backButton = new SpriteButton(BACK_BUTTON_X, BACK_BUTTON_Y, BACK_BUTTON_SCALING_FACTOR, backButtonTexture, BACK_BUTTON_HOVER_COLOR);
+        this.backButton =
+            new SpriteButton(
+                BACK_BUTTON_X,
+                BACK_BUTTON_Y,
+                BACK_BUTTON_SCALING_FACTOR,
+                SPRITE_BUTTON_HOVER_COLOR,
+                backButtonTexture
+            );
         this.addChild(this.backButton)
 
         // add event listeners

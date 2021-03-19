@@ -2,11 +2,12 @@ import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
+import { TutorialSitDownScreen } from './screens/TutorialSitDownScreen';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
-    private activeGameObjects: Array<MotionScreen> = [];
+    private activeGameObjects: Array<MotionScreen | TutorialSitDownScreen> = [];
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -60,6 +61,9 @@ export class GameApp {
         loader
             .add('dot', './assets/sprites/dot.png')
             .add('backArrow', './assets/sprites/backArrow.png')
+            .add('circleHollow', './assets/sprites/circle_hollow.png')
+            .add('circleFilled', './assets/sprites/circle_filled.png')
+            .add('sitDownImage', './assets/images/TutorialSitDown-01.png')
             .add('helvetica', './assets/fonts/helvetica-bitmap.fnt')
             .load()
     }
@@ -70,9 +74,9 @@ export class GameApp {
         MainLoop.setDraw(this.render);
 
         // add motion screen to stage and model
-        const motionScreen: MotionScreen = new MotionScreen();
-        this.stage.addChild(motionScreen);
-        this.activeGameObjects.push(motionScreen);
+        const tutorialSitDownScreen: TutorialSitDownScreen = new TutorialSitDownScreen();
+        this.stage.addChild(tutorialSitDownScreen);
+        this.activeGameObjects.push(tutorialSitDownScreen);
     }
 
     private gameLoop = (delta: number): void => {

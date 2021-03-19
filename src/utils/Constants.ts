@@ -22,13 +22,18 @@ export const KEY_BACKSPACE: string = "Backspace";
 // Font/text constants
 
 export const PATCH_LABEL_COLOR: number = 0xFFFFFF;
+export const TEXT_COLOR: number = 0x262626;
 export const FONT_SIZE: number = window.innerWidth * 20 / 1280; //TODO: calculate once
 
 // Button constants
 
-export const BUTTON_TEXT_COLOR: number = 0x262626;
+export const BUTTON_DISABLED_COLOR: number = 0xCAC9C9;
+
 export const SPRITE_BUTTON_DISABLE_TINT_COLOR: number = 0xFFFFFF;
-export const SPRITE_BUTTON_CLICKED_TINT: number = 0x262626;
+export const SPRITE_BUTTON_CLICKED_TINT: number = 0xBBBBBB;
+export const SPRITE_BUTTON_HOVER_COLOR: number = 0xCCCCCC;
+
+export const TEXT_BUTTON_ROUNDING_RADIUS: number = 8;
 
 export const START_BUTTON_COLOR: number = 0x73C61A;
 export const START_BUTTON_HOVER_COLOR: number = 0x9BD855;
@@ -36,4 +41,10 @@ export const START_BUTTON_HOVER_COLOR: number = 0x9BD855;
 export const BACK_BUTTON_X: number = 50;
 export const BACK_BUTTON_Y: number = 50;
 export const BACK_BUTTON_SCALING_FACTOR: number = 1 / 15;
-export const BACK_BUTTON_HOVER_COLOR: number = 0xCCCCCC;
+
+export const NEXT_BUTTON_COLOR: number = 0x93CEEF;
+export const NEXT_BUTTON_HOVER_COLOR: number = 0xBEE2F4;
+
+// TUTORIAL CONSTANTS
+
+export const BACKGROUND_COLOR: number = 0xEAF5FC;

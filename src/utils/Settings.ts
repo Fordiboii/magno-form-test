@@ -34,9 +34,24 @@ export abstract class Settings {
     public static STAIRCASE_REVERSAL_POINTS: number; // total number of reversal points.
     public static STAIRCASE_REVERSALS_TO_CALCULATE_MEAN: number; // number of reversal points to use when calculating the test score in geometric mean.
 
+    // Game constants not to be included in results.
+
     // Button settings
-    public static START_BUTTON_WIDTH: number;
-    public static START_BUTTON_HEIGHT: number;
+    public static TEXT_BUTTON_WIDTH: number;
+    public static TEXT_BUTTON_HEIGHT: number;
+
+    public static CIRCLE_BUTTON_WIDTH: number;
+    public static CIRCLE_BUTTON_TOP_BOTTOM_PADDING: number;
+
+    public static NEXT_BACK_BUTTON_SPACING: number;
+
+    // Header settings
+    public static HEADER_WIDTH: number;
+    public static HEADER_HEIGHT: number;
+    public static HEADER_Y_POSITION: number;
+
+    // Tutorial settings
+    public static TUTORIAL_CONTENT_TOP_BOTTOM_PADDING: number;
 
     public static load = (): void => {
         // Screen settings
@@ -73,7 +88,20 @@ export abstract class Settings {
         Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8;
 
         // Button settings
-        Settings.START_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5;
-        Settings.START_BUTTON_HEIGHT = Settings.WINDOW_HEIGHT_PX / 15;
+        Settings.TEXT_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5;
+        Settings.TEXT_BUTTON_HEIGHT = Settings.WINDOW_HEIGHT_PX / 15;
+
+        Settings.CIRCLE_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 50;
+        Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING = Settings.WINDOW_HEIGHT_PX / 16;
+
+        Settings.NEXT_BACK_BUTTON_SPACING = Settings.WINDOW_WIDTH_PX / 9;
+
+        // Header settings
+        Settings.HEADER_WIDTH = Settings.WINDOW_WIDTH_PX / 1.5;
+        Settings.HEADER_HEIGHT = Settings.WINDOW_HEIGHT_PX / 10;
+        Settings.HEADER_Y_POSITION = Settings.WINDOW_HEIGHT_PX / 16;
+
+        // Tutorial settings
+        Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING = Settings.WINDOW_HEIGHT_PX / 30;
     }
 }
