@@ -1,5 +1,10 @@
 import * as PIXI from "pixi.js";
-import { BUTTON_DISABLED_COLOR, TEXT_BUTTON_ROUNDING_RADIUS, TEXT_COLOR } from "../../utils/Constants";
+import {
+    BUTTON_DISABLED_COLOR,
+    FONT_SIZE,
+    TEXT_BUTTON_ROUNDING_RADIUS,
+    TEXT_COLOR
+} from "../../utils/Constants";
 
 export class TextButton extends PIXI.Graphics {
     buttonWidth: number;
@@ -44,7 +49,7 @@ export class TextButton extends PIXI.Graphics {
                 buttonText,
                 {
                     fontName: "Helvetica-Normal",
-                    fontSize: 26,
+                    fontSize: FONT_SIZE * 1.2,
                     fill: buttonTextColor
                 }
             );

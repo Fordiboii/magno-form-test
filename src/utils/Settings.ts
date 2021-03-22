@@ -53,6 +53,9 @@ export abstract class Settings {
     // Tutorial settings
     public static TUTORIAL_CONTENT_TOP_BOTTOM_PADDING: number;
 
+    public static TRIAL_SCREEN_X: number;
+    public static TRIAL_SCREEN_Y: number;
+
     public static load = (): void => {
         // Screen settings
         Settings.SCREEN_VIEWING_DISTANCE_MM = 300;
@@ -103,5 +106,8 @@ export abstract class Settings {
 
         // Tutorial settings
         Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING = Settings.WINDOW_HEIGHT_PX / 30;
+
+        Settings.TRIAL_SCREEN_X = Settings.WINDOW_WIDTH_PX / 2;
+        Settings.TRIAL_SCREEN_Y = Settings.WINDOW_HEIGHT_PX / 2 - Settings.WINDOW_HEIGHT_PX / 10;
     }
 }

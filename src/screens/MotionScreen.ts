@@ -4,9 +4,6 @@ import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
 import {
     SPRITE_BUTTON_HOVER_COLOR,
-    BACK_BUTTON_SCALING_FACTOR,
-    BACK_BUTTON_X,
-    BACK_BUTTON_Y,
     TEXT_COLOR,
     FONT_SIZE,
     KEY_BACKSPACE,
@@ -96,11 +93,13 @@ export class MotionScreen extends PIXI.Container {
         const backButtonTexture = PIXI.Loader.shared.resources['backArrow'].texture;
         this.backButton =
             new SpriteButton(
-                BACK_BUTTON_X,
-                BACK_BUTTON_Y,
-                BACK_BUTTON_SCALING_FACTOR,
-                SPRITE_BUTTON_HOVER_COLOR,
-                backButtonTexture
+                Settings.WINDOW_WIDTH_PX / 32,
+                Settings.WINDOW_HEIGHT_PX / 32,
+                Settings.WINDOW_WIDTH_PX / 40,
+                Settings.WINDOW_WIDTH_PX / 40,
+                backButtonTexture,
+                [0.5, 0],
+                SPRITE_BUTTON_HOVER_COLOR
             );
         this.addChild(this.backButton)
 

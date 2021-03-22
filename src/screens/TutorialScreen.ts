@@ -52,9 +52,9 @@ export abstract class TutorialScreen extends PIXI.Container {
 
         // content and tutorial text positions
         this.contentX = Settings.WINDOW_WIDTH_PX / 2;
-        this.contentY = Settings.HEADER_Y_POSITION + this.header.height + Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING;;
+        this.contentY = Settings.HEADER_Y_POSITION + this.header.height + Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING;
         this.tutorialTextX = Settings.WINDOW_WIDTH_PX / 2;
-        this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 2 + Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING;;
+        this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 2;
 
         // add tutorial text
         this.tutorialText = new PIXI.Text("",
@@ -120,5 +120,5 @@ export abstract class TutorialScreen extends PIXI.Container {
         this.addChild(this.circleContainer);
     }
 
-    abstract update(): void;
+    abstract update(delta: number): void;
 }

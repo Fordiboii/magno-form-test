@@ -90,22 +90,9 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
 
     abstract createDots(): void;
 
-    abstract createNewTrial(): void;
-
-    abstract updateCoherency(factor: number, isCorrectAnswer: boolean): void;
-
     destroyDots = (): void => {
         this.dotsLeft.forEach(dot => dot.destroy());
         this.dotsRight.forEach(dot => dot.destroy());
-    }
-
-    reset = (): void => {
-        this.dotsLeftParticleContainer.visible = false;
-        this.dotsRightParticleContainer.visible = false;
-        this.runTime = 0;
-        this.createNewTrial();
-        this.dotsLeftParticleContainer.visible = true;
-        this.dotsRightParticleContainer.visible = true;
     }
 
     paused = (): void => {

@@ -13,7 +13,7 @@ import {
     PATCH_OUTLINE_THICKNESS
 } from '../utils/Constants';
 
-export class MotionWorld extends AbstractMotionWorld {
+export class MotionTutorialWorld extends AbstractMotionWorld {
     constructor() {
         super();
         this.createPatches();
@@ -41,6 +41,13 @@ export class MotionWorld extends AbstractMotionWorld {
             );
 
         this.createDots();
+
+        // show dots
+        this.dotsLeftContainer.visible = true;
+        this.dotsRightContainer.visible = true;
+
+        // set state to running
+        this.setState(WorldState.RUNNING);
     }
 
     /**
@@ -55,15 +62,6 @@ export class MotionWorld extends AbstractMotionWorld {
         } else if (this.currentState == WorldState.FINISHED) {
             return;
         }
-    }
-
-    reset = (): void => {
-        this.dotsLeftParticleContainer.visible = false;
-        this.dotsRightParticleContainer.visible = false;
-        this.runTime = 0;
-        this.createNewTrial();
-        this.dotsLeftParticleContainer.visible = true;
-        this.dotsRightParticleContainer.visible = true;
     }
 
     /**
@@ -82,12 +80,12 @@ export class MotionWorld extends AbstractMotionWorld {
      * Creates the left and right patches for placing dots
      */
     createPatches = (): void => {
-        this.patchGap = Psychophysics.getPatchGapInPixels();
-        const patchWidth: number = Psychophysics.getPatchWidthInPixels();
-        const patchHeight: number = Psychophysics.getPatchHeightInPixels();
+        this.patchGap = Psychophysics.getPatchGapInPixels() / 1.4;
+        const patchWidth: number = Psychophysics.getPatchWidthInPixels() / 1.4;
+        const patchHeight: number = Psychophysics.getPatchHeightInPixels() / 1.4;
 
-        const screenXCenter: number = Settings.WINDOW_WIDTH_PX / 2;
-        const screenYCenter: number = Settings.WINDOW_HEIGHT_PX / 2;
+        const screenXCenter: number = Settings.TRIAL_SCREEN_X;
+        const screenYCenter: number = Settings.TRIAL_SCREEN_Y;
 
         const patchLeftX: number = screenXCenter - patchWidth - (this.patchGap / 2);
         const patchRightX: number = screenXCenter + (this.patchGap / 2);
@@ -117,8 +115,8 @@ export class MotionWorld extends AbstractMotionWorld {
         let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
         let shuffledRightGridPoints = randoSequence(this.rightGridPoints);
 
-        // randomly choose patch to contain coherent dots
-        this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
+        // set coherent patch side to right
+        this.coherentPatchSide = Direction[1];
         // randomly choose direction of coherent moving dots
         const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
 
@@ -166,103 +164,6 @@ export class MotionWorld extends AbstractMotionWorld {
                 this.dotsRight.push(dot);
                 // add to particle container
                 this.dotsRightParticleContainer.addChild(dot);
-            }
-        }
-    }
-
-    /**
-     * Updates patches and dots when the user has chosen a patch.
-     * Chooses a new random and coherent patch. 
-     * Randomly places dots and updates their direction, timers and velocity. 
-     */
-    createNewTrial = (): void => {
-        let maxAliveTimeMultiplier: number = 1;
-        let numberOfCoherentDots: number = 0;
-        let currentCoherencePercent: number;
-        let dotPosition: [number, number];
-        let dot: Dot;
-
-        // shuffle grid points. Used to get random dot positions.
-        let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
-        let shuffledRightGridPoints = randoSequence(this.rightGridPoints);
-
-        // randomly choose patch to contain coherent dots
-        this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
-
-        // randomly choose direction of coherent moving dots
-        const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
-
-        for (let i = 0; i < this.numberOfDots; i++) {
-            // multiplier to give dots different respawn rate
-            if (i == this.dotsToKill * maxAliveTimeMultiplier) {
-                maxAliveTimeMultiplier++;
-            }
-            // get current coherent dots percentage
-            currentCoherencePercent = (numberOfCoherentDots / this.numberOfDots) * 100;
-
-            // get new position
-            dotPosition = shuffledLeftGridPoints[i].value;
-
-            // update dot position and reset direction, timers and velocity.
-            dot = this.dotsLeft[i];
-            if (this.coherentPatchSide == "LEFT" && currentCoherencePercent < this.coherencePercent) {
-                dot.setPosition(dotPosition[0], dotPosition[1])
-                dot.setDirection(coherentDirection);
-                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
-                dot.resetVelocity();
-                numberOfCoherentDots++;
-            } else {
-                dot.setPosition(dotPosition[0], dotPosition[1])
-                dot.setDirection(Direction.RANDOM);
-                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
-                dot.resetVelocity();
-            }
-
-            // get new position
-            dotPosition = shuffledRightGridPoints[i].value;
-
-            // update dot position and reset direction, timers and velocity.
-            dot = this.dotsRight[i];
-            if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
-                dot.setPosition(dotPosition[0], dotPosition[1])
-                dot.setDirection(coherentDirection);
-                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
-                dot.resetVelocity();
-                numberOfCoherentDots++;
-            } else {
-                dot.setPosition(dotPosition[0], dotPosition[1])
-                dot.setDirection(Direction.RANDOM);
-                dot.setTimers(this.dotMaxAliveTime * maxAliveTimeMultiplier);
-                dot.resetVelocity();
-            }
-        }
-    }
-
-    /**
-     * Updates the coherency percentage by a decibel factor.
-     * Decreases coherency if answer is correct, increases otherwise.
-     * @param factor decibel factor used to increase or decrease coherency level.
-     * @param isCorrectAnswer if the user chose the patch with coherent dots.
-     */
-    updateCoherency = (factor: number, isCorrectAnswer: boolean): void => {
-        let temp: number = this.coherencePercent * factor;
-
-        if (isCorrectAnswer) {
-            if (factor > 1) {
-                temp -= this.coherencePercent;
-                this.coherencePercent -= temp;
-            } else {
-                this.coherencePercent = temp;
-            }
-        } else {
-            if (factor > 1) {
-                this.coherencePercent = temp;
-            } else {
-                temp -= this.coherencePercent;
-                this.coherencePercent -= temp;
-            }
-            if (this.coherencePercent > 100) {
-                this.coherencePercent = 100;
             }
         }
     }
@@ -316,5 +217,88 @@ export class MotionWorld extends AbstractMotionWorld {
             }
         }
         return gridPoints
+    }
+
+    /**
+     * Override updateDots to keep showing the dots.
+     */
+    updateDots = (delta: number): void => {
+        let possibleCollisions: Array<Dot> = new Array<Dot>();
+        let dot: Dot;
+        let dotPosition: [number, number];
+
+        // clear quadtree
+        this.quadTree.clear()
+
+        // insert dots into quadtree
+        this.dotsLeft.forEach(dot => this.quadTree.insert(dot));
+
+        // check for collisions and update velocity if collision detected
+        for (let i = 0; i < this.dotsLeft.length; i++) {
+            dot = this.dotsLeft[i];
+            possibleCollisions = [];
+
+            if (dot.isRandom) {
+                this.checkWallCollisionLeftPatch(dot);
+            }
+
+            possibleCollisions = this.quadTree.retrieve(possibleCollisions, dot);
+            possibleCollisions.forEach(otherDot => {
+                dot.collideWithDot(otherDot);
+            });
+        }
+
+        // update position and check if it's time to respawn
+        this.dotsLeft.forEach(dot => {
+            dot.update(delta);
+            if (dot.aliveTimer <= 0) {
+                dot.resetAliveTimer();
+                dotPosition =
+                    this.getRandomPosition(
+                        this.leftMinX + this.dotRadius,
+                        this.patchMinY + this.dotRadius,
+                        this.leftMaxX - this.dotRadius,
+                        this.patchMaxY - this.dotRadius
+                    )
+                dot.setPosition(dotPosition[0], dotPosition[1]);
+            }
+        });
+
+        // clear quadtree
+        this.quadTree.clear()
+
+        // insert dots into quadtree
+        this.dotsRight.forEach(dot => this.quadTree.insert(dot));
+
+        // check for collisions and update velocity if collision detected
+        for (let i = 0; i < this.dotsRight.length; i++) {
+            dot = this.dotsRight[i];
+            possibleCollisions = [];
+
+            if (dot.isRandom) {
+                this.checkWallCollisionRightPatch(dot);
+            }
+
+            possibleCollisions = this.quadTree.retrieve(possibleCollisions, dot);
+            possibleCollisions.forEach(otherDot => {
+                dot.collideWithDot(otherDot);
+            });
+        }
+
+        // update position and check if it's time to respawn
+        this.dotsRight.forEach(dot => {
+            dot.update(delta);
+            if (dot.aliveTimer <= 0) {
+                dot.resetAliveTimer();
+                dotPosition =
+                    this.getRandomPosition(
+                        this.rightMinX + this.dotRadius,
+                        this.patchMinY + this.dotRadius,
+                        this.rightMaxX - this.dotRadius,
+                        this.patchMaxY - this.dotRadius
+                    )
+                dot.setPosition(dotPosition[0], dotPosition[1]);
+            }
+        })
     }
 }

@@ -38,10 +38,6 @@ export const TEXT_BUTTON_ROUNDING_RADIUS: number = 8;
 export const START_BUTTON_COLOR: number = 0x73C61A;
 export const START_BUTTON_HOVER_COLOR: number = 0x9BD855;
 
-export const BACK_BUTTON_X: number = 50;
-export const BACK_BUTTON_Y: number = 50;
-export const BACK_BUTTON_SCALING_FACTOR: number = 1 / 15;
-
 export const NEXT_BUTTON_COLOR: number = 0x93CEEF;
 export const NEXT_BUTTON_HOVER_COLOR: number = 0xBEE2F4;
 
