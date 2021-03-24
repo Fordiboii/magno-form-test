@@ -111,7 +111,7 @@ export abstract class TutorialScreen extends PIXI.Container {
 
         // add circles
         const circleHollowTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleHollow'].texture;
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) {
             const circle: SpriteButton =
                 new SpriteButton(
                     i * Settings.CIRCLE_BUTTON_WIDTH * 2,
