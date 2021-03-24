@@ -29,7 +29,7 @@ export class TutorialSitDownScreen extends TutorialScreen {
         // disable/enable buttons
         this.backButton.disable();
 
-        // change selected circle texture
+        // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
         this.circles[0].texture = circleFilledTexture;
     }

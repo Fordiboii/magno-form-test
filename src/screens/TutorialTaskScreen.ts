@@ -41,7 +41,7 @@ export class TutorialTaskScreen extends TutorialScreen {
             "During the test, you should identify and click on the box where some of the dots are moving systematically back and forth." +
             "The other box will contain dots moving randomly. Repeat this exercise until the test is done. The test takes approximately 8 minutes.";
 
-        // change selected circle texture
+        // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
         this.circles[1].texture = circleFilledTexture;
     }

@@ -34,13 +34,23 @@ export const SPRITE_BUTTON_CLICKED_TINT: number = 0xBBBBBB;
 export const SPRITE_BUTTON_HOVER_COLOR: number = 0xCCCCCC;
 
 export const TEXT_BUTTON_ROUNDING_RADIUS: number = 8;
+export const TEXT_BUTTON_DROP_SHADOW_ANGLE: number = 90; // in degrees
+export const TEXT_BUTTON_DROP_SHADOW_DISTANCE: number = 2;
+export const TEXT_BUTTON_DROP_SHADOW_BLUR: number = 1;
+export const TEXT_BUTTON_DROP_SHADOW_COLOR: number = 0x999999;
 
 export const START_BUTTON_COLOR: number = 0x73C61A;
+export const START_BUTTON_STROKE_COLOR: number = 0x51A40A;
 export const START_BUTTON_HOVER_COLOR: number = 0x9BD855;
 
 export const NEXT_BUTTON_COLOR: number = 0x93CEEF;
+export const NEXT_BUTTON_STROKE_COLOR: number = 0x82BDDE;
 export const NEXT_BUTTON_HOVER_COLOR: number = 0xBEE2F4;
 
 // TUTORIAL CONSTANTS
 
+export const BLUE_TEXT_COLOR: number = 0x93CEEF;
+export const GREEN_TEXT_COLOR: number = 0x7AB642;
+export const RED_TEXT_COLOR: number = 0xE24040;
 export const BACKGROUND_COLOR: number = 0xEAF5FC;
+export const MAX_FEEDBACK_TIME: number = 2000; // in milliseconds

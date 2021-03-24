@@ -1,7 +1,15 @@
 import * as PIXI from 'pixi.js';
 import { SpriteButton } from '../objects/buttons/SpriteButton';
 import { TextButton } from '../objects/buttons/TextButton';
-import { SPRITE_BUTTON_HOVER_COLOR, TEXT_COLOR, NEXT_BUTTON_COLOR, NEXT_BUTTON_HOVER_COLOR, BACKGROUND_COLOR, FONT_SIZE } from '../utils/Constants';
+import {
+    SPRITE_BUTTON_HOVER_COLOR,
+    TEXT_COLOR,
+    NEXT_BUTTON_COLOR,
+    NEXT_BUTTON_HOVER_COLOR,
+    BACKGROUND_COLOR,
+    FONT_SIZE,
+    NEXT_BUTTON_STROKE_COLOR
+} from '../utils/Constants';
 import { Settings } from '../utils/Settings';
 
 export abstract class TutorialScreen extends PIXI.Container {
@@ -79,6 +87,7 @@ export abstract class TutorialScreen extends PIXI.Container {
                 Settings.TEXT_BUTTON_WIDTH,
                 Settings.TEXT_BUTTON_HEIGHT,
                 NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
                 "BACK",
                 TEXT_COLOR,
                 NEXT_BUTTON_HOVER_COLOR
@@ -93,6 +102,7 @@ export abstract class TutorialScreen extends PIXI.Container {
                 Settings.TEXT_BUTTON_WIDTH,
                 Settings.TEXT_BUTTON_HEIGHT,
                 NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
                 "NEXT",
                 TEXT_COLOR,
                 NEXT_BUTTON_HOVER_COLOR

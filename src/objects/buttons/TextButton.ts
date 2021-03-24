@@ -1,7 +1,12 @@
 import * as PIXI from "pixi.js";
+import { DropShadowFilter } from "pixi-filters";
 import {
     BUTTON_DISABLED_COLOR,
     FONT_SIZE,
+    TEXT_BUTTON_DROP_SHADOW_ANGLE,
+    TEXT_BUTTON_DROP_SHADOW_BLUR,
+    TEXT_BUTTON_DROP_SHADOW_COLOR,
+    TEXT_BUTTON_DROP_SHADOW_DISTANCE,
     TEXT_BUTTON_ROUNDING_RADIUS,
     TEXT_COLOR
 } from "../../utils/Constants";
@@ -22,10 +27,12 @@ export class TextButton extends PIXI.Graphics {
         width: number,
         height: number,
         color: number,
+        strokeColor?: number,
         buttonText?: string,
         buttonTextColor: number = TEXT_COLOR,
         hoverColor?: number,
         disabled: boolean = false,
+        strokeWidth: number = 3
     ) {
         super();
         this.buttonWidth = width;
@@ -35,6 +42,7 @@ export class TextButton extends PIXI.Graphics {
         this.disabled = disabled;
         if (buttonText) this.buttonText = buttonText;
         if (hoverColor) this.hoverColor = hoverColor;
+        if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
 
         this.interactive = disabled ? false : true;
         this.buttonMode = disabled ? false : true;
@@ -49,7 +57,7 @@ export class TextButton extends PIXI.Graphics {
                 buttonText,
                 {
                     fontName: "Helvetica-Normal",
-                    fontSize: FONT_SIZE * 1.2,
+                    fontSize: FONT_SIZE,
                     fill: buttonTextColor
                 }
             );
@@ -108,32 +116,46 @@ export class TextButton extends PIXI.Graphics {
 
         if (hoverColor) {
             this.on("mouseover", (): void => {
-                this.clear()
-                    .beginFill(hoverColor)
+                this.clear();
+                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
+                this.beginFill(hoverColor)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                     .endFill();
             });
             this.on("mouseout", (): void => {
-                this.clear()
-                    .beginFill(color)
+                this.clear();
+                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
+                this.beginFill(color)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                     .endFill();
             });
             this.on("touchstart", (): void => {
-                this.clear()
-                    .beginFill(hoverColor)
+                this.clear();
+                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
+                this.beginFill(hoverColor)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                     .endFill();
             });
             this.on("touchmove", (e: TouchEvent): void => {
                 if (e.target == null) {
-                    this.clear()
-                        .beginFill(color)
+                    this.clear();
+                    if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
+                    this.beginFill(color)
                         .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                         .endFill();
                 }
             });
         }
+
+        // adds button shadow
+        this.filters = [
+            new DropShadowFilter({
+                rotation: TEXT_BUTTON_DROP_SHADOW_ANGLE,
+                distance: TEXT_BUTTON_DROP_SHADOW_DISTANCE,
+                blur: TEXT_BUTTON_DROP_SHADOW_BLUR,
+                color: TEXT_BUTTON_DROP_SHADOW_COLOR
+            })
+        ]
     }
 
     /**

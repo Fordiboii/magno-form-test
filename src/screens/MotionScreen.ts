@@ -10,7 +10,8 @@ import {
     KEY_LEFT,
     KEY_RIGHT,
     START_BUTTON_COLOR,
-    START_BUTTON_HOVER_COLOR
+    START_BUTTON_HOVER_COLOR,
+    START_BUTTON_STROKE_COLOR
 } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
@@ -83,6 +84,7 @@ export class MotionScreen extends PIXI.Container {
                 Settings.TEXT_BUTTON_WIDTH,
                 Settings.TEXT_BUTTON_HEIGHT,
                 START_BUTTON_COLOR,
+                START_BUTTON_STROKE_COLOR,
                 "START TEST",
                 TEXT_COLOR,
                 START_BUTTON_HOVER_COLOR
@@ -138,7 +140,6 @@ export class MotionScreen extends PIXI.Container {
                 this.wrongAnswerCounter++;
                 currentStep = false;
             }
-            this.motionWorld.reset();
 
             // increment step counter and check if the test is completed
             this.stepCounter++;
@@ -147,6 +148,9 @@ export class MotionScreen extends PIXI.Container {
                 this.motionWorld.setState(WorldState.FINISHED);
             } else if (this.motionWorld.getState() == WorldState.PAUSED) {
                 this.motionWorld.setState(WorldState.RUNNING);
+                this.motionWorld.reset();
+            } else {
+                this.motionWorld.reset();
             }
             // check if the current answer differs from the previous step. Save the value at reversal and increment counter
             if (this.stepCounter > 1 && this.prevStep != currentStep) {
@@ -164,7 +168,6 @@ export class MotionScreen extends PIXI.Container {
                 this.wrongAnswerCounter++;
                 currentStep = false;
             }
-            this.motionWorld.reset();
 
             // increment step counter and check if the test is completed
             this.stepCounter++;
@@ -173,6 +176,9 @@ export class MotionScreen extends PIXI.Container {
                 this.motionWorld.setState(WorldState.FINISHED);
             } else if (this.motionWorld.getState() == WorldState.PAUSED) {
                 this.motionWorld.setState(WorldState.RUNNING);
+                this.motionWorld.reset();
+            } else {
+                this.motionWorld.reset();
             }
             // check if the current answer differs from the previous step. Save the value at reversal and increment counter
             if (this.stepCounter > 1 && this.prevStep != currentStep) {
@@ -219,6 +225,14 @@ export class MotionScreen extends PIXI.Container {
     }
 
     startButtonClickHandler = (): void => {
+        // add event handlers
+        window.addEventListener("keydown", this.keyDownHandler);
+        this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+
+        // hide start button, make patches interactive and set state to running
         this.startButton.visible = false;
         this.motionWorld.patchLeft.interactive = true;
         this.motionWorld.patchRight.interactive = true;
@@ -229,6 +243,14 @@ export class MotionScreen extends PIXI.Container {
 
     startButtonTouchendHandler = (): void => {
         if (this.startButton.isMouseDown) {
+            // add event handlers
+            window.addEventListener("keydown", this.keyDownHandler);
+            this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+            this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+            this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+            this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+
+            // hide start button, make patches interactive and set state to running
             this.startButton.visible = false;
             this.motionWorld.patchLeft.interactive = true;
             this.motionWorld.patchRight.interactive = true;

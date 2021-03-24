@@ -56,6 +56,8 @@ export abstract class Settings {
     public static TRIAL_SCREEN_X: number;
     public static TRIAL_SCREEN_Y: number;
 
+    public static TRIAL_MAX_STEPS: number;
+
     public static load = (): void => {
         // Screen settings
         Settings.SCREEN_VIEWING_DISTANCE_MM = 300;
@@ -109,5 +111,7 @@ export abstract class Settings {
 
         Settings.TRIAL_SCREEN_X = Settings.WINDOW_WIDTH_PX / 2;
         Settings.TRIAL_SCREEN_Y = Settings.WINDOW_HEIGHT_PX / 2 - Settings.WINDOW_HEIGHT_PX / 10;
+
+        Settings.TRIAL_MAX_STEPS = 3;
     }
 }

@@ -4,11 +4,12 @@ import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
 import { TutorialSitDownScreen } from './screens/TutorialSitDownScreen';
 import { TutorialTaskScreen } from './screens/TutorialTaskScreen';
+import { TutorialTrialScreen } from './screens/TutorialTrialScreen';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
-    private activeGameObjects: Array<MotionScreen | TutorialSitDownScreen | TutorialTaskScreen> = [];
+    private activeGameObjects: Array<MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen> = [];
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -75,10 +76,10 @@ export class GameApp {
         MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
         MainLoop.setDraw(this.render);
 
-        // add motion screen to stage and model
-        const tutorialTaskCreen: TutorialTaskScreen = new TutorialTaskScreen();
-        this.stage.addChild(tutorialTaskCreen);
-        this.activeGameObjects.push(tutorialTaskCreen);
+        // add tutorial trial screen to stage and model
+        const tutorialTrialScreen: TutorialTrialScreen = new TutorialTrialScreen();
+        this.stage.addChild(tutorialTrialScreen);
+        this.activeGameObjects.push(tutorialTrialScreen);
     }
 
     private gameLoop = (delta: number): void => {
