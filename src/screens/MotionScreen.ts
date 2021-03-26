@@ -120,7 +120,7 @@ export class MotionScreen extends PIXI.Container {
         this.motionWorld.update(delta);
     }
 
-    keyDownHandler = (event: KeyboardEvent): void => {
+    keyLeftRightDownHandler = (event: KeyboardEvent): void => {
         if (event.repeat) return
 
         let currentStep: boolean = true;
@@ -183,7 +183,11 @@ export class MotionScreen extends PIXI.Container {
             }
 
             this.prevStep = currentStep;
-        } else if (event.code == KEY_BACKSPACE) {
+        }
+    }
+
+    keyBackspaceDownHandler = (event: KeyboardEvent): void => {
+        if (event.code == KEY_BACKSPACE) {
             this.gameApp.changeScreen("tutorialTrialScreen");
         }
     }
@@ -226,7 +230,7 @@ export class MotionScreen extends PIXI.Container {
 
     startButtonClickHandler = (): void => {
         // add event handlers
-        window.addEventListener("keydown", this.keyDownHandler, true);
+        window.addEventListener("keydown", this.keyLeftRightDownHandler, true);
         this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
         this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
         this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
@@ -243,7 +247,7 @@ export class MotionScreen extends PIXI.Container {
 
     startButtonTouchendHandler = (): void => {
         // add event handlers
-        window.addEventListener("keydown", this.keyDownHandler, true);
+        window.addEventListener("keydown", this.keyLeftRightDownHandler, true);
         this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
         this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
         this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
@@ -271,6 +275,7 @@ export class MotionScreen extends PIXI.Container {
      * Adds all custom event listeners.
      */
     addEventListeners = (): void => {
+        window.addEventListener("keydown", this.keyBackspaceDownHandler, true);
         this.startButton.on("click", this.startButtonClickHandler);
         this.startButton.on("touchend", this.startButtonTouchendHandler);
         this.backButton.on("click", this.backButtonClickHandler);
@@ -281,7 +286,8 @@ export class MotionScreen extends PIXI.Container {
      * Removes all custom event listeners.
      */
     removeEventListeners = (): void => {
-        window.removeEventListener("keydown", this.keyDownHandler, true);
+        window.removeEventListener("keydown", this.keyBackspaceDownHandler, true);
+        window.removeEventListener("keydown", this.keyLeftRightDownHandler, true);
         this.backButton.removeAllListeners();
         this.startButton.removeAllListeners();
         this.motionWorld.patchLeft.removeAllListeners();
