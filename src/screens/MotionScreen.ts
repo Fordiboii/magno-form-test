@@ -187,6 +187,7 @@ export class MotionScreen extends PIXI.Container {
     }
 
     keyBackspaceDownHandler = (event: KeyboardEvent): void => {
+        if (event.repeat) return
         if (event.code == KEY_BACKSPACE) {
             this.gameApp.changeScreen("tutorialTrialScreen");
         }
