@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { GameApp } from '../app';
 import { MotionTutorialWorld } from '../motion/MotionTutorialWorld';
 import { Settings } from '../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
@@ -8,8 +9,9 @@ export class TutorialTaskScreen extends TutorialScreen {
     protected motionTutorialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     protected tutorialArrow: PIXI.Sprite;
 
-    constructor() {
-        super();
+    constructor(gameApp: GameApp) {
+        super(gameApp);
+
         // set header text
         this.header.text = "MOTION TEST TUTORIAL";
 
@@ -48,5 +50,33 @@ export class TutorialTaskScreen extends TutorialScreen {
 
     update = (delta: number): void => {
         this.motionTutorialWorld.update(delta);
+    }
+
+    backButtonClickHandler = (): void => {
+        this.gameApp.changeScreen("tutorialSitDownScreen");
+    }
+
+    nextButtonClickHandler = (): void => {
+        this.gameApp.changeScreen("tutorialTrialScreen");
+    }
+
+    /**
+     * Adds all custom event listeners
+     */
+    addEventListeners = (): void => {
+        this.backButton.on("click", this.backButtonClickHandler);
+        this.backButton.on("touchend", this.backButtonClickHandler);
+        this.nextButton.on("click", this.nextButtonClickHandler);
+        this.nextButton.on("touchend", this.nextButtonClickHandler);
+    }
+
+    /**
+     * Removes all custom event listeners
+     */
+    removeEventListeners = (): void => {
+        this.backButton.off("click", this.backButtonClickHandler);
+        this.backButton.off("touchend", this.backButtonClickHandler);
+        this.nextButton.off("click", this.nextButtonClickHandler);
+        this.nextButton.off("touchend", this.nextButtonClickHandler);
     }
 }

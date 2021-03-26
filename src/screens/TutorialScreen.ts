@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { GameApp } from '../app';
 import { SpriteButton } from '../objects/buttons/SpriteButton';
 import { TextButton } from '../objects/buttons/TextButton';
 import {
@@ -13,6 +14,7 @@ import {
 import { Settings } from '../utils/Settings';
 
 export abstract class TutorialScreen extends PIXI.Container {
+    public gameApp: GameApp;
     protected backgroundColorSprite: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     protected header: PIXI.Text;
     protected tutorialText: PIXI.Text;
@@ -27,8 +29,10 @@ export abstract class TutorialScreen extends PIXI.Container {
     protected tutorialTextX: number;
     protected tutorialTextY: number;
 
-    constructor() {
+    constructor(gameApp: GameApp) {
         super();
+        // reference to game object
+        this.gameApp = gameApp;
 
         // button positions
         const backButtonX: number = Settings.WINDOW_WIDTH_PX / 2 - Settings.NEXT_BACK_BUTTON_SPACING;
@@ -128,7 +132,32 @@ export abstract class TutorialScreen extends PIXI.Container {
         this.circleContainer.x = Settings.WINDOW_WIDTH_PX / 2 - this.circleContainer.getBounds().width / 2;
         this.circleContainer.y = Settings.WINDOW_HEIGHT_PX - Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING;
         this.addChild(this.circleContainer);
+
+        // add circle event handlers
+        this.circles[0].on("click", this.firstCircleClickHandler);
+        this.circles[1].on("click", this.secondCircleClickHandler);
+        this.circles[2].on("click", this.thirdCircleClickHandler);
+    }
+
+    firstCircleClickHandler = (): void => {
+        if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialSitDownScreen) {
+            this.gameApp.changeScreen("tutorialSitDownScreen");
+        }
+    }
+
+    secondCircleClickHandler = (): void => {
+        if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialTaskScreen) {
+            this.gameApp.changeScreen("tutorialTaskScreen");
+        }
+    }
+
+    thirdCircleClickHandler = (): void => {
+        if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialTrialScreen) {
+            this.gameApp.changeScreen("tutorialTrialScreen");
+        }
     }
 
     abstract update(delta: number): void;
+
+    abstract removeEventListeners(): void;
 }

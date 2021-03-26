@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import { DropShadowFilter } from "pixi-filters";
 import {
     BUTTON_DISABLED_COLOR,
+    BUTTON_DISABLED_STROKE_COLOR,
     FONT_SIZE,
     TEXT_BUTTON_DROP_SHADOW_ANGLE,
     TEXT_BUTTON_DROP_SHADOW_BLUR,
@@ -72,37 +73,37 @@ export class TextButton extends PIXI.Graphics {
                     text.y += onClickTextOffset;
                     this.isMouseDown = true;
                 }
-            })
+            });
 
             this.on("mouseup", (): void => {
                 if (this.isMouseDown) {
                     text.y -= onClickTextOffset;
                     this.isMouseDown = false;
                 }
-            })
+            });
 
             this.on("mouseout", (): void => {
                 if (this.isMouseDown) {
                     text.y -= onClickTextOffset;
                 }
-            })
+            });
 
             this.on("mouseover", (): void => {
                 if (this.isMouseDown) {
                     text.y += onClickTextOffset;
                 }
-            })
+            });
 
             this.on("mouseupoutside", (): void => {
                 this.isMouseDown = false;
-            })
+            });
 
             this.on("touchstart", (): void => {
                 if (!this.isMouseDown) {
                     text.y += onClickTextOffset;
                     this.isMouseDown = true;
                 }
-            })
+            });
 
             this.on("touchmove", (e: TouchEvent): void => {
                 if (e.target == null) {
@@ -111,7 +112,14 @@ export class TextButton extends PIXI.Graphics {
                         this.isMouseDown = false;
                     }
                 }
-            })
+            });
+
+            this.on("touchend", (): void => {
+                if (this.isMouseDown) {
+                    text.y -= onClickTextOffset;
+                    this.isMouseDown = false;
+                }
+            });
         }
 
         if (hoverColor) {
@@ -145,6 +153,12 @@ export class TextButton extends PIXI.Graphics {
                         .endFill();
                 }
             });
+            this.on("touchend", (): void => {
+                this.clear();
+                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
+                this.beginFill(color)
+                    .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+            });
         }
 
         // adds button shadow
@@ -155,18 +169,20 @@ export class TextButton extends PIXI.Graphics {
                 blur: TEXT_BUTTON_DROP_SHADOW_BLUR,
                 color: TEXT_BUTTON_DROP_SHADOW_COLOR
             })
-        ]
+        ];
     }
 
     /**
      * Makes the button gray and non-clickable.
      */
-    disable = (): void => {
+    disable = (withStroke?: boolean, strokeWidth = 3): void => {
         this.interactive = false;
         this.buttonMode = false;
-        this.clear()
-            .beginFill(BUTTON_DISABLED_COLOR)
+        this.clear();
+        if (withStroke) this.lineStyle(strokeWidth, BUTTON_DISABLED_STROKE_COLOR);
+        this.beginFill(BUTTON_DISABLED_COLOR)
             .drawRoundedRect(0, 0, this.buttonWidth, this.buttonHeight, TEXT_BUTTON_ROUNDING_RADIUS)
             .endFill();
+        this.filters = [];
     }
 }

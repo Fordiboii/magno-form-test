@@ -28,6 +28,7 @@ export const FONT_SIZE: number = window.innerWidth * 20 / 1280; //TODO: calculat
 // Button constants
 
 export const BUTTON_DISABLED_COLOR: number = 0xCAC9C9;
+export const BUTTON_DISABLED_STROKE_COLOR: number = 0xA8A8A8;
 
 export const SPRITE_BUTTON_DISABLE_TINT_COLOR: number = 0xFFFFFF;
 export const SPRITE_BUTTON_CLICKED_TINT: number = 0xBBBBBB;

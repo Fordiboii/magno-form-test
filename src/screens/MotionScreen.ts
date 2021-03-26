@@ -11,13 +11,17 @@ import {
     KEY_RIGHT,
     START_BUTTON_COLOR,
     START_BUTTON_HOVER_COLOR,
-    START_BUTTON_STROKE_COLOR
+    START_BUTTON_STROKE_COLOR,
+    PATCH_LABEL_COLOR
 } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
 import { SpriteButton } from "../objects/buttons/SpriteButton";
+import { GameApp } from '../app';
 
 export class MotionScreen extends PIXI.Container {
+    protected gameApp: GameApp;
+
     protected motionWorld: MotionWorld;
 
     protected reversalPoints: number;
@@ -35,13 +39,17 @@ export class MotionScreen extends PIXI.Container {
     protected correctAnswerFactor: number;
     protected wrongAnswerFactor: number;
 
-    protected patchLeftLabel: PIXI.BitmapText;
-    protected patchRightLabel: PIXI.BitmapText;
+    protected patchLeftLabel: PIXI.Text;
+    protected patchRightLabel: PIXI.Text;
     protected startButton: TextButton;
     protected backButton: SpriteButton;
 
-    constructor() {
+    constructor(gameApp: GameApp) {
         super();
+
+        // reference to game object
+        this.gameApp = gameApp;
+
         this.reversalPoints = Settings.STAIRCASE_REVERSAL_POINTS;
         this.maxSteps = Settings.STAIRCASE_MAX_ATTEMPTS;
 
@@ -64,14 +72,16 @@ export class MotionScreen extends PIXI.Container {
         this.addChild(this.motionWorld);
 
         // create patch labels and add to container
-        this.patchLeftLabel = new PIXI.BitmapText("1", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3 })
-        this.patchLeftLabel.anchor = 0.5;
+        this.patchLeftLabel = new PIXI.Text("1", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
+        this.patchLeftLabel.anchor.set(0.5);
+        this.patchLeftLabel.roundPixels = true;
         this.patchLeftLabel.x = this.motionWorld.patchLeft.x + this.motionWorld.patchLeft.width / 2;
         this.patchLeftLabel.y = this.motionWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchLeftLabel);
 
-        this.patchRightLabel = new PIXI.BitmapText("2", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3 })
-        this.patchRightLabel.anchor = 0.5;
+        this.patchRightLabel = new PIXI.Text("2", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
+        this.patchRightLabel.anchor.set(0.5);
+        this.patchRightLabel.roundPixels = true;
         this.patchRightLabel.x = this.motionWorld.patchRight.x + this.motionWorld.patchRight.width / 2;
         this.patchRightLabel.y = this.motionWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
@@ -103,21 +113,7 @@ export class MotionScreen extends PIXI.Container {
                 [0.5, 0],
                 SPRITE_BUTTON_HOVER_COLOR
             );
-        this.addChild(this.backButton)
-
-        // add event listeners
-        window.addEventListener("keydown", this.keyDownHandler);
-
-        this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
-        this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
-        this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
-        this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
-
-        this.startButton.on("click", (): void => this.startButtonClickHandler());
-        this.startButton.on("touchend", (): void => this.startButtonTouchendHandler());
-
-        this.backButton.on("click", (): void => this.backButtonClickHandler());
-        this.backButton.on("touchend", (): void => this.backButtonTouchendHandler());
+        this.addChild(this.backButton);
     }
 
     update = (delta: number): void => {
@@ -188,7 +184,7 @@ export class MotionScreen extends PIXI.Container {
 
             this.prevStep = currentStep;
         } else if (event.code == KEY_BACKSPACE) {
-            //TODO: Exit test if backspace is pressed
+            this.gameApp.changeScreen("tutorialTrialScreen");
         }
     }
 
@@ -224,9 +220,13 @@ export class MotionScreen extends PIXI.Container {
         this.prevStep = currentStep;
     }
 
+    resetMotionWorld = (): void => {
+        this.motionWorld = new MotionWorld();
+    }
+
     startButtonClickHandler = (): void => {
         // add event handlers
-        window.addEventListener("keydown", this.keyDownHandler);
+        window.addEventListener("keydown", this.keyDownHandler, true);
         this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
         this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
         this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
@@ -242,33 +242,49 @@ export class MotionScreen extends PIXI.Container {
     }
 
     startButtonTouchendHandler = (): void => {
-        if (this.startButton.isMouseDown) {
-            // add event handlers
-            window.addEventListener("keydown", this.keyDownHandler);
-            this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
-            this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
-            this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
-            this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+        // add event handlers
+        window.addEventListener("keydown", this.keyDownHandler, true);
+        this.motionWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.motionWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.motionWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.motionWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
-            // hide start button, make patches interactive and set state to running
-            this.startButton.visible = false;
-            this.motionWorld.patchLeft.interactive = true;
-            this.motionWorld.patchRight.interactive = true;
-            this.motionWorld.dotsLeftContainer.visible = true;
-            this.motionWorld.dotsRightContainer.visible = true;
-            this.motionWorld.setState(WorldState.RUNNING);
-        }
-        this.startButton.isMouseDown = false;
+        // hide start button, make patches interactive and set state to running
+        this.startButton.visible = false;
+        this.motionWorld.patchLeft.interactive = true;
+        this.motionWorld.patchRight.interactive = true;
+        this.motionWorld.dotsLeftContainer.visible = true;
+        this.motionWorld.dotsRightContainer.visible = true;
+        this.motionWorld.setState(WorldState.RUNNING);
+
     }
 
     backButtonClickHandler = (): void => {
-        console.log("yo, you just clicked it yo")
+        this.gameApp.changeScreen("tutorialTrialScreen");
     }
 
     backButtonTouchendHandler = (): void => {
-        if (this.backButton.isMouseDown) {
-            console.log("yo, touchy touchy feely feely, this button just got touched yall")
-        }
-        this.backButton.isMouseDown = false;
+        this.gameApp.changeScreen("tutorialTrialScreen");
+    }
+
+    /**
+     * Adds all custom event listeners.
+     */
+    addEventListeners = (): void => {
+        this.startButton.on("click", this.startButtonClickHandler);
+        this.startButton.on("touchend", this.startButtonTouchendHandler);
+        this.backButton.on("click", this.backButtonClickHandler);
+        this.backButton.on("touchend", this.backButtonTouchendHandler);
+    }
+
+    /**
+     * Removes all custom event listeners.
+     */
+    removeEventListeners = (): void => {
+        window.removeEventListener("keydown", this.keyDownHandler, true);
+        this.backButton.removeAllListeners();
+        this.startButton.removeAllListeners();
+        this.motionWorld.patchLeft.removeAllListeners();
+        this.motionWorld.patchRight.removeAllListeners();
     }
 }

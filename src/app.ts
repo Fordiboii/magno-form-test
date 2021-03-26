@@ -5,11 +5,13 @@ import { MotionScreen } from './screens/MotionScreen';
 import { TutorialSitDownScreen } from './screens/TutorialSitDownScreen';
 import { TutorialTaskScreen } from './screens/TutorialTaskScreen';
 import { TutorialTrialScreen } from './screens/TutorialTrialScreen';
+import { Screens } from "./interfaces/screens";
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
-    private activeGameObjects: Array<MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen> = [];
+    public screens: Screens;
+    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen;
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -76,24 +78,62 @@ export class GameApp {
         MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
         MainLoop.setDraw(this.render);
 
-        // add tutorial trial screen to stage and model
-        const tutorialTrialScreen: TutorialTrialScreen = new TutorialTrialScreen();
-        this.stage.addChild(tutorialTrialScreen);
-        this.activeGameObjects.push(tutorialTrialScreen);
+        // add tutorial sit-down screen to model
+        const tutorialSitDownScreen: TutorialSitDownScreen = new TutorialSitDownScreen(this);
+        const tutorialTaskScreen: TutorialTaskScreen = new TutorialTaskScreen(this);
+        const tutorialTrialScreen: TutorialTrialScreen = new TutorialTrialScreen(this);
+        const motionScreen: MotionScreen = new MotionScreen(this);
+
+        this.screens = {
+            tutorialSitDownScreen: tutorialSitDownScreen,
+            tutorialTaskScreen: tutorialTaskScreen,
+            tutorialTrialScreen: tutorialTrialScreen,
+            motionScreen: motionScreen
+        };
+
+        // add screens to stage
+        this.stage.addChild(tutorialSitDownScreen, tutorialTaskScreen, tutorialTrialScreen, motionScreen);
+
+        // set current screen and hide the others
+        this.currentScreen = this.screens.tutorialSitDownScreen;
+        this.screens.tutorialTaskScreen.visible = false;
+        this.screens.tutorialTrialScreen.visible = false;
+        this.screens.motionScreen.visible = false;
+
+        // add event listeners 
+        this.currentScreen.addEventListeners();
     }
 
     private gameLoop = (delta: number): void => {
         // update model
-        this.activeGameObjects.forEach(gameObject => {
-            gameObject.update(delta);
-        });
+        this.currentScreen.update(delta);
 
         // log FPS
         // let fps = Math.round(MainLoop.getFPS());
         // console.log(fps);
+    }
 
-        // update current game state
-        // this.state();
+    /**
+     * Sets the current screen. 
+     * @param key string referring to a key in the Screens interface.
+     */
+    public changeScreen = (key: "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "motionScreen"): void => {
+        this.currentScreen.visible = false;
+        this.currentScreen.removeEventListeners();
+        if (this.currentScreen === this.screens.motionScreen) {
+            this.stage.removeChild(this.screens.motionScreen);
+            this.screens.motionScreen = new MotionScreen(this);
+            this.screens.motionScreen.visible = false;
+            this.stage.addChild(this.screens.motionScreen);
+        } else if (this.currentScreen === this.screens.tutorialTrialScreen) {
+            this.stage.removeChild(this.screens.tutorialTrialScreen);
+            this.screens.tutorialTrialScreen = new TutorialTrialScreen(this);
+            this.screens.tutorialTrialScreen.visible = false;
+            this.stage.addChild(this.screens.tutorialTrialScreen);
+        }
+        this.currentScreen = this.screens[key];
+        this.currentScreen.addEventListeners();
+        this.currentScreen.visible = true;
     }
 
     private render = (): void => {

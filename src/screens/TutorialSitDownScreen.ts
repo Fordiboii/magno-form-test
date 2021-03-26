@@ -1,12 +1,14 @@
 import * as PIXI from 'pixi.js';
+import { GameApp } from '../app';
 import { Settings } from '../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialSitDownScreen extends TutorialScreen {
     protected tutorialImage: PIXI.Sprite;
 
-    constructor() {
-        super();
+    constructor(gameApp: GameApp) {
+        super(gameApp);
+
         // set header text
         this.header.text = "MOTION TEST TUTORIAL";
 
@@ -27,7 +29,7 @@ export class TutorialSitDownScreen extends TutorialScreen {
             " cm from the edge of the table.";
 
         // disable/enable buttons
-        this.backButton.disable();
+        this.backButton.disable(true);
 
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
@@ -36,5 +38,29 @@ export class TutorialSitDownScreen extends TutorialScreen {
 
     update = (): void => {
         return;
+    }
+
+    nextButtonClickHandler = (): void => {
+        this.gameApp.changeScreen("tutorialTaskScreen");
+    }
+
+    nextButtonTouchendHandler = (): void => {
+        this.gameApp.changeScreen("tutorialTaskScreen");
+    }
+
+    /**
+     * Adds all custom event listeners
+     */
+    addEventListeners = (): void => {
+        this.nextButton.on("click", this.nextButtonClickHandler);
+        this.nextButton.on("touchend", this.nextButtonTouchendHandler);
+    }
+
+    /**
+     * Removes all custom event listeners
+     */
+    removeEventListeners = (): void => {
+        this.nextButton.off("click", this.nextButtonClickHandler);
+        this.nextButton.off("touchend", this.nextButtonClickHandler);
     }
 }

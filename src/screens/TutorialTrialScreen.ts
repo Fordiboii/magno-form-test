@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { GameApp } from '../app';
 import { MotionTutorialTrialWorld } from '../motion/MotionTutorialTrialWorld';
 import { TextButton } from '../objects/buttons/TextButton';
 import {
@@ -36,8 +37,9 @@ export class TutorialTrialScreen extends TutorialScreen {
     protected trialIncorrectText: PIXI.Text;
     protected trialFinishedText: PIXI.Text;
 
-    constructor() {
-        super();
+    constructor(gameApp: GameApp) {
+        super(gameApp);
+
         this.maxSteps = Settings.TRIAL_MAX_STEPS;
         this.stepCounter = 0;
         this.correctAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_CORRECT_ANSWER_DB);
@@ -141,10 +143,6 @@ export class TutorialTrialScreen extends TutorialScreen {
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
         this.circles[2].texture = circleFilledTexture;
-
-        // add event listeners
-        this.startButton.on("click", (): void => this.startButtonClickHandler());
-        this.startButton.on("touchend", (): void => this.startButtonTouchendHandler());
     }
 
     update = (delta: number): void => {
@@ -259,22 +257,56 @@ export class TutorialTrialScreen extends TutorialScreen {
     }
 
     startButtonTouchendHandler = (): void => {
-        if (this.startButton.isMouseDown) {
-            // add event handlers
-            window.addEventListener("keydown", this.keyDownHandler);
-            this.motionTutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
-            this.motionTutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
-            this.motionTutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
-            this.motionTutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+        // add event handlers
+        window.addEventListener("keydown", this.keyDownHandler);
+        this.motionTutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.motionTutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.motionTutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.motionTutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
-            // hide start button, make patches interactive and set state to running
-            this.startButton.visible = false;
-            this.motionTutorialTrialWorld.patchLeft.interactive = true;
-            this.motionTutorialTrialWorld.patchRight.interactive = true;
-            this.motionTutorialTrialWorld.dotsLeftContainer.visible = true;
-            this.motionTutorialTrialWorld.dotsRightContainer.visible = true;
-            this.motionTutorialTrialWorld.setState(WorldState.RUNNING);
-        }
-        this.startButton.isMouseDown = false;
+        // hide start button, make patches interactive and set state to running
+        this.startButton.visible = false;
+        this.motionTutorialTrialWorld.patchLeft.interactive = true;
+        this.motionTutorialTrialWorld.patchRight.interactive = true;
+        this.motionTutorialTrialWorld.dotsLeftContainer.visible = true;
+        this.motionTutorialTrialWorld.dotsRightContainer.visible = true;
+        this.motionTutorialTrialWorld.setState(WorldState.RUNNING);
+    }
+
+    backButtonClickHandler = (): void => {
+        this.gameApp.changeScreen("tutorialTaskScreen");
+    }
+
+    nextButtonClickHandler = (): void => {
+        this.gameApp.changeScreen("motionScreen");
+    }
+
+    /**
+     * Adds all custom event listeners
+     */
+    addEventListeners = (): void => {
+        this.startButton.on("click", this.startButtonClickHandler);
+        this.startButton.on("touchend", this.startButtonTouchendHandler);
+        this.backButton.on("click", this.backButtonClickHandler);
+        this.backButton.on("touchend", this.backButtonClickHandler);
+        this.nextButton.on("click", this.nextButtonClickHandler);
+        this.nextButton.on("touchend", this.nextButtonClickHandler);
+    }
+
+    /**
+     * Removes all custom event listeners
+     */
+    removeEventListeners = (): void => {
+        this.motionTutorialTrialWorld.patchLeft.off("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.motionTutorialTrialWorld.patchLeft.off("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.motionTutorialTrialWorld.patchRight.off("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.motionTutorialTrialWorld.patchRight.off("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+
+        this.startButton.off("click", this.startButtonClickHandler);
+        this.startButton.off("touchend", this.startButtonTouchendHandler);
+        this.backButton.off("click", this.backButtonClickHandler);
+        this.backButton.off("touchend", this.backButtonClickHandler);
+        this.nextButton.off("click", this.nextButtonClickHandler);
+        this.nextButton.off("touchend", this.nextButtonClickHandler);
     }
 }
