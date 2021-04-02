@@ -36,8 +36,8 @@ export const SPRITE_BUTTON_HOVER_COLOR: number = 0xCCCCCC;
 
 export const TEXT_BUTTON_ROUNDING_RADIUS: number = 8;
 export const TEXT_BUTTON_DROP_SHADOW_ANGLE: number = 90; // in degrees
-export const TEXT_BUTTON_DROP_SHADOW_DISTANCE: number = 2;
-export const TEXT_BUTTON_DROP_SHADOW_BLUR: number = 1;
+export const TEXT_BUTTON_DROP_SHADOW_DISTANCE: number = 1.5;
+export const TEXT_BUTTON_DROP_SHADOW_BLUR: number = 0;
 export const TEXT_BUTTON_DROP_SHADOW_COLOR: number = 0x999999;
 
 export const START_BUTTON_COLOR: number = 0x73C61A;

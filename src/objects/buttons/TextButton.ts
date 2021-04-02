@@ -12,12 +12,14 @@ import {
     TEXT_COLOR
 } from "../../utils/Constants";
 
-export class TextButton extends PIXI.Graphics {
+export class TextButton extends PIXI.Container {
+    button: PIXI.Graphics = new PIXI.Graphics();
+    text: PIXI.Text;
+
     buttonWidth: number;
     buttonHeight: number;
     isMouseDown: boolean = false;
     color: number;
-    buttonText: string | undefined;
     buttonTextColor: number;
     hoverColor: number | undefined;
     disabled: boolean;
@@ -41,20 +43,20 @@ export class TextButton extends PIXI.Graphics {
         this.color = color;
         this.buttonTextColor = buttonTextColor;
         this.disabled = disabled;
-        if (buttonText) this.buttonText = buttonText;
         if (hoverColor) this.hoverColor = hoverColor;
-        if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
+        if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
 
+        this.addChild(this.button)
         this.interactive = disabled ? false : true;
         this.buttonMode = disabled ? false : true;
         this.position.set(x - width / 2, y - height / 2)
-        this.beginFill(color)
+        this.button.beginFill(color)
             .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
             .endFill();
 
         if (buttonText) {
             const onClickTextOffset: number = 3;
-            const text: PIXI.Text = new PIXI.Text(
+            this.text = new PIXI.Text(
                 buttonText,
                 {
                     fontName: "Helvetica-Normal",
@@ -62,35 +64,35 @@ export class TextButton extends PIXI.Graphics {
                     fill: buttonTextColor
                 }
             );
-            text.roundPixels = true;
-            text.anchor.set(0.5);
-            text.x = width / 2;
-            text.y = height / 2;
-            this.addChild(text);
+            this.text.roundPixels = true;
+            this.text.anchor.set(0.5);
+            this.text.x = width / 2;
+            this.text.y = height / 2;
+            this.addChild(this.text);
 
             this.on("mousedown", (): void => {
                 if (!this.isMouseDown) {
-                    text.y += onClickTextOffset;
+                    this.text.y += onClickTextOffset;
                     this.isMouseDown = true;
                 }
             });
 
             this.on("mouseup", (): void => {
                 if (this.isMouseDown) {
-                    text.y -= onClickTextOffset;
+                    this.text.y -= onClickTextOffset;
                     this.isMouseDown = false;
                 }
             });
 
             this.on("mouseout", (): void => {
                 if (this.isMouseDown) {
-                    text.y -= onClickTextOffset;
+                    this.text.y -= onClickTextOffset;
                 }
             });
 
             this.on("mouseover", (): void => {
                 if (this.isMouseDown) {
-                    text.y += onClickTextOffset;
+                    this.text.y += onClickTextOffset;
                 }
             });
 
@@ -100,7 +102,7 @@ export class TextButton extends PIXI.Graphics {
 
             this.on("touchstart", (): void => {
                 if (!this.isMouseDown) {
-                    text.y += onClickTextOffset;
+                    this.text.y += onClickTextOffset;
                     this.isMouseDown = true;
                 }
             });
@@ -108,7 +110,7 @@ export class TextButton extends PIXI.Graphics {
             this.on("touchmove", (e: TouchEvent): void => {
                 if (e.target == null) {
                     if (this.isMouseDown) {
-                        text.y -= onClickTextOffset;
+                        this.text.y -= onClickTextOffset;
                         this.isMouseDown = false;
                     }
                 }
@@ -116,7 +118,7 @@ export class TextButton extends PIXI.Graphics {
 
             this.on("touchend", (): void => {
                 if (this.isMouseDown) {
-                    text.y -= onClickTextOffset;
+                    this.text.y -= onClickTextOffset;
                     this.isMouseDown = false;
                 }
             });
@@ -124,45 +126,45 @@ export class TextButton extends PIXI.Graphics {
 
         if (hoverColor) {
             this.on("mouseover", (): void => {
-                this.clear();
-                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
-                this.beginFill(hoverColor)
+                this.button.clear();
+                if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
+                this.button.beginFill(hoverColor)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                     .endFill();
             });
             this.on("mouseout", (): void => {
-                this.clear();
-                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
-                this.beginFill(color)
+                this.button.clear();
+                if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
+                this.button.beginFill(color)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                     .endFill();
             });
             this.on("touchstart", (): void => {
-                this.clear();
-                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
-                this.beginFill(hoverColor)
+                this.button.clear();
+                if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
+                this.button.beginFill(hoverColor)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                     .endFill();
             });
             this.on("touchmove", (e: TouchEvent): void => {
                 if (e.target == null) {
-                    this.clear();
-                    if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
-                    this.beginFill(color)
+                    this.button.clear();
+                    if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
+                    this.button.beginFill(color)
                         .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
                         .endFill();
                 }
             });
             this.on("touchend", (): void => {
-                this.clear();
-                if (strokeColor) this.lineStyle(strokeWidth, strokeColor);
-                this.beginFill(color)
+                this.button.clear();
+                if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
+                this.button.beginFill(color)
                     .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
             });
         }
 
         // adds button shadow
-        this.filters = [
+        this.button.filters = [
             new DropShadowFilter({
                 rotation: TEXT_BUTTON_DROP_SHADOW_ANGLE,
                 distance: TEXT_BUTTON_DROP_SHADOW_DISTANCE,
@@ -176,13 +178,14 @@ export class TextButton extends PIXI.Graphics {
      * Makes the button gray and non-clickable.
      */
     disable = (withStroke?: boolean, strokeWidth = 3): void => {
+        this.text.alpha = 0.5;
         this.interactive = false;
         this.buttonMode = false;
-        this.clear();
-        if (withStroke) this.lineStyle(strokeWidth, BUTTON_DISABLED_STROKE_COLOR);
-        this.beginFill(BUTTON_DISABLED_COLOR)
+        this.button.clear();
+        if (withStroke) this.button.lineStyle(strokeWidth, BUTTON_DISABLED_STROKE_COLOR);
+        this.button.beginFill(BUTTON_DISABLED_COLOR)
             .drawRoundedRect(0, 0, this.buttonWidth, this.buttonHeight, TEXT_BUTTON_ROUNDING_RADIUS)
             .endFill();
-        this.filters = [];
+        this.button.filters = [];
     }
 }
