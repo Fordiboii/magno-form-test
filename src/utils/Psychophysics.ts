@@ -13,6 +13,7 @@ export abstract class Psychophysics {
     public static pixelsToVisualAngle = (pixels: number, distance: number, res: number, dim: number): number => {
         return 2 * (Math.atan((pixels) / (2 * distance * (res / dim)))) * (180 / Math.PI)
     }
+
     /**
      * Function for converting visual angle degrees to pixels.
      * res and dim should both use either height or width.
@@ -25,6 +26,7 @@ export abstract class Psychophysics {
     public static visualAngleToPixels = (degrees: number, distance: number, res: number, dim: number): number => {
         return Math.tan((Math.PI / 180) * degrees / 2) * 2 * distance * (res / dim)
     }
+
     /**
      * Calculate the width of the of the patch.
      * @returns the width in pixels.
@@ -32,6 +34,7 @@ export abstract class Psychophysics {
     public static getPatchWidthInPixels = (): number => {
         return Psychophysics.visualAngleToPixels(Settings.PATCH_WIDTH, Settings.SCREEN_VIEWING_DISTANCE_MM, Settings.WINDOW_WIDTH_PX, Settings.WINDOW_WIDTH_MM)
     }
+
     /**
      * Calculate the height of the patch.
      * @returns the height in pixels.
@@ -39,6 +42,7 @@ export abstract class Psychophysics {
     public static getPatchHeightInPixels = (): number => {
         return Psychophysics.visualAngleToPixels(Settings.PATCH_HEIGHT, Settings.SCREEN_VIEWING_DISTANCE_MM, Settings.WINDOW_HEIGHT_PX, Settings.WINDOW_HEIGHT_MM)
     }
+
     /**
      * Calculate the gap between patches.
      * @returns the gap in pixels.
@@ -53,8 +57,7 @@ export abstract class Psychophysics {
      * @returns the decibel value for given amplitude ratio.
      */
     public static factorToDecibel = (factor: number): number => {
-        let squared: number = factor * factor;
-        return 10 * Math.log10(squared);
+        return 10 * Math.log10(factor ** 2);
     }
 
     /**

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-import { GameApp } from '../app';
-import { MotionTutorialTrialWorld } from '../motion/MotionTutorialTrialWorld';
-import { TextButton } from '../objects/buttons/TextButton';
+import { GameApp } from '../../app';
+import { MotionTutorialTrialWorld } from '../../motion/MotionTutorialTrialWorld';
+import { TextButton } from '../../objects/buttons/TextButton';
 import {
     BLUE_TEXT_COLOR,
     FONT_SIZE,
@@ -13,10 +13,10 @@ import {
     START_BUTTON_HOVER_COLOR,
     START_BUTTON_STROKE_COLOR,
     TEXT_COLOR
-} from '../utils/Constants';
-import { WorldState } from '../utils/Enums';
-import { Psychophysics } from '../utils/Psychophysics';
-import { Settings } from '../utils/Settings';
+} from '../../utils/Constants';
+import { WorldState } from '../../utils/Enums';
+import { Psychophysics } from '../../utils/Psychophysics';
+import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialTrialScreen extends TutorialScreen {

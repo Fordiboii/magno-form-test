@@ -1,6 +1,6 @@
-import { TutorialSitDownScreen } from "../screens/TutorialSitDownScreen";
-import { TutorialTaskScreen } from "../screens/TutorialTaskScreen";
-import { TutorialTrialScreen } from "../screens/TutorialTrialScreen";
+import { TutorialSitDownScreen } from "../screens/tutorialScreens/TutorialSitDownScreen";
+import { TutorialTaskScreen } from "../screens/tutorialScreens/TutorialTaskScreen";
+import { TutorialTrialScreen } from "../screens/tutorialScreens/TutorialTrialScreen";
 import { MotionScreen } from "../screens/MotionScreen";
 
 export interface Screens {

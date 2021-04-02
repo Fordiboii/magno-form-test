@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { GameApp } from '../app';
-import { Settings } from '../utils/Settings';
+import { GameApp } from '../../app';
+import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialSitDownScreen extends TutorialScreen {

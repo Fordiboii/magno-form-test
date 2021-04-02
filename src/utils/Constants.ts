@@ -48,10 +48,14 @@ export const NEXT_BUTTON_COLOR: number = 0x93CEEF;
 export const NEXT_BUTTON_STROKE_COLOR: number = 0x82BDDE;
 export const NEXT_BUTTON_HOVER_COLOR: number = 0xBEE2F4;
 
-// TUTORIAL CONSTANTS
+// Tutorial constants
 
 export const BLUE_TEXT_COLOR: number = 0x93CEEF;
 export const GREEN_TEXT_COLOR: number = 0x7AB642;
 export const RED_TEXT_COLOR: number = 0xE24040;
 export const BACKGROUND_COLOR: number = 0xEAF5FC;
 export const MAX_FEEDBACK_TIME: number = 2000; // in milliseconds
+
+// Loading constants
+
+export const LOADING_SPINNER_COLOR: number = 0xF6A117;

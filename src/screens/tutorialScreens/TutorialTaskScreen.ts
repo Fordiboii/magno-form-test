@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-import { GameApp } from '../app';
-import { MotionTutorialWorld } from '../motion/MotionTutorialWorld';
-import { Settings } from '../utils/Settings';
+import { GameApp } from '../../app';
+import { MotionTutorialWorld } from '../../motion/MotionTutorialWorld';
+import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialTaskScreen extends TutorialScreen {

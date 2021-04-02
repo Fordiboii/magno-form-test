@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
-import { GameApp } from '../app';
-import { SpriteButton } from '../objects/buttons/SpriteButton';
-import { TextButton } from '../objects/buttons/TextButton';
+import { GameApp } from '../../app';
+import { SpriteButton } from '../../objects/buttons/SpriteButton';
+import { TextButton } from '../../objects/buttons/TextButton';
 import {
     SPRITE_BUTTON_HOVER_COLOR,
     TEXT_COLOR,
@@ -10,8 +10,8 @@ import {
     BACKGROUND_COLOR,
     FONT_SIZE,
     NEXT_BUTTON_STROKE_COLOR
-} from '../utils/Constants';
-import { Settings } from '../utils/Settings';
+} from '../../utils/Constants';
+import { Settings } from '../../utils/Settings';
 
 export abstract class TutorialScreen extends PIXI.Container {
     public gameApp: GameApp;

@@ -2,16 +2,17 @@ import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
 import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
-import { TutorialSitDownScreen } from './screens/TutorialSitDownScreen';
-import { TutorialTaskScreen } from './screens/TutorialTaskScreen';
-import { TutorialTrialScreen } from './screens/TutorialTrialScreen';
+import { TutorialSitDownScreen } from './screens/tutorialScreens/TutorialSitDownScreen';
+import { TutorialTaskScreen } from './screens/tutorialScreens/TutorialTaskScreen';
+import { TutorialTrialScreen } from './screens/tutorialScreens/TutorialTrialScreen';
+import { LoadingScreen } from './screens/LoadingScreen';
 import { Screens } from "./interfaces/screens";
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;
-    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen;
+    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen;
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -55,12 +56,19 @@ export class GameApp {
 
         // load assets
         const loader = PIXI.Loader.shared;
+        loader.onStart.add((): void => {
+            // set draw and update methods
+            MainLoop.setDraw(this.render);
+            MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
+            // show loading screen
+            this.showLoadingScreen();
+            // start main loop
+            MainLoop.start();
+        });
         loader.onError.add((err, _loader, resource) => { console.log(err, resource) });
         loader.onComplete.once(() => {
             // initialize game
             this.setup();
-            // start game loop
-            MainLoop.start();
         });
         loader
             .add('dot', './assets/sprites/dot.png')
@@ -73,11 +81,13 @@ export class GameApp {
             .load()
     }
 
-    private setup = (): void => {
-        // set update and render methods.
-        MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
-        MainLoop.setDraw(this.render);
+    private showLoadingScreen = (): void => {
+        const loadingScreen: LoadingScreen = new LoadingScreen();
+        this.stage.addChild(loadingScreen);
+        this.currentScreen = loadingScreen;
+    }
 
+    private setup = (): void => {
         // add tutorial sit-down screen to model
         const tutorialSitDownScreen: TutorialSitDownScreen = new TutorialSitDownScreen(this);
         const tutorialTaskScreen: TutorialTaskScreen = new TutorialTaskScreen(this);
@@ -94,14 +104,11 @@ export class GameApp {
         // add screens to stage
         this.stage.addChild(tutorialSitDownScreen, tutorialTaskScreen, tutorialTrialScreen, motionScreen);
 
-        // set current screen and hide the others
-        this.currentScreen = this.screens.tutorialSitDownScreen;
+        // hide screens and change to first tutorial screen
         this.screens.tutorialTaskScreen.visible = false;
         this.screens.tutorialTrialScreen.visible = false;
         this.screens.motionScreen.visible = false;
-
-        // add event listeners 
-        this.currentScreen.addEventListeners();
+        this.changeScreen("tutorialSitDownScreen");
     }
 
     private gameLoop = (delta: number): void => {

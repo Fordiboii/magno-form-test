@@ -1,7 +1,7 @@
 {
-  "name": "pixijs-typescript-template",
+  "name": "magno-motion-test",
   "version": "0.0.1",
-  "description": "pixi.js typescript template",
+  "description": "Motion detection test used for dyslexia research.",
   "scripts": {
     "test": "npx jest",
     "code-coverage": "jest --coverage",
@@ -10,7 +10,7 @@
     "build": "cross-env NODE_ENV=production parcel build ./src/index.html --public-url .",
     "deploy": "gh-pages -d dist"
   },
-  "author": "bySabi Files",
+  "author": "Fordiboii",
   "license": "MIT",
   "dependencies": {
     "@nastyox/rando.js": "^2.0.5",
