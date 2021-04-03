@@ -13,7 +13,7 @@ import {
     PATCH_OUTLINE_COLOR,
     PATCH_OUTLINE_THICKNESS
 } from '../utils/Constants';
-import { TutorialTrialScreen } from '../screens/TutorialTrialScreen';
+import { TutorialTrialScreen } from '../screens/tutorialscreens/TutorialTrialScreen';
 
 export class MotionTutorialTrialWorld extends AbstractMotionWorld {
     private feedbackTimer: number = 0;
