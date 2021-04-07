@@ -7,12 +7,15 @@ import { TutorialTaskScreen } from './screens/tutorialScreens/TutorialTaskScreen
 import { TutorialTrialScreen } from './screens/tutorialScreens/TutorialTrialScreen';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { Screens } from "./interfaces/screens";
+import { ResultsScreen } from './screens/ResultsScreen';
+import { Settings } from './utils/Settings';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;
-    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen;
+    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen;
+    private threshold: number;
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -54,17 +57,19 @@ export class GameApp {
         // add resize event listener
         window.addEventListener('resize', this.resize);
 
+        // set draw and update methods
+        MainLoop.setDraw(this.render);
+        MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
+        // show loading screen
+        this.showLoadingScreen();
+        // start main loop
+        MainLoop.start();
+
+        // load settings
+        Settings.load();
+
         // load assets
         const loader = PIXI.Loader.shared;
-        loader.onStart.add((): void => {
-            // set draw and update methods
-            MainLoop.setDraw(this.render);
-            MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
-            // show loading screen
-            this.showLoadingScreen();
-            // start main loop
-            MainLoop.start();
-        });
         loader.onError.add((err, _loader, resource) => { console.log(err, resource) });
         loader.onComplete.once(() => {
             // initialize game
@@ -75,6 +80,7 @@ export class GameApp {
             .add('backArrow', './assets/sprites/backArrow.png')
             .add('circleHollow', './assets/sprites/circle_hollow.png')
             .add('circleFilled', './assets/sprites/circle_filled.png')
+            .add('resultsBarMarker', './assets/sprites/resultsBarMarker.png')
             .add('tutorialArrow', './assets/sprites/tutorialArrow.png')
             .add('sitDownImage', './assets/images/TutorialSitDown-01.png')
             .add('helvetica', './assets/fonts/helvetica-bitmap.fnt')
@@ -88,7 +94,7 @@ export class GameApp {
     }
 
     private setup = (): void => {
-        // add tutorial sit-down screen to model
+        // create screens
         const tutorialSitDownScreen: TutorialSitDownScreen = new TutorialSitDownScreen(this);
         const tutorialTaskScreen: TutorialTaskScreen = new TutorialTaskScreen(this);
         const tutorialTrialScreen: TutorialTrialScreen = new TutorialTrialScreen(this);
@@ -98,7 +104,8 @@ export class GameApp {
             tutorialSitDownScreen: tutorialSitDownScreen,
             tutorialTaskScreen: tutorialTaskScreen,
             tutorialTrialScreen: tutorialTrialScreen,
-            motionScreen: motionScreen
+            motionScreen: motionScreen,
+            resultsScreen: undefined
         };
 
         // add screens to stage
@@ -124,9 +131,12 @@ export class GameApp {
      * Sets the current screen. 
      * @param key string referring to a key in the Screens interface.
      */
-    public changeScreen = (key: "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "motionScreen"): void => {
+    public changeScreen = (key: "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "motionScreen" | "resultsScreen"): void => {
+        // disable current screen and remove event listeners
         this.currentScreen.visible = false;
         this.currentScreen.removeEventListeners();
+
+        // create new instances of MotionScreen and TutorialTrialScreen if navigated back to
         if (this.currentScreen === this.screens.motionScreen) {
             this.stage.removeChild(this.screens.motionScreen);
             this.screens.motionScreen = new MotionScreen(this);
@@ -138,17 +148,35 @@ export class GameApp {
             this.screens.tutorialTrialScreen.visible = false;
             this.stage.addChild(this.screens.tutorialTrialScreen);
         }
-        this.currentScreen = this.screens[key];
-        this.currentScreen.addEventListeners();
-        this.currentScreen.visible = true;
+        if (key == "resultsScreen") {
+            // create result screen and set it to current screen.
+            this.screens.resultsScreen = new ResultsScreen(this.getThreshold());
+            this.stage.addChild(this.screens.resultsScreen);
+            this.currentScreen = this.screens.resultsScreen;
+            this.currentScreen.addEventListeners();
+            this.currentScreen.visible = true;
+        } else {
+            // change to new screen
+            this.currentScreen = this.screens[key];
+            this.currentScreen.addEventListeners();
+            this.currentScreen.visible = true;
+        }
     }
 
     private render = (): void => {
         this.renderer.render(this.stage);
     }
 
-    public resize = (): void => {
+    private resize = (): void => {
         this.renderer.view.style.width = window.innerWidth + "px";
         this.renderer.view.style.height = window.innerHeight + "px";
     };
+
+    getThreshold = (): number => {
+        return this.threshold;
+    }
+
+    setThreshold = (value: number): void => {
+        this.threshold = value;
+    }
 }

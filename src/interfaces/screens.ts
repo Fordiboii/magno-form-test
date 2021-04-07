@@ -2,10 +2,12 @@ import { TutorialSitDownScreen } from "../screens/tutorialScreens/TutorialSitDow
 import { TutorialTaskScreen } from "../screens/tutorialScreens/TutorialTaskScreen";
 import { TutorialTrialScreen } from "../screens/tutorialScreens/TutorialTrialScreen";
 import { MotionScreen } from "../screens/MotionScreen";
+import { ResultsScreen } from "../screens/ResultsScreen";
 
 export interface Screens {
     tutorialSitDownScreen: TutorialSitDownScreen,
     tutorialTaskScreen: TutorialTaskScreen,
     tutorialTrialScreen: TutorialTrialScreen,
-    motionScreen: MotionScreen
+    motionScreen: MotionScreen,
+    resultsScreen: ResultsScreen | undefined
 }
