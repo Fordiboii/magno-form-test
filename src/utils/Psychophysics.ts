@@ -68,4 +68,21 @@ export abstract class Psychophysics {
     public static decibelToFactor = (decibel: number): number => {
         return Math.pow(10, (decibel / 20));
     }
+
+    /**
+     * Calculates the geometric mean of the last @param ofLast numbers of an array.
+     * @param numberArray the values to calculate the geometric mean of.
+     * @param ofLast how many values to use, starting from the end of the array.
+     * @returns the geometric mean.
+     */
+    public static geometricMean = (numberArray: Array<number>, ofLast: number): number => {
+        let sum: number = 1;
+        let root: number = 0;
+        const startIndex: number = numberArray.length >= ofLast ? numberArray.length - ofLast : 0;
+        for (let i = startIndex; i < numberArray.length; i++) {
+            sum *= numberArray[i];
+            root++;
+        }
+        return Math.pow(sum, 1 / root)
+    }
 }
