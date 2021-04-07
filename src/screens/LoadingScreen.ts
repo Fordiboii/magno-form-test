@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
 import { BACKGROUND_COLOR, LOADING_SPINNER_COLOR, NEXT_BUTTON_COLOR } from "../utils/Constants";
-import { Settings } from "../utils/Settings";
 
 export class LoadingScreen extends PIXI.Container {
     backgroundColorSprite: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
@@ -9,26 +8,29 @@ export class LoadingScreen extends PIXI.Container {
 
     constructor() {
         super();
+        const width: number = window.innerWidth;
+        const height: number = window.innerHeight;
+
         // add background color
-        this.backgroundColorSprite.width = Settings.WINDOW_WIDTH_PX;
-        this.backgroundColorSprite.height = Settings.WINDOW_HEIGHT_PX;
+        this.backgroundColorSprite.width = width;
+        this.backgroundColorSprite.height = height;
         this.backgroundColorSprite.tint = BACKGROUND_COLOR;
         this.addChild(this.backgroundColorSprite);
 
         // add logo
         this.logo = PIXI.Sprite.from("../assets/images/magnologo.png");
         this.logo.anchor.set(0.5);
-        this.logo.scale.set(Settings.WINDOW_WIDTH_PX / 2800);
-        this.logo.position.set(Settings.WINDOW_WIDTH_PX / 2, Settings.WINDOW_HEIGHT_PX / 2 - Settings.WINDOW_HEIGHT_PX / 12);
+        this.logo.scale.set(width / 2800);
+        this.logo.position.set(width / 2, height / 2 - height / 12);
         this.addChild(this.logo);
 
         // add loading spinner
         this.loadingSpinner = new PIXI.Graphics();
-        this.loadingSpinner.position.set(Settings.WINDOW_WIDTH_PX / 2, Settings.WINDOW_HEIGHT_PX / 2 + Settings.WINDOW_HEIGHT_PX / 8);
-        this.loadingSpinner.lineStyle(Settings.WINDOW_WIDTH_PX / 130, NEXT_BUTTON_COLOR, 0.5);
-        this.loadingSpinner.drawCircle(0, 0, Settings.WINDOW_WIDTH_PX / 50);
-        this.loadingSpinner.lineStyle(Settings.WINDOW_WIDTH_PX / 130, LOADING_SPINNER_COLOR);
-        this.loadingSpinner.arc(0, 0, Settings.WINDOW_WIDTH_PX / 50, 0, Math.PI / 4);
+        this.loadingSpinner.position.set(width / 2, height / 2 + height / 8);
+        this.loadingSpinner.lineStyle(width / 130, NEXT_BUTTON_COLOR, 0.5);
+        this.loadingSpinner.drawCircle(0, 0, width / 50);
+        this.loadingSpinner.lineStyle(width / 130, LOADING_SPINNER_COLOR);
+        this.loadingSpinner.arc(0, 0, width / 50, 0, Math.PI / 4);
         this.loadingSpinner.cacheAsBitmap = true;
         this.addChild(this.loadingSpinner);
     }
