@@ -20,29 +20,29 @@ import { SpriteButton } from "../objects/buttons/SpriteButton";
 import { GameApp } from '../app';
 
 export class MotionScreen extends PIXI.Container {
-    protected gameApp: GameApp;
+    private gameApp: GameApp;
 
-    protected motionWorld: MotionWorld;
+    private motionWorld: MotionWorld;
 
-    protected reversalPoints: number;
-    protected maxSteps: number;
+    private reversalPoints: number;
+    private maxSteps: number;
 
-    protected prevStep: boolean;
+    private prevStep: boolean;
 
-    protected reversalCounter: number;
-    protected stepCounter: number;
-    protected correctAnswerCounter: number;
-    protected wrongAnswerCounter: number;
+    private reversalCounter: number;
+    private stepCounter: number;
+    private correctAnswerCounter: number;
+    private wrongAnswerCounter: number;
 
-    protected reversalValues: Array<number>;
+    private reversalValues: Array<number>;
 
-    protected correctAnswerFactor: number;
-    protected wrongAnswerFactor: number;
+    private correctAnswerFactor: number;
+    private wrongAnswerFactor: number;
 
-    protected patchLeftLabel: PIXI.Text;
-    protected patchRightLabel: PIXI.Text;
-    protected startButton: TextButton;
-    protected backButton: SpriteButton;
+    private patchLeftLabel: PIXI.Text;
+    private patchRightLabel: PIXI.Text;
+    private startButton: TextButton;
+    private backButton: SpriteButton;
 
     constructor(gameApp: GameApp) {
         super();
@@ -117,7 +117,15 @@ export class MotionScreen extends PIXI.Container {
     }
 
     update = (delta: number): void => {
-        this.motionWorld.update(delta);
+        if (this.motionWorld.getState() == WorldState.FINISHED) {
+            // calculate threshold score
+            const threshold: number = Psychophysics.geometricMean(this.reversalValues, Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN);
+            this.gameApp.setThreshold(threshold);
+            // change screen
+            this.gameApp.changeScreen("resultsScreen");
+        } else {
+            this.motionWorld.update(delta);
+        }
     }
 
     keyLeftRightDownHandler = (event: KeyboardEvent): void => {
