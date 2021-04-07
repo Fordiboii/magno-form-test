@@ -36,6 +36,9 @@ export abstract class Settings {
 
     // Game constants not to be included in results.
 
+    // Text settings
+    public static FONT_SIZE: number;
+
     // Button settings
     public static TEXT_BUTTON_WIDTH: number;
     public static TEXT_BUTTON_HEIGHT: number;
@@ -92,6 +95,9 @@ export abstract class Settings {
         Settings.STAIRCASE_REVERSAL_POINTS = 10;
         Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8;
 
+        // Text settings
+        Settings.FONT_SIZE = window.innerWidth * 20 / 1280;
+
         // Button settings
         Settings.TEXT_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5;
         Settings.TEXT_BUTTON_HEIGHT = Settings.WINDOW_HEIGHT_PX / 15;
@@ -103,7 +109,6 @@ export abstract class Settings {
 
         // Header settings
         Settings.HEADER_WIDTH = Settings.WINDOW_WIDTH_PX / 1.5;
-        Settings.HEADER_HEIGHT = Settings.WINDOW_HEIGHT_PX / 10;
         Settings.HEADER_Y_POSITION = Settings.WINDOW_HEIGHT_PX / 16;
 
         // Tutorial settings

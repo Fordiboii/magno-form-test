@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { ResultsBar } from "../objects/ResultsBar";
-import { BACKGROUND_COLOR, FONT_SIZE, TEXT_COLOR } from "../utils/Constants";
+import { BACKGROUND_COLOR, TEXT_COLOR } from "../utils/Constants";
 import { Settings } from "../utils/Settings";
 
 export class ResultsScreen extends PIXI.Container {
@@ -24,7 +24,7 @@ export class ResultsScreen extends PIXI.Container {
         this.addChild(this.backgroundColorSprite);
 
         // add header
-        const HEADER_FONT_SIZE: number = FONT_SIZE * 1.2;
+        const HEADER_FONT_SIZE: number = Settings.FONT_SIZE * 1.2;
         this.header = new PIXI.Text("TEST RESULTS",
             {
                 fontSize: HEADER_FONT_SIZE,
@@ -41,7 +41,7 @@ export class ResultsScreen extends PIXI.Container {
         this.addChild(this.header);
 
         // add score
-        const SCORE_FONT_SIZE: number = FONT_SIZE * 1.5;
+        const SCORE_FONT_SIZE: number = Settings.FONT_SIZE * 1.5;
         this.score = new PIXI.Text(`YOUR SCORE: ${this.threshold}`,
             {
                 fontSize: SCORE_FONT_SIZE,
@@ -68,7 +68,7 @@ export class ResultsScreen extends PIXI.Container {
         // add description
         this.description = new PIXI.Text(this.descriptionText,
             {
-                fontSize: FONT_SIZE,
+                fontSize: Settings.FONT_SIZE,
                 fill: TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,

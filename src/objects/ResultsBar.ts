@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
 import {
-    FONT_SIZE,
     RESULTS_GREEN_COLOR,
     RESULTS_ORANGE_COLOR,
     RESULTS_RED_COLOR,
@@ -49,7 +48,7 @@ export class ResultsBar extends PIXI.Container {
         // add min score label
         this.minLabel = new PIXI.Text("0",
             {
-                fontSize: FONT_SIZE * 1.1,
+                fontSize: Settings.FONT_SIZE * 1.1,
                 fill: TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -63,7 +62,7 @@ export class ResultsBar extends PIXI.Container {
         // add max score label
         this.maxLabel = new PIXI.Text("100",
             {
-                fontSize: FONT_SIZE * 1.1,
+                fontSize: Settings.FONT_SIZE * 1.1,
                 fill: TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -77,7 +76,7 @@ export class ResultsBar extends PIXI.Container {
         // add min label description
         this.minLabelDescription = new PIXI.Text("Little to no problems",
             {
-                fontSize: FONT_SIZE * 0.7,
+                fontSize: Settings.FONT_SIZE * 0.7,
                 fill: TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -91,7 +90,7 @@ export class ResultsBar extends PIXI.Container {
         // add min label description
         this.maxLabelDescription = new PIXI.Text("Possibly severe problems",
             {
-                fontSize: FONT_SIZE * 0.7,
+                fontSize: Settings.FONT_SIZE * 0.7,
                 fill: TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,

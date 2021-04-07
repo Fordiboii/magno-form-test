@@ -8,7 +8,6 @@ import {
     NEXT_BUTTON_COLOR,
     NEXT_BUTTON_HOVER_COLOR,
     BACKGROUND_COLOR,
-    FONT_SIZE,
     NEXT_BUTTON_STROKE_COLOR
 } from '../../utils/Constants';
 import { Settings } from '../../utils/Settings';
@@ -46,36 +45,38 @@ export abstract class TutorialScreen extends PIXI.Container {
         this.addChild(this.backgroundColorSprite);
 
         // add header
-        const HEADER_FONT_SIZE: number = FONT_SIZE * 1.2;
+        const HEADER_FONT_SIZE: number = Settings.FONT_SIZE * 1.2;
         this.header = new PIXI.Text("",
             {
                 fontSize: HEADER_FONT_SIZE,
                 fill: TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
-                wordWrapWidth: Settings.HEADER_WIDTH
+                wordWrapWidth: Settings.HEADER_WIDTH,
+                lineHeight: 0
             }
         );
         this.header.anchor.set(0.5, 0);
         this.header.x = Settings.WINDOW_WIDTH_PX / 2;
-        this.header.y = Settings.HEADER_Y_POSITION;
+        this.header.y = Settings.WINDOW_HEIGHT_PX / 16;
         this.header.roundPixels = true;
         this.addChild(this.header);
 
         // content and tutorial text positions
         this.contentX = Settings.WINDOW_WIDTH_PX / 2;
-        this.contentY = Settings.HEADER_Y_POSITION + this.header.height + Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING;
+        this.contentY = Settings.WINDOW_HEIGHT_PX / 16 + this.header.height + Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING;
         this.tutorialTextX = Settings.WINDOW_WIDTH_PX / 2;
         this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 2;
 
         // add tutorial text
         this.tutorialText = new PIXI.Text("",
             {
-                fontSize: FONT_SIZE,
+                fontSize: Settings.FONT_SIZE,
                 fill: TEXT_COLOR,
                 align: 'left',
                 wordWrap: true,
-                wordWrapWidth: Settings.HEADER_WIDTH
+                wordWrapWidth: Settings.HEADER_WIDTH,
+                lineHeight: 0
             }
         );
         this.tutorialText.anchor.set(0.5, 0);

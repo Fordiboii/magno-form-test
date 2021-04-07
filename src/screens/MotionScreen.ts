@@ -5,7 +5,6 @@ import { Settings } from "../utils/Settings";
 import {
     SPRITE_BUTTON_HOVER_COLOR,
     TEXT_COLOR,
-    FONT_SIZE,
     KEY_BACKSPACE,
     KEY_LEFT,
     KEY_RIGHT,
@@ -72,14 +71,14 @@ export class MotionScreen extends PIXI.Container {
         this.addChild(this.motionWorld);
 
         // create patch labels and add to container
-        this.patchLeftLabel = new PIXI.Text("1", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
+        this.patchLeftLabel = new PIXI.Text("1", { fontName: "Helvetica-Normal", fontSize: Settings.FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
         this.patchLeftLabel.anchor.set(0.5);
         this.patchLeftLabel.roundPixels = true;
         this.patchLeftLabel.x = this.motionWorld.patchLeft.x + this.motionWorld.patchLeft.width / 2;
         this.patchLeftLabel.y = this.motionWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchLeftLabel);
 
-        this.patchRightLabel = new PIXI.Text("2", { fontName: "Helvetica-Normal", fontSize: FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
+        this.patchRightLabel = new PIXI.Text("2", { fontName: "Helvetica-Normal", fontSize: Settings.FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
         this.patchRightLabel.anchor.set(0.5);
         this.patchRightLabel.roundPixels = true;
         this.patchRightLabel.x = this.motionWorld.patchRight.x + this.motionWorld.patchRight.width / 2;

@@ -22,7 +22,6 @@ export const KEY_BACKSPACE: string = "Backspace";
 
 export const PATCH_LABEL_COLOR: number = 0xFFFFFF;
 export const TEXT_COLOR: number = 0x262626;
-export const FONT_SIZE: number = window.innerWidth * 20 / 1280; //TODO: calculate once
 
 // Button constants
 

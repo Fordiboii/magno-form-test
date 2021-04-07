@@ -4,7 +4,6 @@ import { MotionTutorialTrialWorld } from '../../motion/MotionTutorialTrialWorld'
 import { TextButton } from '../../objects/buttons/TextButton';
 import {
     BLUE_TEXT_COLOR,
-    FONT_SIZE,
     GREEN_TEXT_COLOR,
     KEY_LEFT,
     KEY_RIGHT,
@@ -87,7 +86,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.trialCorrectText = new PIXI.Text("WELL DONE!",
             {
                 fontName: 'Helvetica-Normal',
-                fontSize: FONT_SIZE,
+                fontSize: Settings.FONT_SIZE,
                 fill: GREEN_TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -102,7 +101,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.trialIncorrectText = new PIXI.Text("BETTER LUCK NEXT TIME!",
             {
                 fontName: 'Helvetica-Normal',
-                fontSize: FONT_SIZE,
+                fontSize: Settings.FONT_SIZE,
                 fill: RED_TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -117,7 +116,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.trialFinishedText = new PIXI.Text("YOU ARE READY FOR THE TEST!",
             {
                 fontName: 'Helvetica-Normal',
-                fontSize: FONT_SIZE,
+                fontSize: Settings.FONT_SIZE,
                 fill: BLUE_TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,

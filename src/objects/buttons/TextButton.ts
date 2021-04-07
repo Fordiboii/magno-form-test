@@ -3,7 +3,6 @@ import { DropShadowFilter } from "pixi-filters";
 import {
     BUTTON_DISABLED_COLOR,
     BUTTON_DISABLED_STROKE_COLOR,
-    FONT_SIZE,
     TEXT_BUTTON_DROP_SHADOW_ANGLE,
     TEXT_BUTTON_DROP_SHADOW_BLUR,
     TEXT_BUTTON_DROP_SHADOW_COLOR,
@@ -11,6 +10,7 @@ import {
     TEXT_BUTTON_ROUNDING_RADIUS,
     TEXT_COLOR
 } from "../../utils/Constants";
+import { Settings } from "../../utils/Settings";
 
 export class TextButton extends PIXI.Container {
     button: PIXI.Graphics = new PIXI.Graphics();
@@ -60,7 +60,7 @@ export class TextButton extends PIXI.Container {
                 buttonText,
                 {
                     fontName: "Helvetica-Normal",
-                    fontSize: FONT_SIZE,
+                    fontSize: Settings.FONT_SIZE,
                     fill: buttonTextColor
                 }
             );
