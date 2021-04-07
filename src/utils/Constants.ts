@@ -11,7 +11,6 @@ export const MM_PER_INCH: number = 25.4;
 
 export const PATCH_OUTLINE_THICKNESS: number = 1;
 export const PATCH_OUTLINE_COLOR: number = 0xFFFFFF;
-export const DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER: number = 1.5; // multiplier to increase initial dot spacing in order to reduce grid points.
 
 // Keyboard constants
 
@@ -59,3 +58,10 @@ export const MAX_FEEDBACK_TIME: number = 2000; // in milliseconds
 // Loading constants
 
 export const LOADING_SPINNER_COLOR: number = 0xF6A117;
+
+// Results bar constants
+
+export const RESULTS_GREEN_COLOR: string = "#72B734";
+export const RESULTS_RED_COLOR: string = "#E72F2F";
+export const RESULTS_YELLOW_COLOR: string = "#EEE53F";
+export const RESULTS_ORANGE_COLOR: string = "#F1983C";

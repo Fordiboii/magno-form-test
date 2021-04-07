@@ -1,14 +1,12 @@
 import * as PIXI from 'pixi.js';
 import { Direction, WorldState } from '../utils/Enums';
 import { AbstractMotionWorld } from './AbstractMotionWorld';
-import { rando, randoSequence } from '@nastyox/rando.js';
 import { Dot } from '../objects/Dot';
 import { QuadTree } from '../utils/QuadTree';
 import { Psychophysics } from '../utils/Psychophysics';
 import { Settings } from '../utils/Settings';
 import { Patch } from '../objects/Patch';
 import {
-    DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER,
     PATCH_OUTLINE_COLOR,
     PATCH_OUTLINE_THICKNESS
 } from '../utils/Constants';
@@ -29,7 +27,7 @@ export class MotionWorld extends AbstractMotionWorld {
                 this.leftMaxX - this.dotRadius,
                 this.patchMinY + this.dotRadius,
                 this.patchMaxY - this.dotRadius,
-                DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER * this.dotSpawnSeparationDistance
+                this.dotSpawnSeparationDistance
             );
         this.rightGridPoints =
             this.createGridPoints(
@@ -37,7 +35,7 @@ export class MotionWorld extends AbstractMotionWorld {
                 this.rightMaxX - this.dotRadius,
                 this.patchMinY + this.dotRadius,
                 this.patchMaxY - this.dotRadius,
-                DOT_SPAWN_SEPARATION_DISTANCE_MULTIPLIER * this.dotSpawnSeparationDistance
+                this.dotSpawnSeparationDistance
             );
 
         this.createDots();
@@ -114,13 +112,13 @@ export class MotionWorld extends AbstractMotionWorld {
         let dot: Dot;
 
         // shuffle grid points. Used to get initial dot positions.
-        let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
-        let shuffledRightGridPoints = randoSequence(this.rightGridPoints);
+        this.shuffleGridPoints(this.leftGridPoints);
+        this.shuffleGridPoints(this.rightGridPoints);
 
         // randomly choose patch to contain coherent dots
-        this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
+        this.coherentPatchSide = Math.round(Math.random()) ? Direction[0] : Direction[1];
         // randomly choose direction of coherent moving dots
-        const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
+        const coherentDirection: Direction = Math.round(Math.random()) ? Direction.RIGHT : Direction.LEFT;
 
         for (let i = 0; i < this.numberOfDots; i++) {
             // multiplier to give dots different respawn rate
@@ -131,7 +129,7 @@ export class MotionWorld extends AbstractMotionWorld {
             currentCoherencePercent = (numberOfCoherentDots / this.numberOfDots) * 100;
 
             // get initial position
-            dotPosition = shuffledLeftGridPoints[i].value;
+            dotPosition = this.leftGridPoints[i];
 
             // add dot to left patch
             if (this.coherentPatchSide == "LEFT" && currentCoherencePercent < this.coherencePercent) {
@@ -150,7 +148,7 @@ export class MotionWorld extends AbstractMotionWorld {
             }
 
             // get initial position
-            dotPosition = shuffledRightGridPoints[i].value;
+            dotPosition = this.rightGridPoints[i];
 
             // add dot to right patch
             if (this.coherentPatchSide == "RIGHT" && currentCoherencePercent < this.coherencePercent) {
@@ -183,14 +181,14 @@ export class MotionWorld extends AbstractMotionWorld {
         let dot: Dot;
 
         // shuffle grid points. Used to get random dot positions.
-        let shuffledLeftGridPoints = randoSequence(this.leftGridPoints);
-        let shuffledRightGridPoints = randoSequence(this.rightGridPoints);
+        this.shuffleGridPoints(this.leftGridPoints);
+        this.shuffleGridPoints(this.rightGridPoints);
 
         // randomly choose patch to contain coherent dots
-        this.coherentPatchSide = rando(1) ? Direction[0] : Direction[1];
+        this.coherentPatchSide = Math.round(Math.random()) ? Direction[0] : Direction[1];
 
         // randomly choose direction of coherent moving dots
-        const coherentDirection: Direction = rando(1) ? Direction.RIGHT : Direction.LEFT;
+        const coherentDirection: Direction = Math.round(Math.random()) ? Direction.RIGHT : Direction.LEFT;
 
         for (let i = 0; i < this.numberOfDots; i++) {
             // multiplier to give dots different respawn rate
@@ -201,7 +199,7 @@ export class MotionWorld extends AbstractMotionWorld {
             currentCoherencePercent = (numberOfCoherentDots / this.numberOfDots) * 100;
 
             // get new position
-            dotPosition = shuffledLeftGridPoints[i].value;
+            dotPosition = this.leftGridPoints[i];
 
             // update dot position and reset direction, timers and velocity.
             dot = this.dotsLeft[i];
@@ -219,7 +217,7 @@ export class MotionWorld extends AbstractMotionWorld {
             }
 
             // get new position
-            dotPosition = shuffledRightGridPoints[i].value;
+            dotPosition = this.rightGridPoints[i];
 
             // update dot position and reset direction, timers and velocity.
             dot = this.dotsRight[i];

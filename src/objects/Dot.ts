@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js';
 import { Settings } from "../utils/Settings";
 import { Direction } from "../utils/Enums";
 import { rotateVector } from '../utils/RotateVector';
-import { rando } from '@nastyox/rando.js';
 
 export class Dot extends PIXI.Sprite {
     public isRandom: boolean;
@@ -51,8 +50,8 @@ export class Dot extends PIXI.Sprite {
             this.velocity = [this.speed, 0];
         }
         if (this.direction === Direction.RANDOM) {
-            this.velocity = rotateVector(this.velocity, rando() * 360);
-            this.directionTimer = rando() * this.ranMaxTime;
+            this.velocity = rotateVector(this.velocity, Math.random() * 360);
+            this.directionTimer = Math.random() * this.ranMaxTime;
             this.isRandom = true;
         } else {
             this.directionTimer = 0;
@@ -73,7 +72,7 @@ export class Dot extends PIXI.Sprite {
 
         // change velocity vector by a random angle if dot is moving randomly
         if (this.isRandom && this.directionTimer >= this.ranMaxTime) {
-            let randomAngle: number = rando() * 360;
+            let randomAngle: number = Math.random() * 360;
             this.velocity = rotateVector(this.velocity, randomAngle);
             this.directionTimer = 0;
         }
@@ -107,8 +106,8 @@ export class Dot extends PIXI.Sprite {
             this.velocity = [this.speed, 0];
         }
         if (this.direction === Direction.RANDOM) {
-            this.velocity = rotateVector(this.velocity, rando() * 360);
-            this.directionTimer = rando() * this.ranMaxTime;
+            this.velocity = rotateVector(this.velocity, Math.random() * 360);
+            this.directionTimer = Math.random() * this.ranMaxTime;
             this.isRandom = true;
         } else {
             this.directionTimer = 0;
@@ -162,12 +161,12 @@ export class Dot extends PIXI.Sprite {
         const dist: number = Math.sqrt((n[0] ** 2) + (n[1] ** 2));
 
         // Return if dots are not colliding
-        if (dist > 2 * Settings.DOT_RADIUS) {
+        if (dist > 2 * this.radius) {
             return;
         }
 
         // Find minimum translation distance
-        const distScalar: number = (2 * Settings.DOT_RADIUS - dist) / dist;
+        const distScalar: number = (2 * this.radius - dist) / dist;
         const mtd: [number, number] = [n[0] * distScalar, n[1] * distScalar];
 
         // Find unit normal vector

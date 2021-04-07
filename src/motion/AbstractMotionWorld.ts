@@ -2,7 +2,6 @@ import { Dot } from "../objects/Dot";
 import { Patch } from "../objects/Patch";
 import * as PIXI from "pixi.js";
 import { QuadTree } from "../utils/QuadTree";
-import { rando } from "@nastyox/rando.js";
 import { WorldState } from "../utils/Enums";
 import { PATCH_OUTLINE_THICKNESS } from "../utils/Constants";
 import { Settings } from "../utils/Settings";
@@ -260,9 +259,22 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
      */
     getRandomPosition = (xMin: number, yMin: number, xMax: number, yMax: number): [number, number] => {
         let x, y: number;
-        x = rando() * (xMax - xMin) + xMin;
-        y = rando() * (yMax - yMin) + yMin;
+        x = Math.random() * (xMax - xMin) + xMin;
+        y = Math.random() * (yMax - yMin) + yMin;
         return [x, y]
+    }
+
+    /**
+     * Shuffles an array in place according to the Fisher-Yates shuffle algorithm.
+     * @param array
+     */
+    shuffleGridPoints = (array: Array<any>): void => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * i + 1)
+            const temp = array[i]
+            array[i] = array[j]
+            array[j] = temp
+        }
     }
 
     /**
