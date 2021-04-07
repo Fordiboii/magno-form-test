@@ -22,20 +22,20 @@ import { TutorialScreen } from './TutorialScreen';
 export class TutorialTrialScreen extends TutorialScreen {
     public maxSteps: number;
     public stepCounter: number;
-    protected correctAnswerFactor: number;
-    protected wrongAnswerFactor: number;
+    private correctAnswerFactor: number;
+    private wrongAnswerFactor: number;
 
-    protected motionTutorialTrialWorld: MotionTutorialTrialWorld;
-    protected motionTutorialTrialWorldBackground: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    private motionTutorialTrialWorld: MotionTutorialTrialWorld;
+    private motionTutorialTrialWorldBackground: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
-    protected startButton: TextButton;
+    private startButton: TextButton;
 
-    protected trialTextContainer: PIXI.Container = new PIXI.Container();
-    protected trialTextBackgroundColor: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    private trialTextContainer: PIXI.Container = new PIXI.Container();
+    private trialTextBackgroundColor: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
-    protected trialCorrectText: PIXI.Text;
-    protected trialIncorrectText: PIXI.Text;
-    protected trialFinishedText: PIXI.Text;
+    private trialCorrectText: PIXI.Text;
+    private trialIncorrectText: PIXI.Text;
+    private trialFinishedText: PIXI.Text;
 
     constructor(gameApp: GameApp) {
         super(gameApp);

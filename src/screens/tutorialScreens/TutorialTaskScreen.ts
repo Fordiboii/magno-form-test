@@ -5,9 +5,9 @@ import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialTaskScreen extends TutorialScreen {
-    protected motionTutorialWorld: MotionTutorialWorld;
-    protected motionTutorialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
-    protected tutorialArrow: PIXI.Sprite;
+    private motionTutorialWorld: MotionTutorialWorld;
+    private motionTutorialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    private tutorialArrow: PIXI.Sprite;
 
     constructor(gameApp: GameApp) {
         super(gameApp);

@@ -4,7 +4,7 @@ import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialSitDownScreen extends TutorialScreen {
-    protected tutorialImage: PIXI.Sprite;
+    private tutorialImage: PIXI.Sprite;
 
     constructor(gameApp: GameApp) {
         super(gameApp);
