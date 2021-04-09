@@ -16,7 +16,7 @@ export class MobileScreen extends PIXI.Container {
 
         // create abort and checkmark sprites
         const abortSprite: PIXI.Sprite = PIXI.Sprite.from("../assets/sprites/abort.png");
-        abortSprite.anchor.set(0.5);
+        abortSprite.anchor.set(0.5, 1);
         abortSprite.width = abortSprite.height = Settings.WINDOW_WIDTH_PX * 0.55;
         const checkMarkSprite1: PIXI.Sprite = PIXI.Sprite.from("../assets/sprites/green-checkmark-line.png");
         checkMarkSprite1.anchor.set(0.5, 1);
@@ -36,8 +36,9 @@ export class MobileScreen extends PIXI.Container {
         this.mobileSprite.anchor.set(0.5, 1);
         this.mobileSprite.x = Settings.WINDOW_WIDTH_PX / 2;
         this.mobileSprite.y = Settings.WINDOW_HEIGHT_PX / 3;
-        this.mobileSprite.scale.set(0.2);
-        abortSprite.y = - this.mobileSprite.height * 1300;
+        this.mobileSprite.width = Settings.WINDOW_WIDTH_PX * 0.15;
+        this.mobileSprite.height = Settings.WINDOW_HEIGHT_PX * 0.15;
+        abortSprite.y = -150;
         this.mobileSprite.addChild(abortSprite);
         this.addChild(this.mobileSprite)
 
@@ -67,8 +68,9 @@ export class MobileScreen extends PIXI.Container {
         this.desktopSprite.anchor.set(0.5, 1);
         this.desktopSprite.x = this.mobileSprite.x - desktopTabletSpacing;
         this.desktopSprite.y = Settings.WINDOW_HEIGHT_PX * 4 / 5;
-        this.desktopSprite.scale.set(0.3);
-        checkMarkSprite1.y = -this.desktopSprite.height * 200;
+        this.desktopSprite.width = Settings.WINDOW_WIDTH_PX * 0.4;
+        this.desktopSprite.height = Settings.WINDOW_HEIGHT_PX * 0.15;
+        checkMarkSprite1.y = -0.5 * this.desktopSprite.height;
         this.desktopSprite.addChild(checkMarkSprite1);
         this.addChild(this.desktopSprite);
 
@@ -76,8 +78,9 @@ export class MobileScreen extends PIXI.Container {
         this.tabletSprite.anchor.set(0.5, 1);
         this.tabletSprite.x = this.mobileSprite.x + desktopTabletSpacing;
         this.tabletSprite.y = this.desktopSprite.y;
-        this.tabletSprite.scale.set(0.2);
-        checkMarkSprite2.y = -this.tabletSprite.height * 800;
+        this.tabletSprite.width = Settings.WINDOW_WIDTH_PX * 0.18;
+        this.tabletSprite.height = Settings.WINDOW_HEIGHT_PX * 0.15;
+        checkMarkSprite2.y = -1.5 * this.tabletSprite.height;
         this.tabletSprite.addChild(checkMarkSprite2);
         this.addChild(this.tabletSprite);
     }
