@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
 import { SIMULATION_TIMESTEP } from './utils/Constants';
+import { MobileScreen } from './screens/MobileScreen';
 import { MotionScreen } from './screens/MotionScreen';
 import { TutorialSitDownScreen } from './screens/tutorialScreens/TutorialSitDownScreen';
 import { TutorialTaskScreen } from './screens/tutorialScreens/TutorialTaskScreen';
@@ -14,7 +15,7 @@ export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;
-    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen;
+    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
     private threshold: number;
 
     constructor(width: number, height: number) {
@@ -35,10 +36,8 @@ export class GameApp {
         // add renderer view to document body
         window.document.body.appendChild(this.renderer.view)
 
-        // // set timestep (in ms) the app should simulate between each frame.
+        // set timestep (in ms) the app should simulate between each frame.
         MainLoop.setSimulationTimestep(SIMULATION_TIMESTEP);
-        // // set max fps.
-        // MainLoop.setMaxAllowedFPS(100);
 
         // warn if the browser doesn't support the Page Visibility API and revert to onblur and onfocus events.
         if (document.hidden === undefined) {
@@ -59,16 +58,24 @@ export class GameApp {
         // add resize event listener
         window.addEventListener('resize', this.resize);
 
-        // set draw and update methods
-        MainLoop.setDraw(this.render);
-        MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
-        // show loading screen
-        this.showLoadingScreen();
-        // start main loop
-        MainLoop.start();
-
         // load settings
         Settings.load();
+
+        // set draw and update methods and start main loop
+        MainLoop.setDraw(this.render);
+        MainLoop.setUpdate((delta: number) => this.gameLoop(delta));
+        MainLoop.start();
+
+        // check if user is on a mobile device
+        if (navigator.userAgent.toLowerCase().match(/mobile/i)) {
+            const mobileScreen: MobileScreen = new MobileScreen();
+            this.stage.addChild(mobileScreen);
+            this.currentScreen = mobileScreen;
+            return;
+        }
+
+        // show loading screen
+        this.showLoadingScreen();
 
         // load assets
         const loader = PIXI.Loader.shared;
