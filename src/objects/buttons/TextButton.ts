@@ -7,7 +7,6 @@ import {
     TEXT_BUTTON_DROP_SHADOW_BLUR,
     TEXT_BUTTON_DROP_SHADOW_COLOR,
     TEXT_BUTTON_DROP_SHADOW_DISTANCE,
-    TEXT_BUTTON_ROUNDING_RADIUS,
     TEXT_COLOR
 } from "../../utils/Constants";
 import { Settings } from "../../utils/Settings";
@@ -23,6 +22,7 @@ export class TextButton extends PIXI.Container {
     buttonTextColor: number;
     hoverColor: number | undefined;
     disabled: boolean;
+    radius: number;
 
     constructor(
         x: number,
@@ -35,7 +35,8 @@ export class TextButton extends PIXI.Container {
         buttonTextColor: number = TEXT_COLOR,
         hoverColor?: number,
         disabled: boolean = false,
-        strokeWidth: number = 3
+        strokeWidth: number = 3,
+        radius: number = Settings.TEXT_BUTTON_ROUNDING_RADIUS
     ) {
         super();
         this.buttonWidth = width;
@@ -43,6 +44,7 @@ export class TextButton extends PIXI.Container {
         this.color = color;
         this.buttonTextColor = buttonTextColor;
         this.disabled = disabled;
+        this.radius = radius;
         if (hoverColor) this.hoverColor = hoverColor;
         if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
 
@@ -51,7 +53,7 @@ export class TextButton extends PIXI.Container {
         this.buttonMode = disabled ? false : true;
         this.position.set(x - width / 2, y - height / 2)
         this.button.beginFill(color)
-            .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+            .drawRoundedRect(0, 0, width, height, radius)
             .endFill();
 
         if (buttonText) {
@@ -129,21 +131,21 @@ export class TextButton extends PIXI.Container {
                 this.button.clear();
                 if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
                 this.button.beginFill(hoverColor)
-                    .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+                    .drawRoundedRect(0, 0, width, height, radius)
                     .endFill();
             });
             this.on("mouseout", (): void => {
                 this.button.clear();
                 if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
                 this.button.beginFill(color)
-                    .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+                    .drawRoundedRect(0, 0, width, height, radius)
                     .endFill();
             });
             this.on("touchstart", (): void => {
                 this.button.clear();
                 if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
                 this.button.beginFill(hoverColor)
-                    .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+                    .drawRoundedRect(0, 0, width, height, radius)
                     .endFill();
             });
             this.on("touchmove", (e: TouchEvent): void => {
@@ -151,7 +153,7 @@ export class TextButton extends PIXI.Container {
                     this.button.clear();
                     if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
                     this.button.beginFill(color)
-                        .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+                        .drawRoundedRect(0, 0, width, height, radius)
                         .endFill();
                 }
             });
@@ -159,7 +161,7 @@ export class TextButton extends PIXI.Container {
                 this.button.clear();
                 if (strokeColor) this.button.lineStyle(strokeWidth, strokeColor);
                 this.button.beginFill(color)
-                    .drawRoundedRect(0, 0, width, height, TEXT_BUTTON_ROUNDING_RADIUS)
+                    .drawRoundedRect(0, 0, width, height, radius)
             });
         }
 
@@ -184,7 +186,7 @@ export class TextButton extends PIXI.Container {
         this.button.clear();
         if (withStroke) this.button.lineStyle(strokeWidth, BUTTON_DISABLED_STROKE_COLOR);
         this.button.beginFill(BUTTON_DISABLED_COLOR)
-            .drawRoundedRect(0, 0, this.buttonWidth, this.buttonHeight, TEXT_BUTTON_ROUNDING_RADIUS)
+            .drawRoundedRect(0, 0, this.buttonWidth, this.buttonHeight, this.radius)
             .endFill();
         this.button.filters = [];
     }

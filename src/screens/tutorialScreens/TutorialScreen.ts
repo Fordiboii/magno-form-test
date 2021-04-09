@@ -36,7 +36,7 @@ export abstract class TutorialScreen extends PIXI.Container {
         // button positions
         const backButtonX: number = Settings.WINDOW_WIDTH_PX / 2 - Settings.NEXT_BACK_BUTTON_SPACING;
         const nextButtonX: number = Settings.WINDOW_WIDTH_PX / 2 + Settings.NEXT_BACK_BUTTON_SPACING;
-        const backAndNextButtonY: number = Settings.WINDOW_HEIGHT_PX - 2 * Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING - Settings.TEXT_BUTTON_HEIGHT / 2;
+        const backAndNextButtonY: number = Settings.WINDOW_HEIGHT_PX - 1.3 * Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING - Settings.TEXT_BUTTON_HEIGHT / 2;
 
         // add background color
         this.backgroundColorSprite.width = Settings.WINDOW_WIDTH_PX;
@@ -64,9 +64,9 @@ export abstract class TutorialScreen extends PIXI.Container {
 
         // content and tutorial text positions
         this.contentX = Settings.WINDOW_WIDTH_PX / 2;
-        this.contentY = Settings.WINDOW_HEIGHT_PX / 16 + this.header.height + Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING;
+        this.contentY = Settings.WINDOW_HEIGHT_PX / 12 + this.header.height;
         this.tutorialTextX = Settings.WINDOW_WIDTH_PX / 2;
-        this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 2;
+        this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 1.95;
 
         // add tutorial text
         this.tutorialText = new PIXI.Text("",
@@ -75,7 +75,7 @@ export abstract class TutorialScreen extends PIXI.Container {
                 fill: TEXT_COLOR,
                 align: 'left',
                 wordWrap: true,
-                wordWrapWidth: Settings.HEADER_WIDTH,
+                wordWrapWidth: Settings.TUTORIAL_TEXT_WIDTH,
                 lineHeight: 0
             }
         );
@@ -131,7 +131,7 @@ export abstract class TutorialScreen extends PIXI.Container {
             this.circleContainer.addChild(circle);
         }
         this.circleContainer.x = Settings.WINDOW_WIDTH_PX / 2 - this.circleContainer.getBounds().width / 2;
-        this.circleContainer.y = Settings.WINDOW_HEIGHT_PX - Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING;
+        this.circleContainer.y = Settings.WINDOW_HEIGHT_PX - Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING / 1.5;
         this.addChild(this.circleContainer);
 
         // add circle event handlers

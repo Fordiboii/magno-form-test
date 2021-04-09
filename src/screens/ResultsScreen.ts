@@ -57,12 +57,13 @@ export class ResultsScreen extends PIXI.Container {
         this.score.roundPixels = true;
         this.addChild(this.score);
 
+        this.descriptionText = "Thank you for participating.\n\n "
         if (threshold < 20) {
-            this.descriptionText = "Your score is within the normal score range";
+            this.descriptionText += "Your score is within the normal score range.";
         } else if (threshold >= 20 && threshold < 50) {
-            this.descriptionText = "Your score is slightly above the normal score range";
+            this.descriptionText += "Your score is slightly above the normal score range.";
         } else {
-            this.descriptionText = "Your score is significantly above the normal score range";
+            this.descriptionText += "Your score is significantly above the normal score range.";
         }
 
         // add description
@@ -82,7 +83,7 @@ export class ResultsScreen extends PIXI.Container {
         this.addChild(this.description);
 
         // add resultsbar
-        this.resultsBar = new ResultsBar(Settings.WINDOW_WIDTH_PX / 2, Settings.WINDOW_HEIGHT_PX / 1.7, Settings.WINDOW_WIDTH_PX * 3 / 5, Settings.TEXT_BUTTON_HEIGHT);
+        this.resultsBar = new ResultsBar(Settings.WINDOW_WIDTH_PX / 2, Settings.WINDOW_HEIGHT_PX / 1.5, Settings.WINDOW_WIDTH_PX * 3 / 5, Settings.TEXT_BUTTON_HEIGHT);
         this.resultsBar.setMarker(threshold);
         this.addChild(this.resultsBar);
     }

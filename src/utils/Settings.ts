@@ -42,6 +42,7 @@ export abstract class Settings {
     // Button settings
     public static TEXT_BUTTON_WIDTH: number;
     public static TEXT_BUTTON_HEIGHT: number;
+    public static TEXT_BUTTON_ROUNDING_RADIUS: number;
 
     public static CIRCLE_BUTTON_WIDTH: number;
     public static CIRCLE_BUTTON_TOP_BOTTOM_PADDING: number;
@@ -54,6 +55,8 @@ export abstract class Settings {
     public static HEADER_Y_POSITION: number;
 
     // Tutorial settings
+    public static TUTORIAL_TEXT_WIDTH: number;
+
     public static TUTORIAL_CONTENT_TOP_BOTTOM_PADDING: number;
 
     public static TRIAL_SCREEN_X: number;
@@ -68,8 +71,8 @@ export abstract class Settings {
         // Window settings
         Settings.WINDOW_WIDTH_PX = window.innerWidth;
         Settings.WINDOW_HEIGHT_PX = window.innerHeight;
-        Settings.WINDOW_WIDTH_MM = (window.innerWidth / (window.devicePixelRatio * DEFAULT_DPI)) * MM_PER_INCH;
-        Settings.WINDOW_HEIGHT_MM = (window.innerHeight / (window.devicePixelRatio * DEFAULT_DPI)) * MM_PER_INCH;
+        Settings.WINDOW_WIDTH_MM = (window.innerWidth / DEFAULT_DPI) * MM_PER_INCH;
+        Settings.WINDOW_HEIGHT_MM = (window.innerHeight / DEFAULT_DPI) * MM_PER_INCH;
 
         // Patch settings
         Settings.PATCH_GAP = 5;
@@ -99,20 +102,22 @@ export abstract class Settings {
         Settings.FONT_SIZE = window.innerWidth * 20 / 1280;
 
         // Button settings
-        Settings.TEXT_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5;
-        Settings.TEXT_BUTTON_HEIGHT = Settings.WINDOW_HEIGHT_PX / 15;
+        Settings.TEXT_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5.7;
+        Settings.TEXT_BUTTON_HEIGHT = Settings.WINDOW_WIDTH_PX / 32;
+        Settings.TEXT_BUTTON_ROUNDING_RADIUS = Settings.TEXT_BUTTON_WIDTH / Settings.TEXT_BUTTON_HEIGHT * 1.5;
 
-        Settings.CIRCLE_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 50;
+        Settings.CIRCLE_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 65;
         Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING = Settings.WINDOW_HEIGHT_PX / 16;
 
-        Settings.NEXT_BACK_BUTTON_SPACING = Settings.WINDOW_WIDTH_PX / 9;
+        Settings.NEXT_BACK_BUTTON_SPACING = Settings.WINDOW_WIDTH_PX / 10;
 
         // Header settings
         Settings.HEADER_WIDTH = Settings.WINDOW_WIDTH_PX / 1.5;
         Settings.HEADER_Y_POSITION = Settings.WINDOW_HEIGHT_PX / 16;
 
         // Tutorial settings
-        Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING = Settings.WINDOW_HEIGHT_PX / 30;
+        Settings.TUTORIAL_TEXT_WIDTH = Settings.WINDOW_WIDTH_PX / 1.6;
+        Settings.TUTORIAL_CONTENT_TOP_BOTTOM_PADDING = Settings.WINDOW_HEIGHT_PX / 50;
 
         Settings.TRIAL_SCREEN_X = Settings.WINDOW_WIDTH_PX / 2;
         Settings.TRIAL_SCREEN_Y = Settings.WINDOW_HEIGHT_PX / 2 - Settings.WINDOW_HEIGHT_PX / 10;

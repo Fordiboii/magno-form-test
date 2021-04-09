@@ -21,7 +21,7 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.motionTutorialWorldContainer.x = this.contentX;
         this.motionTutorialWorldContainer.y = this.contentY + Settings.WINDOW_HEIGHT_PX / 32;
         this.motionTutorialWorldContainer.width = Settings.WINDOW_WIDTH_PX;
-        this.motionTutorialWorldContainer.height = Settings.WINDOW_HEIGHT_PX / 2.3;
+        this.motionTutorialWorldContainer.height = Settings.WINDOW_HEIGHT_PX / 2.2;
         this.addChild(this.motionTutorialWorldContainer);
 
         // add motion tutorial world
@@ -32,16 +32,18 @@ export class TutorialTaskScreen extends TutorialScreen {
         const tutorialArrowTexture: PIXI.Texture = PIXI.Loader.shared.resources['tutorialArrow'].texture;
         this.tutorialArrow = new PIXI.Sprite(tutorialArrowTexture);
         this.tutorialArrow.anchor.set(0.5, 0);
-        this.tutorialArrow.scale.set(0.07, 0.03);
+        this.tutorialArrow.width = Settings.WINDOW_WIDTH_PX / 40;
+        this.tutorialArrow.height = Settings.WINDOW_HEIGHT_PX / 22;
         this.tutorialArrow.roundPixels = true;
         this.tutorialArrow.position.x = this.motionTutorialWorld.patchRight.x + this.motionTutorialWorld.patchRight.width / 2;
-        this.tutorialArrow.position.y = this.motionTutorialWorldContainer.y + this.motionTutorialWorldContainer.height / 16;
-        this.addChild(this.tutorialArrow)
+        this.tutorialArrow.position.y = this.motionTutorialWorldContainer.y - ((this.motionTutorialWorldContainer.y - this.motionTutorialWorld.patchRight.y) / 3);
+        this.addChild(this.tutorialArrow);
 
         // add tutorial text
         this.tutorialText.text =
-            "During the test, you should identify and click on the box where some of the dots are moving systematically back and forth." +
-            "The other box will contain dots moving randomly. Repeat this exercise until the test is done. The test takes approximately 8 minutes.";
+            "During the test, you should identify and select the box where some of the dots are moving systematically back and forth, here shown in the right box." +
+            " You select a box by clicking it or using the left and right arrow keys on your keyboard." +
+            " Repeat the exercise until the test is completed. The test takes approximately 8 minutes.";
 
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;

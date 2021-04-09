@@ -83,7 +83,7 @@ export class ResultsBar extends PIXI.Container {
                 wordWrapWidth: Settings.HEADER_WIDTH
             });
         this.minLabelDescription.anchor.set(0.5, 0);
-        this.minLabelDescription.position.set(x - this.resultBarGradient.width / 2, y + this.resultBarGradient.height + this.minLabel.height / 1.5);
+        this.minLabelDescription.position.set(x - this.resultBarGradient.width / 2, y + this.resultBarGradient.height + this.minLabel.height / 1.5 + labelPadding);
         this.minLabelDescription.roundPixels = true;
         this.addChild(this.minLabelDescription);
 
@@ -97,7 +97,7 @@ export class ResultsBar extends PIXI.Container {
                 wordWrapWidth: Settings.HEADER_WIDTH
             });
         this.maxLabelDescription.anchor.set(0.5, 0);
-        this.maxLabelDescription.position.set(x + this.resultBarGradient.width / 2, y + this.resultBarGradient.height + this.minLabel.height / 1.5);
+        this.maxLabelDescription.position.set(x + this.resultBarGradient.width / 2, y + this.resultBarGradient.height + this.minLabel.height / 1.5 + labelPadding);
         this.maxLabelDescription.roundPixels = true;
         this.addChild(this.maxLabelDescription);
 

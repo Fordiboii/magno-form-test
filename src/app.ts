@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
-import { DEVICE_PIXEL_RATIO, SIMULATION_TIMESTEP } from './utils/Constants';
+import { SIMULATION_TIMESTEP } from './utils/Constants';
 import { MotionScreen } from './screens/MotionScreen';
 import { TutorialSitDownScreen } from './screens/tutorialScreens/TutorialSitDownScreen';
 import { TutorialTaskScreen } from './screens/tutorialScreens/TutorialTaskScreen';
@@ -23,12 +23,14 @@ export class GameApp {
         this.renderer = PIXI.autoDetectRenderer({
             width: width,
             height: height,
-            resolution: DEVICE_PIXEL_RATIO, // for retina display devices
+            resolution: window.devicePixelRatio, // for retina display devices
             autoDensity: true, // for retina display devices
         });
 
-        // For using pixijs inspection dev tool.
-        (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__ && (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
+        if (process.env.NODE_ENV != "production") {
+            // For using pixijs inspection dev tool.
+            (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__ && (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
+        }
 
         // add renderer view to document body
         window.document.body.appendChild(this.renderer.view)

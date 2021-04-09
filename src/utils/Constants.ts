@@ -3,8 +3,7 @@ export const SIMULATION_TIMESTEP: number = 1000 / 60; // Simulate test at 60 FPS
 
 // Screen constants
 
-export const DEVICE_PIXEL_RATIO: number = window.devicePixelRatio; // The ratio of one CSS-pixel to one physical pixel. Value of 1 means DPI = DEFAULT_DPI.
-export const DEFAULT_DPI: number = 96; // Default DPI for screens.
+export const DEFAULT_DPI: number = 72; // Default DPI for screens.
 export const MM_PER_INCH: number = 25.4;
 
 // Patch constants
@@ -32,7 +31,6 @@ export const SPRITE_BUTTON_DISABLE_TINT_COLOR: number = 0xFFFFFF;
 export const SPRITE_BUTTON_CLICKED_TINT: number = 0xBBBBBB;
 export const SPRITE_BUTTON_HOVER_COLOR: number = 0xCCCCCC;
 
-export const TEXT_BUTTON_ROUNDING_RADIUS: number = 8;
 export const TEXT_BUTTON_DROP_SHADOW_ANGLE: number = 90; // in degrees
 export const TEXT_BUTTON_DROP_SHADOW_DISTANCE: number = 1.5;
 export const TEXT_BUTTON_DROP_SHADOW_BLUR: number = 0;

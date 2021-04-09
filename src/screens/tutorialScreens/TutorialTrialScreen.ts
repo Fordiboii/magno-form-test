@@ -25,7 +25,7 @@ export class TutorialTrialScreen extends TutorialScreen {
     private wrongAnswerFactor: number;
 
     private motionTutorialTrialWorld: MotionTutorialTrialWorld;
-    private motionTutorialTrialWorldBackground: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    private motionTutorialTrialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
     private startButton: TextButton;
 
@@ -48,13 +48,13 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.header.text = "MOTION TEST TUTORIAL";
 
         // add motion tutorial world background
-        this.motionTutorialTrialWorldBackground.tint = 0;
-        this.motionTutorialTrialWorldBackground.anchor.set(0.5, 0)
-        this.motionTutorialTrialWorldBackground.x = this.contentX;
-        this.motionTutorialTrialWorldBackground.y = this.contentY + Settings.WINDOW_HEIGHT_PX / 32;
-        this.motionTutorialTrialWorldBackground.width = Settings.WINDOW_WIDTH_PX;
-        this.motionTutorialTrialWorldBackground.height = Settings.WINDOW_HEIGHT_PX / 2.3;
-        this.addChild(this.motionTutorialTrialWorldBackground);
+        this.motionTutorialTrialWorldContainer.tint = 0;
+        this.motionTutorialTrialWorldContainer.anchor.set(0.5, 0)
+        this.motionTutorialTrialWorldContainer.x = this.contentX;
+        this.motionTutorialTrialWorldContainer.y = this.contentY + Settings.WINDOW_HEIGHT_PX / 32;
+        this.motionTutorialTrialWorldContainer.width = Settings.WINDOW_WIDTH_PX;
+        this.motionTutorialTrialWorldContainer.height = Settings.WINDOW_HEIGHT_PX / 2.2;
+        this.addChild(this.motionTutorialTrialWorldContainer);
 
         // add motion tutorial world
         this.motionTutorialTrialWorld = new MotionTutorialTrialWorld(this);
@@ -64,7 +64,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.startButton =
             new TextButton(
                 Settings.WINDOW_WIDTH_PX / 2,
-                this.motionTutorialTrialWorldBackground.y + this.motionTutorialTrialWorldBackground.height / 1.8,
+                Settings.TRIAL_SCREEN_Y,
                 Settings.TEXT_BUTTON_WIDTH,
                 Settings.TEXT_BUTTON_HEIGHT,
                 START_BUTTON_COLOR,
@@ -77,11 +77,12 @@ export class TutorialTrialScreen extends TutorialScreen {
 
         // add tutorial text
         this.tutorialText.text =
-            "Try it out a few times! Keep in mind that you will not receive feedback on whether or not you have chosen the correct box during the actual test.";
+            "Try it out a few times! Keep in mind that you will not receive feedback on whether or not you have chosen the correct box during the actual test."
+            + " When you are ready, click \"NEXT\".";
 
         // add trial texts
         const TRIAL_TEXT_X: number = Settings.WINDOW_WIDTH_PX / 2;
-        const TRIAL_TEXT_Y: number = this.motionTutorialTrialWorldBackground.y + this.motionTutorialTrialWorldBackground.height / 2;
+        const TRIAL_TEXT_Y: number = this.motionTutorialTrialWorldContainer.y + this.motionTutorialTrialWorldContainer.height / 2;
 
         this.trialCorrectText = new PIXI.Text("WELL DONE!",
             {
