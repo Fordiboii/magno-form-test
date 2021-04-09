@@ -35,7 +35,7 @@ export class MobileScreen extends PIXI.Container {
         this.mobileSprite = PIXI.Sprite.from("../assets/sprites/mobile-phone.png");
         this.mobileSprite.anchor.set(0.5, 1);
         this.mobileSprite.x = Settings.WINDOW_WIDTH_PX / 2;
-        this.mobileSprite.y = Settings.WINDOW_HEIGHT_PX / 3;
+        this.mobileSprite.y = Settings.WINDOW_HEIGHT_PX / 4;
         this.mobileSprite.width = Settings.WINDOW_WIDTH_PX * 0.15;
         this.mobileSprite.height = Settings.WINDOW_HEIGHT_PX * 0.15;
         abortSprite.y = -150;
@@ -67,7 +67,7 @@ export class MobileScreen extends PIXI.Container {
         this.desktopSprite = PIXI.Sprite.from("./assets/sprites/computer-laptop.png");
         this.desktopSprite.anchor.set(0.5, 1);
         this.desktopSprite.x = this.mobileSprite.x - desktopTabletSpacing;
-        this.desktopSprite.y = Settings.WINDOW_HEIGHT_PX * 4 / 5;
+        this.desktopSprite.y = Settings.WINDOW_HEIGHT_PX * 7 / 8;
         this.desktopSprite.width = Settings.WINDOW_WIDTH_PX * 0.4;
         this.desktopSprite.height = Settings.WINDOW_HEIGHT_PX * 0.15;
         checkMarkSprite1.y = -0.5 * this.desktopSprite.height;
