@@ -65,13 +65,17 @@ export class TutorialTrialScreen extends TutorialScreen {
             new TextButton(
                 Settings.WINDOW_WIDTH_PX / 2,
                 Settings.TRIAL_SCREEN_Y,
-                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_WIDTH * 1.1,
                 Settings.TEXT_BUTTON_HEIGHT,
                 START_BUTTON_COLOR,
                 START_BUTTON_STROKE_COLOR,
-                "START TRIAL",
+                "START TUTORIAL TRIAL",
                 TEXT_COLOR,
-                START_BUTTON_HOVER_COLOR
+                START_BUTTON_HOVER_COLOR,
+                false,
+                undefined,
+                undefined,
+                Settings.FONT_SIZE * 0.8
             );
         this.addChild(this.startButton);
 
@@ -114,7 +118,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.trialIncorrectText.x = TRIAL_TEXT_X;
         this.trialIncorrectText.y = TRIAL_TEXT_Y;
 
-        this.trialFinishedText = new PIXI.Text("YOU ARE READY FOR THE TEST!",
+        this.trialFinishedText = new PIXI.Text("CLICK NEXT TO PROCEED TO THE TEST",
             {
                 fontName: 'Helvetica-Normal',
                 fontSize: Settings.FONT_SIZE,

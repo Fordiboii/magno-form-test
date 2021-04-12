@@ -36,7 +36,8 @@ export class TextButton extends PIXI.Container {
         hoverColor?: number,
         disabled: boolean = false,
         strokeWidth: number = 3,
-        radius: number = Settings.TEXT_BUTTON_ROUNDING_RADIUS
+        radius: number = Settings.TEXT_BUTTON_ROUNDING_RADIUS,
+        fontSize: number = Settings.FONT_SIZE
     ) {
         super();
         this.buttonWidth = width;
@@ -62,7 +63,7 @@ export class TextButton extends PIXI.Container {
                 buttonText,
                 {
                     fontName: "Helvetica-Normal",
-                    fontSize: Settings.FONT_SIZE,
+                    fontSize: fontSize,
                     fill: buttonTextColor
                 }
             );
