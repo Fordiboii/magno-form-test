@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
+import { TextButton } from "../objects/buttons/TextButton";
 import { ResultsBar } from "../objects/ResultsBar";
-import { BACKGROUND_COLOR, TEXT_COLOR } from "../utils/Constants";
+import { BACKGROUND_COLOR, NEXT_BUTTON_COLOR, NEXT_BUTTON_HOVER_COLOR, NEXT_BUTTON_STROKE_COLOR, TEXT_COLOR } from "../utils/Constants";
 import { Settings } from "../utils/Settings";
 
 export class ResultsScreen extends PIXI.Container {
@@ -11,6 +12,7 @@ export class ResultsScreen extends PIXI.Container {
     private descriptionText: string;
     private resultsBar: ResultsBar;
     private threshold: number;
+    private exitButton: TextButton;
 
     constructor(threshold: number) {
         super();
@@ -86,17 +88,35 @@ export class ResultsScreen extends PIXI.Container {
         this.resultsBar = new ResultsBar(Settings.WINDOW_WIDTH_PX / 2, Settings.WINDOW_HEIGHT_PX / 1.5, Settings.WINDOW_WIDTH_PX * 3 / 5, Settings.TEXT_BUTTON_HEIGHT);
         this.resultsBar.setMarker(threshold);
         this.addChild(this.resultsBar);
+
+        // add exit button
+        this.exitButton = new TextButton(
+            Settings.WINDOW_WIDTH_PX / 2,
+            Settings.WINDOW_HEIGHT_PX / 1.1,
+            Settings.TEXT_BUTTON_WIDTH,
+            Settings.TEXT_BUTTON_HEIGHT,
+            NEXT_BUTTON_COLOR,
+            NEXT_BUTTON_STROKE_COLOR,
+            "EXIT",
+            TEXT_COLOR,
+            NEXT_BUTTON_HOVER_COLOR
+        );
+        this.addChild(this.exitButton);
     }
 
     update = (delta: number): void => {
         return;
     }
 
+    exitButtonClickHandler = (): void => {
+        window.close();
+    }
+
     addEventListeners = (): void => {
-        return;
+        this.exitButton.on("click", this.exitButtonClickHandler);
     }
 
     removeEventListeners = (): void => {
-        return;
+        this.exitButton.off("click", this.exitButtonClickHandler);
     }
 }

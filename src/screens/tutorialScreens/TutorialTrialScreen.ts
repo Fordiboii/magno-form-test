@@ -82,7 +82,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         // add tutorial text
         this.tutorialText.text =
             "Try it out a few times! Keep in mind that you will not receive feedback on whether or not you have chosen the correct box during the actual test."
-            + " When you are ready, click \"NEXT\".";
+            + " When you are ready, click NEXT.";
 
         // add trial texts
         const TRIAL_TEXT_X: number = Settings.WINDOW_WIDTH_PX / 2;
