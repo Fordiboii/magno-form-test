@@ -67,7 +67,7 @@ export class GameApp {
         MainLoop.start();
 
         // check if user is on a mobile device
-        if (navigator.userAgent.toLowerCase().match(/mobile/i)) {
+        if (window.matchMedia("only screen and (max-width: 760px)").matches) {
             const mobileScreen: MobileScreen = new MobileScreen();
             this.stage.addChild(mobileScreen);
             this.currentScreen = mobileScreen;
