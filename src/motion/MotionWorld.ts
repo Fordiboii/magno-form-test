@@ -7,13 +7,25 @@ import { Psychophysics } from '../utils/Psychophysics';
 import { Settings } from '../utils/Settings';
 import { Patch } from '../objects/Patch';
 import {
+    GLOW_FILTER_ANIMATION_SPEED,
+    GLOW_FILTER_MAX_STRENGTH,
+    MAX_FEEDBACK_TIME,
     PATCH_OUTLINE_COLOR,
     PATCH_OUTLINE_THICKNESS
 } from '../utils/Constants';
+import { MotionScreen } from '../screens/MotionScreen';
 
 export class MotionWorld extends AbstractMotionWorld {
-    constructor() {
+    // reference to motion screen
+    motionScreen: MotionScreen;
+
+    private feedbackTimer: number = 0;
+    private maxFeedbackTime: number = MAX_FEEDBACK_TIME;
+
+    constructor(motionScreen: MotionScreen) {
         super();
+        this.motionScreen = motionScreen;
+
         this.createPatches();
 
         this.quadTree = this.createQuadTree(this.patchLeft.x, this.patchLeft.y, this.patchLeft.width * 2 + this.patchGap, this.patchLeft.height);
@@ -50,18 +62,50 @@ export class MotionWorld extends AbstractMotionWorld {
             this.updateDots(delta);
         } else if (this.currentState == WorldState.PAUSED) {
             this.paused();
+        } else if (this.currentState == WorldState.PATCH_SELECTED) {
+            this.feedback(delta);
         } else if (this.currentState == WorldState.FINISHED) {
             return;
         }
     }
 
-    reset = (): void => {
+    /**
+     * Creates a new trial and changes the state from PATCH_SELECTED to RUNNING if the max feedback time is reached.
+     * If the number of max steps is reached, it changes the state to FINISHED.
+     * @param delta time between each frame in ms
+     */
+    feedback = (delta: number): void => {
+        this.feedbackTimer += delta;
+        // animate glow filters
+        this.motionScreen.glowFilter1.outerStrength += (this.motionScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        this.motionScreen.glowFilter2.outerStrength += (this.motionScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        // hide dots
         this.dotsLeftParticleContainer.visible = false;
         this.dotsRightParticleContainer.visible = false;
+        if (this.feedbackTimer >= this.maxFeedbackTime / 2.5) {
+            // reset glow filters
+            this.motionScreen.glowFilter1.outerStrength = 0;
+            this.motionScreen.glowFilter2.outerStrength = 0;
+            // disable glow filters
+            this.motionScreen.glowFilter1.enabled = false;
+            this.motionScreen.glowFilter2.enabled = false;
+            // check if test is finished
+            if (this.motionScreen.stepCounter == this.motionScreen.maxSteps || this.motionScreen.reversalCounter == this.motionScreen.reversalPoints) {
+                this.setState(WorldState.FINISHED);
+                this.feedbackTimer = 0;
+                return;
+            }
+            this.feedbackTimer = 0;
+            this.reset();
+            this.dotsLeftParticleContainer.visible = true;
+            this.dotsRightParticleContainer.visible = true;
+            this.setState(WorldState.RUNNING);
+        }
+    }
+
+    reset = (): void => {
         this.runTime = 0;
         this.createNewTrial();
-        this.dotsLeftParticleContainer.visible = true;
-        this.dotsRightParticleContainer.visible = true;
     }
 
     /**

@@ -1,12 +1,16 @@
 import * as PIXI from 'pixi.js';
+import { GlowFilter } from 'pixi-filters';
 import { GameApp } from '../../app';
 import { MotionTutorialTrialWorld } from '../../motion/MotionTutorialTrialWorld';
 import { TextButton } from '../../objects/buttons/TextButton';
 import {
     BLUE_TEXT_COLOR,
+    GLOW_FILTER_DISTANCE,
+    GLOW_FILTER_QUALITY,
     GREEN_TEXT_COLOR,
     KEY_LEFT,
     KEY_RIGHT,
+    PATCH_LABEL_COLOR,
     RED_TEXT_COLOR,
     START_BUTTON_COLOR,
     START_BUTTON_HOVER_COLOR,
@@ -32,9 +36,16 @@ export class TutorialTrialScreen extends TutorialScreen {
     private trialTextContainer: PIXI.Container = new PIXI.Container();
     private trialTextBackgroundColor: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
+    private patchLeftLabel: PIXI.Text;
+    private patchRightLabel: PIXI.Text;
     private trialCorrectText: PIXI.Text;
     private trialIncorrectText: PIXI.Text;
     private trialFinishedText: PIXI.Text;
+    private pauseText: PIXI.Text;
+
+    // any type because pixi-filters isn't working properly with typescript
+    public glowFilter1: any;
+    public glowFilter2: any;
 
     constructor(gameApp: GameApp) {
         super(gameApp);
@@ -59,6 +70,58 @@ export class TutorialTrialScreen extends TutorialScreen {
         // add motion tutorial world
         this.motionTutorialTrialWorld = new MotionTutorialTrialWorld(this);
         this.addChild(this.motionTutorialTrialWorld);
+
+        // create glow filters for animating patch click
+        this.glowFilter1 = new GlowFilter({
+            distance: GLOW_FILTER_DISTANCE,
+            outerStrength: 0,
+            quality: GLOW_FILTER_QUALITY
+        });
+        this.glowFilter2 = new GlowFilter({
+            distance: GLOW_FILTER_DISTANCE,
+            outerStrength: 0,
+            quality: GLOW_FILTER_QUALITY
+        });
+        this.glowFilter1.enabled = false;
+        this.glowFilter2.enabled = false;
+        this.motionTutorialTrialWorld.patchLeft.filters = [this.glowFilter1];
+        this.motionTutorialTrialWorld.patchRight.filters = [this.glowFilter2];
+
+        // add patch labels
+        this.patchLeftLabel = new PIXI.Text("1", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 1.2,
+            fill: PATCH_LABEL_COLOR
+        });
+        this.patchLeftLabel.anchor.set(0.5);
+        this.patchLeftLabel.roundPixels = true;
+        this.patchLeftLabel.x = this.motionTutorialTrialWorld.patchLeft.x + this.motionTutorialTrialWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.motionTutorialTrialWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.addChild(this.patchLeftLabel);
+
+        this.patchRightLabel = new PIXI.Text("2", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 1.2,
+            fill: PATCH_LABEL_COLOR
+        });
+        this.patchRightLabel.anchor.set(0.5);
+        this.patchRightLabel.roundPixels = true;
+        this.patchRightLabel.x = this.motionTutorialTrialWorld.patchRight.x + this.motionTutorialTrialWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.motionTutorialTrialWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.addChild(this.patchRightLabel);
+
+        // add text shown when animation is paused
+        this.pauseText = new PIXI.Text("Select a box", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 0.9,
+            fill: PATCH_LABEL_COLOR
+        });
+        this.pauseText.anchor.set(0.5, 0);
+        this.pauseText.roundPixels = true;
+        this.pauseText.x = Settings.WINDOW_WIDTH_PX / 2;
+        this.pauseText.y = Settings.TRIAL_SCREEN_Y + this.motionTutorialTrialWorld.patchLeft.height / 1.5;
+        this.pauseText.visible = false;
+        this.addChild(this.pauseText);
 
         // add start button
         this.startButton =
@@ -86,12 +149,12 @@ export class TutorialTrialScreen extends TutorialScreen {
 
         // add trial texts
         const TRIAL_TEXT_X: number = Settings.WINDOW_WIDTH_PX / 2;
-        const TRIAL_TEXT_Y: number = this.motionTutorialTrialWorldContainer.y + this.motionTutorialTrialWorldContainer.height / 2;
+        const TRIAL_TEXT_Y: number = Settings.TRIAL_SCREEN_Y + this.motionTutorialTrialWorld.patchLeft.height / 1.1;
 
-        this.trialCorrectText = new PIXI.Text("WELL DONE!",
+        this.trialCorrectText = new PIXI.Text("Correct",
             {
                 fontName: 'Helvetica-Normal',
-                fontSize: Settings.FONT_SIZE,
+                fontSize: Settings.FONT_SIZE * 0.9,
                 fill: GREEN_TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -99,14 +162,14 @@ export class TutorialTrialScreen extends TutorialScreen {
             }
         );
         this.trialCorrectText.roundPixels = true;
-        this.trialCorrectText.anchor.set(0.5);
+        this.trialCorrectText.anchor.set(0.5, 1);
         this.trialCorrectText.x = TRIAL_TEXT_X;
         this.trialCorrectText.y = TRIAL_TEXT_Y;
 
-        this.trialIncorrectText = new PIXI.Text("BETTER LUCK NEXT TIME!",
+        this.trialIncorrectText = new PIXI.Text("Incorrect",
             {
                 fontName: 'Helvetica-Normal',
-                fontSize: Settings.FONT_SIZE,
+                fontSize: Settings.FONT_SIZE * 0.9,
                 fill: RED_TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -114,14 +177,15 @@ export class TutorialTrialScreen extends TutorialScreen {
             }
         );
         this.trialIncorrectText.roundPixels = true;
-        this.trialIncorrectText.anchor.set(0.5);
+        this.trialIncorrectText.anchor.set(0.5, 1);
         this.trialIncorrectText.x = TRIAL_TEXT_X;
         this.trialIncorrectText.y = TRIAL_TEXT_Y;
+        // this.trialIncorrectText.height = 10;
 
-        this.trialFinishedText = new PIXI.Text("CLICK NEXT TO PROCEED TO THE TEST",
+        this.trialFinishedText = new PIXI.Text("Click NEXT to proceed to the test",
             {
                 fontName: 'Helvetica-Normal',
-                fontSize: Settings.FONT_SIZE,
+                fontSize: Settings.FONT_SIZE * 0.9,
                 fill: BLUE_TEXT_COLOR,
                 align: 'center',
                 wordWrap: true,
@@ -129,7 +193,7 @@ export class TutorialTrialScreen extends TutorialScreen {
             }
         );
         this.trialFinishedText.roundPixels = true;
-        this.trialFinishedText.anchor.set(0.5);
+        this.trialFinishedText.anchor.set(0.5, 1);
         this.trialFinishedText.x = TRIAL_TEXT_X;
         this.trialFinishedText.y = TRIAL_TEXT_Y;
 
@@ -139,7 +203,6 @@ export class TutorialTrialScreen extends TutorialScreen {
 
         this.trialTextBackgroundColor.anchor.set(0.5);
         this.trialTextBackgroundColor.tint = 0;
-        this.trialTextBackgroundColor.filters = [new PIXI.filters.BlurFilter(6)]
         this.trialTextContainer.visible = false;
         this.trialTextContainer.addChild(this.trialTextBackgroundColor, this.trialCorrectText, this.trialIncorrectText, this.trialFinishedText);
         this.addChild(this.trialTextContainer)
@@ -158,6 +221,8 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialTextBackgroundColor.width = this.trialCorrectText.width;
             this.trialTextBackgroundColor.height = this.trialCorrectText.height * 1.5;
             this.trialTextContainer.visible = true;
+
+            this.pauseText.visible = false;
         } else if (this.motionTutorialTrialWorld.getState() == WorldState.TRIAL_INCORRECT) {
             this.trialIncorrectText.visible = true;
 
@@ -166,6 +231,8 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialTextBackgroundColor.width = this.trialIncorrectText.width;
             this.trialTextBackgroundColor.height = this.trialIncorrectText.height * 1.5;
             this.trialTextContainer.visible = true;
+
+            this.pauseText.visible = false;
         } else if (this.motionTutorialTrialWorld.getState() == WorldState.FINISHED) {
             this.trialCorrectText.visible = false;
             this.trialIncorrectText.visible = false;
@@ -176,6 +243,10 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialTextBackgroundColor.width = this.trialFinishedText.width;
             this.trialTextBackgroundColor.height = this.trialFinishedText.height * 1.5;
             this.trialTextContainer.visible = true;
+
+            this.pauseText.visible = false;
+        } else if (this.motionTutorialTrialWorld.getState() == WorldState.PAUSED && !this.startButton.visible) {
+            this.pauseText.visible = true;
         } else {
             this.trialCorrectText.visible = false;
             this.trialIncorrectText.visible = false;
@@ -194,6 +265,10 @@ export class TutorialTrialScreen extends TutorialScreen {
             let coherentPatchSide: string = this.motionTutorialTrialWorld.getCoherentPatchSide();
 
             if (event.code == KEY_LEFT) {
+                // enable glow filter on the selected patch
+                this.glowFilter1.enabled = true;
+
+                // update coherency
                 if (coherentPatchSide == "LEFT") {
                     this.motionTutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
                     this.motionTutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
@@ -201,12 +276,13 @@ export class TutorialTrialScreen extends TutorialScreen {
                     this.motionTutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
                     this.motionTutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
                 }
-                // create a new trial if max steps isn't exceeeded
-                if (this.stepCounter != this.maxSteps - 1) {
-                    this.motionTutorialTrialWorld.reset();
-                }
+
                 this.stepCounter++;
             } else if (event.code == KEY_RIGHT) {
+                // enable glow filter on the selected patch
+                this.glowFilter2.enabled = true;
+
+                // update coherency and state
                 if (coherentPatchSide == "RIGHT") {
                     this.motionTutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
                     this.motionTutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
@@ -214,10 +290,7 @@ export class TutorialTrialScreen extends TutorialScreen {
                     this.motionTutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
                     this.motionTutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
                 }
-                // create a new trial if max steps isn't exceeeded
-                if (this.stepCounter != this.maxSteps - 1) {
-                    this.motionTutorialTrialWorld.reset();
-                }
+
                 this.stepCounter++;
             }
         }
@@ -228,6 +301,14 @@ export class TutorialTrialScreen extends TutorialScreen {
         if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
             let coherentPatchSide: string = this.motionTutorialTrialWorld.getCoherentPatchSide();
 
+            // enable glow filter on the selected patch
+            if (patch == "LEFT") {
+                this.glowFilter1.enabled = true;
+            } else {
+                this.glowFilter2.enabled = true;
+            }
+
+            // update coherency and state
             if (patch == coherentPatchSide) {
                 this.motionTutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
                 this.motionTutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
@@ -235,10 +316,7 @@ export class TutorialTrialScreen extends TutorialScreen {
                 this.motionTutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
                 this.motionTutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
             }
-            // create a new trial if max steps isn't exceeeded
-            if (this.stepCounter != this.maxSteps - 1) {
-                this.motionTutorialTrialWorld.reset();
-            }
+
             this.stepCounter++;
         }
     }

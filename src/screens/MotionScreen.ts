@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { GlowFilter } from "pixi-filters";
 import { MotionWorld } from "../motion/MotionWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
@@ -11,7 +12,9 @@ import {
     START_BUTTON_COLOR,
     START_BUTTON_HOVER_COLOR,
     START_BUTTON_STROKE_COLOR,
-    PATCH_LABEL_COLOR
+    PATCH_LABEL_COLOR,
+    GLOW_FILTER_DISTANCE,
+    GLOW_FILTER_QUALITY,
 } from "../utils/Constants";
 import { WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
@@ -23,13 +26,13 @@ export class MotionScreen extends PIXI.Container {
 
     private motionWorld: MotionWorld;
 
-    private reversalPoints: number;
-    private maxSteps: number;
+    public reversalPoints: number;
+    public maxSteps: number;
 
     private prevStep: boolean;
 
-    private reversalCounter: number;
-    private stepCounter: number;
+    public reversalCounter: number;
+    public stepCounter: number;
     private correctAnswerCounter: number;
     private wrongAnswerCounter: number;
 
@@ -42,10 +45,14 @@ export class MotionScreen extends PIXI.Container {
     private patchRightLabel: PIXI.Text;
     private startButton: TextButton;
     private backButton: SpriteButton;
+    private pauseText: PIXI.Text;
+
+    // any type because pixi-filters isn't working properly with typescript
+    public glowFilter1: any;
+    public glowFilter2: any;
 
     constructor(gameApp: GameApp) {
         super();
-
         // reference to game object
         this.gameApp = gameApp;
 
@@ -67,23 +74,60 @@ export class MotionScreen extends PIXI.Container {
 
     setup = (): void => {
         // create motion world and add to container
-        this.motionWorld = new MotionWorld();
+        this.motionWorld = new MotionWorld(this);
         this.addChild(this.motionWorld);
 
+        // create glow filters for animating patch click
+        this.glowFilter1 = new GlowFilter({
+            distance: GLOW_FILTER_DISTANCE,
+            outerStrength: 0,
+            quality: GLOW_FILTER_QUALITY
+        });
+        this.glowFilter2 = new GlowFilter({
+            distance: GLOW_FILTER_DISTANCE,
+            outerStrength: 0,
+            quality: GLOW_FILTER_QUALITY
+        });
+        this.glowFilter1.enabled = false;
+        this.glowFilter2.enabled = false;
+        this.motionWorld.patchLeft.filters = [this.glowFilter1];
+        this.motionWorld.patchRight.filters = [this.glowFilter2];
+
         // create patch labels and add to container
-        this.patchLeftLabel = new PIXI.Text("1", { fontName: "Helvetica-Normal", fontSize: Settings.FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
+        this.patchLeftLabel = new PIXI.Text("1", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 1.3,
+            fill: PATCH_LABEL_COLOR
+        });
         this.patchLeftLabel.anchor.set(0.5);
         this.patchLeftLabel.roundPixels = true;
         this.patchLeftLabel.x = this.motionWorld.patchLeft.x + this.motionWorld.patchLeft.width / 2;
         this.patchLeftLabel.y = this.motionWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchLeftLabel);
 
-        this.patchRightLabel = new PIXI.Text("2", { fontName: "Helvetica-Normal", fontSize: Settings.FONT_SIZE * 1.3, fill: PATCH_LABEL_COLOR });
+        this.patchRightLabel = new PIXI.Text("2", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 1.3,
+            fill: PATCH_LABEL_COLOR
+        });
         this.patchRightLabel.anchor.set(0.5);
         this.patchRightLabel.roundPixels = true;
         this.patchRightLabel.x = this.motionWorld.patchRight.x + this.motionWorld.patchRight.width / 2;
         this.patchRightLabel.y = this.motionWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
+
+        // add text shown when animation is paused
+        this.pauseText = new PIXI.Text("Select a box", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE,
+            fill: PATCH_LABEL_COLOR
+        });
+        this.pauseText.anchor.set(0.5, 0);
+        this.pauseText.roundPixels = true;
+        this.pauseText.x = Settings.WINDOW_WIDTH_PX / 2;
+        this.pauseText.y = Settings.WINDOW_HEIGHT_PX / 2 + this.motionWorld.patchLeft.height / 1.5;
+        this.pauseText.visible = false;
+        this.addChild(this.pauseText);
 
         // create start button and add to container
         this.startButton =
@@ -117,17 +161,30 @@ export class MotionScreen extends PIXI.Container {
 
     update = (delta: number): void => {
         if (this.motionWorld.getState() == WorldState.FINISHED) {
+            // hide pause text
+            this.pauseText.visible = false;
             // calculate threshold score
             const threshold: number = Psychophysics.geometricMean(this.reversalValues, Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN);
             this.gameApp.setThreshold(threshold);
             // change screen
             this.gameApp.changeScreen("resultsScreen");
+        } else if (this.motionWorld.getState() == WorldState.PAUSED) {
+            // show pause text if start button isn't visible, meaning the test has started and is paused.
+            if (!this.startButton.visible) {
+                this.pauseText.visible = true;
+            }
+            // update motion world
+            this.motionWorld.update(delta);
         } else {
+            // hide pause text
+            this.pauseText.visible = false;
+            // update motion world
             this.motionWorld.update(delta);
         }
     }
 
     keyLeftRightDownHandler = (event: KeyboardEvent): void => {
+        // To prevent handler from triggering multiple times if a key is held
         if (event.repeat) return
 
         let currentStep: boolean = true;
@@ -135,61 +192,63 @@ export class MotionScreen extends PIXI.Container {
         let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
 
         if (event.code == KEY_LEFT) {
-            if (coherentPatchSide == "LEFT") {
-                this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
-                this.correctAnswerCounter++;
-            } else {
-                this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
-                this.wrongAnswerCounter++;
-                currentStep = false;
-            }
+            // get current state
+            const currentState: WorldState = this.motionWorld.getState();
+            // only register input if state is RUNNING or PAUSED
+            if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
+                // set state to PATCH_SELECTED
+                this.motionWorld.setState(WorldState.PATCH_SELECTED);
+                // enable glow filter on the selected patch
+                this.glowFilter1.enabled = true;
 
-            // increment step counter and check if the test is completed
-            this.stepCounter++;
+                // update coherency and counters
+                if (coherentPatchSide == "LEFT") {
+                    this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
+                    this.correctAnswerCounter++;
+                } else {
+                    this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
+                    this.wrongAnswerCounter++;
+                    currentStep = false;
+                }
 
-            if (this.stepCounter - 1 == this.maxSteps || this.reversalCounter == this.reversalPoints) {
-                this.motionWorld.setState(WorldState.FINISHED);
-            } else if (this.motionWorld.getState() == WorldState.PAUSED) {
-                this.motionWorld.setState(WorldState.RUNNING);
-                this.motionWorld.reset();
-            } else {
-                this.motionWorld.reset();
-            }
-            // check if the current answer differs from the previous step. Save the value at reversal and increment counter
-            if (this.stepCounter > 1 && this.prevStep != currentStep) {
-                this.reversalValues.push(reversalValue);
-                this.reversalCounter++;
-            }
+                // check if the current answer differs from the previous step. Save the value at reversal and increment counter
+                if (this.stepCounter > 1 && this.prevStep != currentStep) {
+                    this.reversalValues.push(reversalValue);
+                    this.reversalCounter++;
+                }
 
-            this.prevStep = currentStep;
+                this.prevStep = currentStep;
+                this.stepCounter++;
+            }
         } else if (event.code == KEY_RIGHT) {
-            if (coherentPatchSide == "RIGHT") {
-                this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
-                this.correctAnswerCounter++;
-            } else {
-                this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
-                this.wrongAnswerCounter++;
-                currentStep = false;
-            }
+            // get current state
+            const currentState: WorldState = this.motionWorld.getState();
+            // only register input if state is RUNNING or PAUSED
+            if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
+                // set state to PATCH_SELECTED
+                this.motionWorld.setState(WorldState.PATCH_SELECTED);
+                // enable glow filter on the selected patch
+                this.glowFilter2.enabled = true;
 
-            // increment step counter and check if the test is completed
-            this.stepCounter++;
+                // update coherency and counters
+                if (coherentPatchSide == "RIGHT") {
+                    this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
+                    this.correctAnswerCounter++;
+                } else {
+                    this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
+                    this.wrongAnswerCounter++;
+                    currentStep = false;
+                }
 
-            if (this.stepCounter - 1 == this.maxSteps || this.reversalCounter == this.reversalPoints) {
-                this.motionWorld.setState(WorldState.FINISHED);
-            } else if (this.motionWorld.getState() == WorldState.PAUSED) {
-                this.motionWorld.setState(WorldState.RUNNING);
-                this.motionWorld.reset();
-            } else {
-                this.motionWorld.reset();
-            }
-            // check if the current answer differs from the previous step. Save the value at reversal and increment counter
-            if (this.stepCounter > 1 && this.prevStep != currentStep) {
-                this.reversalValues.push(reversalValue);
-                this.reversalCounter++;
-            }
+                // check if the current answer differs from the previous step. Save the value at reversal and increment counter
+                if (this.stepCounter > 1 && this.prevStep != currentStep) {
+                    this.reversalValues.push(reversalValue);
+                    this.reversalCounter++;
+                }
 
-            this.prevStep = currentStep;
+                this.prevStep = currentStep;
+                this.stepCounter++;
+            }
         }
     }
 
@@ -201,39 +260,46 @@ export class MotionScreen extends PIXI.Container {
     }
 
     mouseDownHandler = (patch: string): void => {
-        let currentStep: boolean = true;
-        let reversalValue: number = this.motionWorld.getCoherencePercent();
-        let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
+        // get current state
+        const currentState: WorldState = this.motionWorld.getState();
+        // only register input if state is RUNNING or PAUSED
+        if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
+            let currentStep: boolean = true;
+            let reversalValue: number = this.motionWorld.getCoherencePercent();
+            let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
 
-        if (patch == coherentPatchSide) {
-            this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
-            this.correctAnswerCounter++;
-        } else {
-            this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
-            this.wrongAnswerCounter++;
-            currentStep = false;
+            // set state to PATCH_SELECTED
+            this.motionWorld.setState(WorldState.PATCH_SELECTED);
+            // enable glow filter on the selected patch
+            if (patch == "LEFT") {
+                this.glowFilter1.enabled = true;
+            } else {
+                this.glowFilter2.enabled = true;
+            }
+
+            // update coherency and counters
+            if (patch == coherentPatchSide) {
+                this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
+                this.correctAnswerCounter++;
+            } else {
+                this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
+                this.wrongAnswerCounter++;
+                currentStep = false;
+            }
+
+            // check if the current answer differs from the previous step. Save the value at reversal and increment counter
+            if (this.stepCounter > 1 && this.prevStep != currentStep) {
+                this.reversalValues.push(reversalValue);
+                this.reversalCounter++;
+            }
+
+            this.prevStep = currentStep;
+            this.stepCounter++;
         }
-        this.motionWorld.reset();
-
-        // increment step counter and check if the test is completed
-        this.stepCounter++;
-
-        if (this.stepCounter - 1 == this.maxSteps || this.reversalCounter == this.reversalPoints) {
-            this.motionWorld.setState(WorldState.FINISHED);
-        } else if (this.motionWorld.getState() == WorldState.PAUSED) {
-            this.motionWorld.setState(WorldState.RUNNING);
-        }
-        // check if the current answer differs from the previous step. Save the value at reversal and increment counter
-        if (this.stepCounter > 1 && this.prevStep != currentStep) {
-            this.reversalValues.push(reversalValue);
-            this.reversalCounter++;
-        }
-
-        this.prevStep = currentStep;
     }
 
     resetMotionWorld = (): void => {
-        this.motionWorld = new MotionWorld();
+        this.motionWorld = new MotionWorld(this);
     }
 
     startButtonClickHandler = (): void => {

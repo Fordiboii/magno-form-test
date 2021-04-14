@@ -7,6 +7,8 @@ import { Psychophysics } from '../utils/Psychophysics';
 import { Settings } from '../utils/Settings';
 import { Patch } from '../objects/Patch';
 import {
+    GLOW_FILTER_ANIMATION_SPEED,
+    GLOW_FILTER_MAX_STRENGTH,
     MAX_FEEDBACK_TIME,
     PATCH_OUTLINE_COLOR,
     PATCH_OUTLINE_THICKNESS
@@ -74,15 +76,26 @@ export class MotionTutorialTrialWorld extends AbstractMotionWorld {
     }
 
     /**
-     * Changes the state from TRIAL_CORRECT or TRIAL_INCORRECT to RUNNING if the max feedback time is reached and creates a new trial.
-     * If the number of max steps is reached, it changes the state to FINISHED instead of RUNNING.
+     * Creates a new trial and changes the state from TRIAL_CORRECT or TRIAL_INCORRECT to RUNNING if the max feedback time is reached.
+     * If the number of max steps is reached, it changes the state to FINISHED.
      * @param delta time between each frame in ms
      */
     feedback = (delta: number): void => {
         this.feedbackTimer += delta;
+        // animate glow filters
+        this.tutorialTrialScreen.glowFilter1.outerStrength += (this.tutorialTrialScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        this.tutorialTrialScreen.glowFilter2.outerStrength += (this.tutorialTrialScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        // hide dots
         this.dotsLeftParticleContainer.visible = false;
         this.dotsRightParticleContainer.visible = false;
         if (this.feedbackTimer >= this.maxFeedbackTime) {
+            // reset glow filters
+            this.tutorialTrialScreen.glowFilter1.outerStrength = 0;
+            this.tutorialTrialScreen.glowFilter2.outerStrength = 0;
+            // disable glow filters
+            this.tutorialTrialScreen.glowFilter1.enabled = false;
+            this.tutorialTrialScreen.glowFilter2.enabled = false;
+            // check if test is finished
             if (this.tutorialTrialScreen.stepCounter == this.tutorialTrialScreen.maxSteps) {
                 this.setState(WorldState.FINISHED);
                 this.feedbackTimer = 0;
@@ -90,17 +103,15 @@ export class MotionTutorialTrialWorld extends AbstractMotionWorld {
             }
             this.feedbackTimer = 0;
             this.reset();
+            this.dotsLeftParticleContainer.visible = true;
+            this.dotsRightParticleContainer.visible = true;
             this.setState(WorldState.RUNNING);
         }
     }
 
     reset = (): void => {
-        this.dotsLeftParticleContainer.visible = false;
-        this.dotsRightParticleContainer.visible = false;
         this.runTime = 0;
         this.createNewTrial();
-        this.dotsLeftParticleContainer.visible = true;
-        this.dotsRightParticleContainer.visible = true;
     }
 
     /**

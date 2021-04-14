@@ -62,3 +62,10 @@ export const RESULTS_GREEN_COLOR: string = "#72B734";
 export const RESULTS_RED_COLOR: string = "#E72F2F";
 export const RESULTS_YELLOW_COLOR: string = "#EEE53F";
 export const RESULTS_ORANGE_COLOR: string = "#F1983C";
+
+// Filter constants
+
+export const GLOW_FILTER_DISTANCE: number = 12;
+export const GLOW_FILTER_MAX_STRENGTH: number = 1.5;
+export const GLOW_FILTER_QUALITY: number = 0.5;
+export const GLOW_FILTER_ANIMATION_SPEED: number = 0.25;
