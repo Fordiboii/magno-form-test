@@ -112,10 +112,16 @@ export class ResultsScreen extends PIXI.Container {
         window.close();
     }
 
+    /**
+     * Adds all custom event listeners.
+     */
     addEventListeners = (): void => {
         this.exitButton.on("click", this.exitButtonClickHandler);
     }
 
+    /**
+     * Removes all custom event listeners.
+     */
     removeEventListeners = (): void => {
         this.exitButton.off("click", this.exitButtonClickHandler);
     }

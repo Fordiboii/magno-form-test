@@ -1,13 +1,17 @@
 import * as PIXI from 'pixi.js';
 import { GameApp } from '../../app';
 import { MotionTutorialWorld } from '../../motion/MotionTutorialWorld';
+import { GREEN_TEXT_COLOR, PATCH_LABEL_COLOR, RED_TEXT_COLOR } from '../../utils/Constants';
 import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialTaskScreen extends TutorialScreen {
     private motionTutorialWorld: MotionTutorialWorld;
     private motionTutorialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
-    private tutorialArrow: PIXI.Sprite;
+    private greenCheckmark: PIXI.Sprite;
+    private redCross: PIXI.Sprite;
+    private patchLeftLabel: PIXI.Text;
+    private patchRightLabel: PIXI.Text;
 
     constructor(gameApp: GameApp) {
         super(gameApp);
@@ -28,22 +32,59 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.motionTutorialWorld = new MotionTutorialWorld();
         this.addChild(this.motionTutorialWorld);
 
-        // add tutorial arrow
-        const tutorialArrowTexture: PIXI.Texture = PIXI.Loader.shared.resources['tutorialArrow'].texture;
-        this.tutorialArrow = new PIXI.Sprite(tutorialArrowTexture);
-        this.tutorialArrow.anchor.set(0.5, 0);
-        this.tutorialArrow.width = Settings.WINDOW_WIDTH_PX / 40;
-        this.tutorialArrow.height = Settings.WINDOW_HEIGHT_PX / 22;
-        this.tutorialArrow.roundPixels = true;
-        this.tutorialArrow.position.x = this.motionTutorialWorld.patchRight.x + this.motionTutorialWorld.patchRight.width / 2;
-        this.tutorialArrow.position.y = this.motionTutorialWorldContainer.y - ((this.motionTutorialWorldContainer.y - this.motionTutorialWorld.patchRight.y) / 3);
-        this.addChild(this.tutorialArrow);
+        // add patch labels
+        this.patchLeftLabel = new PIXI.Text("1", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 1.2,
+            fill: PATCH_LABEL_COLOR
+        });
+        this.patchLeftLabel.anchor.set(0.5);
+        this.patchLeftLabel.roundPixels = true;
+        this.patchLeftLabel.x = this.motionTutorialWorld.patchLeft.x + this.motionTutorialWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.motionTutorialWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.addChild(this.patchLeftLabel);
+
+        this.patchRightLabel = new PIXI.Text("2", {
+            fontName: "Helvetica-Normal",
+            fontSize: Settings.FONT_SIZE * 1.2,
+            fill: PATCH_LABEL_COLOR
+        });
+        this.patchRightLabel.anchor.set(0.5);
+        this.patchRightLabel.roundPixels = true;
+        this.patchRightLabel.x = this.motionTutorialWorld.patchRight.x + this.motionTutorialWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.motionTutorialWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.addChild(this.patchRightLabel);
+
+        // add checkmark
+        const greenCheckmarkTexture: PIXI.Texture = PIXI.Loader.shared.resources['checkmark'].texture;
+        this.greenCheckmark = new PIXI.Sprite(greenCheckmarkTexture);
+        this.greenCheckmark.anchor.set(0.5, 1);
+        this.greenCheckmark.width = this.greenCheckmark.height = Settings.WINDOW_WIDTH_PX > Settings.WINDOW_HEIGHT_PX ? Settings.WINDOW_WIDTH_PX / 34 : Settings.WINDOW_HEIGHT_PX / 26;
+        this.greenCheckmark.roundPixels = true;
+        this.greenCheckmark.x = this.motionTutorialWorld.patchRight.x + this.motionTutorialWorld.patchRight.width / 2;
+        this.greenCheckmark.y = Settings.TRIAL_SCREEN_Y + this.motionTutorialWorld.patchLeft.height / 1.1;
+        this.greenCheckmark.tint = GREEN_TEXT_COLOR;
+        this.addChild(this.greenCheckmark);
+
+        // add cross
+        const redCrossTexture: PIXI.Texture = PIXI.Loader.shared.resources['cross'].texture;
+        this.redCross = new PIXI.Sprite(redCrossTexture);
+        this.redCross.anchor.set(0.5, 1);
+        this.redCross.width = this.redCross.height = Settings.WINDOW_WIDTH_PX > Settings.WINDOW_HEIGHT_PX ? Settings.WINDOW_WIDTH_PX / 34 : Settings.WINDOW_HEIGHT_PX / 26;
+        this.redCross.roundPixels = true;
+        this.redCross.x = this.motionTutorialWorld.patchLeft.x + this.motionTutorialWorld.patchLeft.width / 2;
+        this.redCross.y = Settings.TRIAL_SCREEN_Y + this.motionTutorialWorld.patchLeft.height / 1.1;
+        this.redCross.tint = RED_TEXT_COLOR;
+        this.addChild(this.redCross);
 
         // add tutorial text
         this.tutorialText.text =
-            "During the test, you should identify and select the box where some of the dots are moving systematically back and forth, here shown in the right box." +
+            "During the test, you will see two boxes containing moving dots." +
+            " Your task is to identify and select the box with dots moving systematically back and forth, here shown in box 2." +
+            " The dots are displayed for 5 seconds. " +
             " You select a box by clicking it or using the left and right arrow keys on your keyboard." +
-            " Repeat the exercise until the test is completed. The test takes approximately 8 minutes.";
+            " This exercise is repeated several times until completion, at which point you will receive your test score." +
+            " The test takes approximately 8 minutes.";
 
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
