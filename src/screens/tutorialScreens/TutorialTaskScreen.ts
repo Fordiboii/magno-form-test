@@ -88,7 +88,7 @@ export class TutorialTaskScreen extends TutorialScreen {
 
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
-        this.circles[1].texture = circleFilledTexture;
+        this.circles[2].texture = circleFilledTexture;
     }
 
     update = (delta: number): void => {

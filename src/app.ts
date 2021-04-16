@@ -3,6 +3,7 @@ import MainLoop from 'mainloop.js';
 import { SIMULATION_TIMESTEP } from './utils/Constants';
 import { MobileScreen } from './screens/MobileScreen';
 import { MotionScreen } from './screens/MotionScreen';
+import { LandingPageScreen } from './screens/LandingPageScreen';
 import { TutorialSitDownScreen } from './screens/tutorialScreens/TutorialSitDownScreen';
 import { TutorialTaskScreen } from './screens/tutorialScreens/TutorialTaskScreen';
 import { TutorialTrialScreen } from './screens/tutorialScreens/TutorialTrialScreen';
@@ -15,7 +16,7 @@ export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;
-    public currentScreen: MotionScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
+    public currentScreen: MotionScreen | LandingPageScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
     private threshold: number;
 
     constructor(width: number, height: number) {
@@ -93,6 +94,7 @@ export class GameApp {
             .add('checkmark', './assets/sprites/checkmark.png')
             .add('cross', './assets/sprites/cross.png')
             .add('sitDownImage', './assets/images/TutorialSitDown-01.png')
+            .add('magnoLogo', './assets/images/magnologo.png')
             .add('helvetica', './assets/fonts/helvetica-bitmap.fnt')
             .load()
     }
@@ -105,12 +107,14 @@ export class GameApp {
 
     private setup = (): void => {
         // create screens
+        const landingPageScreen: LandingPageScreen = new LandingPageScreen(this);
         const tutorialSitDownScreen: TutorialSitDownScreen = new TutorialSitDownScreen(this);
         const tutorialTaskScreen: TutorialTaskScreen = new TutorialTaskScreen(this);
         const tutorialTrialScreen: TutorialTrialScreen = new TutorialTrialScreen(this);
         const motionScreen: MotionScreen = new MotionScreen(this);
 
         this.screens = {
+            landingPageScreen: landingPageScreen,
             tutorialSitDownScreen: tutorialSitDownScreen,
             tutorialTaskScreen: tutorialTaskScreen,
             tutorialTrialScreen: tutorialTrialScreen,
@@ -119,13 +123,14 @@ export class GameApp {
         };
 
         // add screens to stage
-        this.stage.addChild(tutorialSitDownScreen, tutorialTaskScreen, tutorialTrialScreen, motionScreen);
+        this.stage.addChild(landingPageScreen, tutorialSitDownScreen, tutorialTaskScreen, tutorialTrialScreen, motionScreen);
 
         // hide screens and change to first tutorial screen
+        this.screens.tutorialSitDownScreen.visible = false;
         this.screens.tutorialTaskScreen.visible = false;
         this.screens.tutorialTrialScreen.visible = false;
         this.screens.motionScreen.visible = false;
-        this.changeScreen("tutorialSitDownScreen");
+        this.changeScreen("landingPageScreen");
     }
 
     private gameLoop = (delta: number): void => {
@@ -141,11 +146,10 @@ export class GameApp {
      * Sets the current screen. 
      * @param key string referring to a key in the Screens interface.
      */
-    public changeScreen = (key: "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "motionScreen" | "resultsScreen"): void => {
+    public changeScreen = (key: "landingPageScreen" | "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "motionScreen" | "resultsScreen"): void => {
         // disable current screen and remove event listeners
         this.currentScreen.visible = false;
         this.currentScreen.removeEventListeners();
-
         // create new instances of MotionScreen and TutorialTrialScreen if navigated back to
         if (this.currentScreen === this.screens.motionScreen) {
             this.stage.removeChild(this.screens.motionScreen);

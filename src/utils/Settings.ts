@@ -51,7 +51,6 @@ export abstract class Settings {
 
     // Header settings
     public static HEADER_WIDTH: number;
-    public static HEADER_HEIGHT: number;
     public static HEADER_Y_POSITION: number;
 
     // Tutorial settings
@@ -71,8 +70,8 @@ export abstract class Settings {
         // Window settings
         Settings.WINDOW_WIDTH_PX = window.innerWidth;
         Settings.WINDOW_HEIGHT_PX = window.innerHeight;
-        Settings.WINDOW_WIDTH_MM = (window.innerWidth / DEFAULT_DPI) * MM_PER_INCH;
-        Settings.WINDOW_HEIGHT_MM = (window.innerHeight / DEFAULT_DPI) * MM_PER_INCH;
+        Settings.WINDOW_WIDTH_MM = (Settings.WINDOW_WIDTH_PX / DEFAULT_DPI) * MM_PER_INCH;
+        Settings.WINDOW_HEIGHT_MM = (Settings.WINDOW_HEIGHT_PX / DEFAULT_DPI) * MM_PER_INCH;
 
         // Patch settings
         Settings.PATCH_GAP = 5;
@@ -99,11 +98,11 @@ export abstract class Settings {
         Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN = 8;
 
         // Text settings
-        Settings.FONT_SIZE = window.innerWidth * 20 / 1280;
+        Settings.FONT_SIZE = Settings.WINDOW_WIDTH_PX > Settings.WINDOW_HEIGHT_PX ? Settings.WINDOW_WIDTH_PX * 20 / 1280 : Settings.WINDOW_WIDTH_PX * 20 / 1280;
 
         // Button settings
         Settings.TEXT_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 5.7;
-        Settings.TEXT_BUTTON_HEIGHT = Settings.WINDOW_WIDTH_PX / 32;
+        Settings.TEXT_BUTTON_HEIGHT = Settings.WINDOW_WIDTH_PX > Settings.WINDOW_HEIGHT_PX ? Settings.WINDOW_WIDTH_PX / 32 : Settings.WINDOW_HEIGHT_MM / 13;
         Settings.TEXT_BUTTON_ROUNDING_RADIUS = Settings.TEXT_BUTTON_WIDTH / Settings.TEXT_BUTTON_HEIGHT * 1.5;
 
         Settings.CIRCLE_BUTTON_WIDTH = Settings.WINDOW_WIDTH_PX / 65;

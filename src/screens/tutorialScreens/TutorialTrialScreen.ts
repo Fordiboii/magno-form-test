@@ -182,7 +182,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.trialIncorrectText.y = TRIAL_TEXT_Y;
         // this.trialIncorrectText.height = 10;
 
-        this.trialFinishedText = new PIXI.Text("Click NEXT to proceed to the test",
+        this.trialFinishedText = new PIXI.Text("Click NEXT to proceed",
             {
                 fontName: 'Helvetica-Normal',
                 fontSize: Settings.FONT_SIZE * 0.9,
@@ -209,7 +209,7 @@ export class TutorialTrialScreen extends TutorialScreen {
 
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
-        this.circles[2].texture = circleFilledTexture;
+        this.circles[3].texture = circleFilledTexture;
     }
 
     update = (delta: number): void => {

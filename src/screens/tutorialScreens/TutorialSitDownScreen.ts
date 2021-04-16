@@ -28,12 +28,9 @@ export class TutorialSitDownScreen extends TutorialScreen {
             Settings.SCREEN_VIEWING_DISTANCE_MM / 10 +
             " cm from the edge of the table.";
 
-        // disable/enable buttons
-        this.backButton.disable(true);
-
         // set selected circle
         const circleFilledTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleFilled'].texture;
-        this.circles[0].texture = circleFilledTexture;
+        this.circles[1].texture = circleFilledTexture;
     }
 
     update = (): void => {
@@ -48,12 +45,22 @@ export class TutorialSitDownScreen extends TutorialScreen {
         this.gameApp.changeScreen("tutorialTaskScreen");
     }
 
+    backButtonClickHandler = (): void => {
+        this.gameApp.changeScreen("landingPageScreen");
+    }
+
+    backButtonTouchendHandler = (): void => {
+        this.gameApp.changeScreen("landingPageScreen");
+    }
+
     /**
      * Adds all custom event listeners
      */
     addEventListeners = (): void => {
         this.nextButton.on("click", this.nextButtonClickHandler);
         this.nextButton.on("touchend", this.nextButtonTouchendHandler);
+        this.backButton.on("click", this.backButtonClickHandler);
+        this.backButton.on("touchend", this.backButtonTouchendHandler);
     }
 
     /**
@@ -62,5 +69,7 @@ export class TutorialSitDownScreen extends TutorialScreen {
     removeEventListeners = (): void => {
         this.nextButton.off("click", this.nextButtonClickHandler);
         this.nextButton.off("touchend", this.nextButtonClickHandler);
+        this.backButton.off("click", this.backButtonClickHandler);
+        this.backButton.off("touchend", this.backButtonTouchendHandler);
     }
 }

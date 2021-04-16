@@ -116,7 +116,7 @@ export abstract class TutorialScreen extends PIXI.Container {
 
         // add circles
         const circleHollowTexture: PIXI.Texture = PIXI.Loader.shared.resources['circleHollow'].texture;
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 4; i++) {
             const circle: SpriteButton =
                 new SpriteButton(
                     i * Settings.CIRCLE_BUTTON_WIDTH * 2,
@@ -138,21 +138,28 @@ export abstract class TutorialScreen extends PIXI.Container {
         this.circles[0].on("click", this.firstCircleClickHandler);
         this.circles[1].on("click", this.secondCircleClickHandler);
         this.circles[2].on("click", this.thirdCircleClickHandler);
+        this.circles[3].on("click", this.fourthCircleClickHandler);
     }
 
     firstCircleClickHandler = (): void => {
+        if (this.gameApp.currentScreen !== this.gameApp.screens.landingPageScreen) {
+            this.gameApp.changeScreen("landingPageScreen");
+        }
+    }
+
+    secondCircleClickHandler = (): void => {
         if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialSitDownScreen) {
             this.gameApp.changeScreen("tutorialSitDownScreen");
         }
     }
 
-    secondCircleClickHandler = (): void => {
+    thirdCircleClickHandler = (): void => {
         if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialTaskScreen) {
             this.gameApp.changeScreen("tutorialTaskScreen");
         }
     }
 
-    thirdCircleClickHandler = (): void => {
+    fourthCircleClickHandler = (): void => {
         if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialTrialScreen) {
             this.gameApp.changeScreen("tutorialTrialScreen");
         }
