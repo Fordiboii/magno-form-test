@@ -53,10 +53,24 @@ export class TutorialSitDownScreen extends TutorialScreen {
         this.gameApp.changeScreen("landingPageScreen");
     }
 
+    touchEndHandler = (e: PIXI.InteractionEvent): void => {
+        const finalPoint: PIXI.Point = e.data.getLocalPosition(this.parent);
+        const xAbs: number = Math.abs(this.initialPoint.x - finalPoint.x);
+
+        if (xAbs > this.changeScreenDragDistance) {
+            if (finalPoint.x < this.initialPoint.x)
+                this.gameApp.changeScreen("tutorialTaskScreen");
+            else
+                this.gameApp.changeScreen("landingPageScreen");
+        }
+    }
+
     /**
      * Adds all custom event listeners
      */
     addEventListeners = (): void => {
+        this.on("touchend", this.touchEndHandler);
+        this.on("touchendoutside", this.touchEndHandler);
         this.nextButton.on("click", this.nextButtonClickHandler);
         this.nextButton.on("touchend", this.nextButtonTouchendHandler);
         this.backButton.on("click", this.backButtonClickHandler);
@@ -67,6 +81,8 @@ export class TutorialSitDownScreen extends TutorialScreen {
      * Removes all custom event listeners
      */
     removeEventListeners = (): void => {
+        this.off("touchend", this.touchEndHandler);
+        this.off("touchendoutside", this.touchEndHandler);
         this.nextButton.off("click", this.nextButtonClickHandler);
         this.nextButton.off("touchend", this.nextButtonClickHandler);
         this.backButton.off("click", this.backButtonClickHandler);

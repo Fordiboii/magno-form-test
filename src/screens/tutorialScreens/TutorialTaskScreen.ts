@@ -103,10 +103,33 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.gameApp.changeScreen("tutorialTrialScreen");
     }
 
+    hideDots = (): void => {
+        this.motionTutorialWorld.dotsLeftContainer.visible = false;
+        this.motionTutorialWorld.dotsRightContainer.visible = false;
+    }
+
+    touchEndHandler = (e: PIXI.InteractionEvent): void => {
+        const finalPoint: PIXI.Point = e.data.getLocalPosition(this.parent);
+        const xAbs: number = Math.abs(this.initialPoint.x - finalPoint.x);
+
+        if (xAbs > this.changeScreenDragDistance) {
+            if (finalPoint.x < this.initialPoint.x)
+                this.gameApp.changeScreen("tutorialTrialScreen");
+            else
+                this.gameApp.changeScreen("tutorialSitDownScreen");
+        }
+
+        this.motionTutorialWorld.dotsLeftContainer.visible = true;
+        this.motionTutorialWorld.dotsRightContainer.visible = true;
+    }
+
     /**
      * Adds all custom event listeners
      */
     addEventListeners = (): void => {
+        this.on("touchmove", this.hideDots);
+        this.on("touchend", this.touchEndHandler);
+        this.on("touchendoutside", this.touchEndHandler);
         this.backButton.on("click", this.backButtonClickHandler);
         this.backButton.on("touchend", this.backButtonClickHandler);
         this.nextButton.on("click", this.nextButtonClickHandler);
@@ -117,6 +140,9 @@ export class TutorialTaskScreen extends TutorialScreen {
      * Removes all custom event listeners
      */
     removeEventListeners = (): void => {
+        this.off("touchmove", this.hideDots);
+        this.off("touchend", this.touchEndHandler);
+        this.off("touchendoutside", this.touchEndHandler);
         this.backButton.off("click", this.backButtonClickHandler);
         this.backButton.off("touchend", this.backButtonClickHandler);
         this.nextButton.off("click", this.nextButtonClickHandler);

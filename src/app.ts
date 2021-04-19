@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
-import { SIMULATION_TIMESTEP } from './utils/Constants';
+import { BACKGROUND_COLOR, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MobileScreen } from './screens/MobileScreen';
 import { MotionScreen } from './screens/MotionScreen';
 import { LandingPageScreen } from './screens/LandingPageScreen';
@@ -18,6 +18,7 @@ export class GameApp {
     public screens: Screens;
     public currentScreen: MotionScreen | LandingPageScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
     private threshold: number;
+    private backgroundSprite: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -122,6 +123,12 @@ export class GameApp {
             resultsScreen: undefined
         };
 
+        // add background color
+        this.backgroundSprite.width = Settings.WINDOW_WIDTH_PX;
+        this.backgroundSprite.height = Settings.WINDOW_HEIGHT_PX;
+        this.backgroundSprite.tint = BACKGROUND_COLOR;
+        this.stage.addChild(this.backgroundSprite);
+
         // add screens to stage
         this.stage.addChild(landingPageScreen, tutorialSitDownScreen, tutorialTaskScreen, tutorialTrialScreen, motionScreen);
 
@@ -167,14 +174,19 @@ export class GameApp {
             this.screens.resultsScreen = new ResultsScreen(this.getThreshold());
             this.stage.addChild(this.screens.resultsScreen);
             this.currentScreen = this.screens.resultsScreen;
-            this.currentScreen.addEventListeners();
-            this.currentScreen.visible = true;
-        } else {
+        } else if (key == "motionScreen") {
+            // hide background
+            this.backgroundSprite.visible = false;
             // change to new screen
             this.currentScreen = this.screens[key];
-            this.currentScreen.addEventListeners();
-            this.currentScreen.visible = true;
+        } else {
+            // show background
+            this.backgroundSprite.visible = true;
+            // change to new screen
+            this.currentScreen = this.screens[key];
         }
+        this.currentScreen.addEventListeners();
+        this.currentScreen.visible = true;
     }
 
     private render = (): void => {

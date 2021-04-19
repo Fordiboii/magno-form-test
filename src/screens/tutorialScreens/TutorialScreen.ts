@@ -28,10 +28,18 @@ export abstract class TutorialScreen extends PIXI.Container {
     protected tutorialTextX: number;
     protected tutorialTextY: number;
 
+    // to handle touch drag events
+    protected initialPoint: PIXI.Point;
+    protected maxDragDistance: number = Settings.WINDOW_WIDTH_PX / 5;
+    protected changeScreenDragDistance: number = Settings.WINDOW_WIDTH_PX / 16;
+
     constructor(gameApp: GameApp) {
         super();
         // reference to game object
         this.gameApp = gameApp;
+
+        // make interactive to detect touch drag event
+        this.interactive = true;
 
         // button positions
         const backButtonX: number = Settings.WINDOW_WIDTH_PX / 2 - Settings.NEXT_BACK_BUTTON_SPACING;
@@ -139,6 +147,12 @@ export abstract class TutorialScreen extends PIXI.Container {
         this.circles[1].on("click", this.secondCircleClickHandler);
         this.circles[2].on("click", this.thirdCircleClickHandler);
         this.circles[3].on("click", this.fourthCircleClickHandler);
+
+        // add container drag event handlers
+        this.on("touchstart", this.touchStartHandler);
+        this.on("touchmove", this.touchDragHandler);
+        this.on("touchend", this.resetPosition);
+        this.on("touchendoutside", this.resetPosition);
     }
 
     firstCircleClickHandler = (): void => {
@@ -163,6 +177,22 @@ export abstract class TutorialScreen extends PIXI.Container {
         if (this.gameApp.currentScreen !== this.gameApp.screens.tutorialTrialScreen) {
             this.gameApp.changeScreen("tutorialTrialScreen");
         }
+    }
+
+    touchStartHandler = (e: PIXI.InteractionEvent): void => {
+        this.initialPoint = e.data.getLocalPosition(this.parent);
+    }
+
+    touchDragHandler = (e: PIXI.InteractionEvent): void => {
+        const nextPoint: PIXI.Point = e.data.getLocalPosition(this.parent);
+        const xAbs: number = Math.abs(this.initialPoint.x - nextPoint.x);
+
+        // move container
+        this.x = xAbs < this.maxDragDistance ? e.data.global.x - this.initialPoint.x : this.x;
+    }
+
+    resetPosition = (): void => {
+        this.x = 0;
     }
 
     abstract update(delta: number): void;
