@@ -73,34 +73,6 @@ export class ResultsBar extends PIXI.Container {
         this.maxLabel.roundPixels = true;
         this.addChild(this.maxLabel);
 
-        // // add min label description
-        // this.minLabelDescription = new PIXI.Text("Little to no problems",
-        //     {
-        //         fontSize: Settings.FONT_SIZE * 0.7,
-        //         fill: TEXT_COLOR,
-        //         align: 'center',
-        //         wordWrap: true,
-        //         wordWrapWidth: Settings.HEADER_WIDTH
-        //     });
-        // this.minLabelDescription.anchor.set(0.5, 0);
-        // this.minLabelDescription.position.set(x - this.resultBarGradient.width / 2, y + this.resultBarGradient.height + this.minLabel.height / 1.5 + labelPadding);
-        // this.minLabelDescription.roundPixels = true;
-        // this.addChild(this.minLabelDescription);
-
-        // // add min label description
-        // this.maxLabelDescription = new PIXI.Text("Possibly severe problems",
-        //     {
-        //         fontSize: Settings.FONT_SIZE * 0.7,
-        //         fill: TEXT_COLOR,
-        //         align: 'center',
-        //         wordWrap: true,
-        //         wordWrapWidth: Settings.HEADER_WIDTH
-        //     });
-        // this.maxLabelDescription.anchor.set(0.5, 0);
-        // this.maxLabelDescription.position.set(x + this.resultBarGradient.width / 2, y + this.resultBarGradient.height + this.minLabel.height / 1.5 + labelPadding);
-        // this.maxLabelDescription.roundPixels = true;
-        // this.addChild(this.maxLabelDescription);
-
         // add marker
         const markerTexture: PIXI.Texture = PIXI.Loader.shared.resources['resultsBarMarker'].texture;
         this.marker = new PIXI.Sprite(markerTexture);
