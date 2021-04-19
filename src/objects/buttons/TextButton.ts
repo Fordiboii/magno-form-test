@@ -59,6 +59,8 @@ export class TextButton extends PIXI.Container {
 
         if (buttonText) {
             const onClickTextOffset: number = 3;
+            const initialTextY: number = height / 2;
+            const onClickTextY: number = initialTextY + onClickTextOffset;
             this.text = new PIXI.Text(
                 buttonText,
                 {
@@ -70,32 +72,32 @@ export class TextButton extends PIXI.Container {
             this.text.roundPixels = true;
             this.text.anchor.set(0.5);
             this.text.x = width / 2;
-            this.text.y = height / 2;
+            this.text.y = initialTextY;
             this.addChild(this.text);
 
             this.on("mousedown", (): void => {
                 if (!this.isMouseDown) {
-                    this.text.y += onClickTextOffset;
+                    this.text.y = onClickTextY;
                     this.isMouseDown = true;
                 }
             });
 
             this.on("mouseup", (): void => {
                 if (this.isMouseDown) {
-                    this.text.y -= onClickTextOffset;
+                    this.text.y = initialTextY;
                     this.isMouseDown = false;
                 }
             });
 
             this.on("mouseout", (): void => {
                 if (this.isMouseDown) {
-                    this.text.y -= onClickTextOffset;
+                    this.text.y = initialTextY;
                 }
             });
 
             this.on("mouseover", (): void => {
                 if (this.isMouseDown) {
-                    this.text.y += onClickTextOffset;
+                    this.text.y = onClickTextY;
                 }
             });
 
@@ -105,7 +107,7 @@ export class TextButton extends PIXI.Container {
 
             this.on("touchstart", (): void => {
                 if (!this.isMouseDown) {
-                    this.text.y += onClickTextOffset;
+                    this.text.y = onClickTextY;
                     this.isMouseDown = true;
                 }
             });
@@ -113,7 +115,7 @@ export class TextButton extends PIXI.Container {
             this.on("touchmove", (e: TouchEvent): void => {
                 if (e.target == null) {
                     if (this.isMouseDown) {
-                        this.text.y -= onClickTextOffset;
+                        this.text.y = initialTextY;
                         this.isMouseDown = false;
                     }
                 }
@@ -121,7 +123,7 @@ export class TextButton extends PIXI.Container {
 
             this.on("touchend", (): void => {
                 if (this.isMouseDown) {
-                    this.text.y -= onClickTextOffset;
+                    this.text.y = initialTextY;
                     this.isMouseDown = false;
                 }
             });
