@@ -1,6 +1,8 @@
 import * as PIXI from "pixi.js";
+import { GameApp } from "../app";
 import { TextButton } from "../objects/buttons/TextButton";
 import { ResultsBar } from "../objects/ResultsBar";
+import { TestResults } from "../objects/TestResults";
 import { BACKGROUND_COLOR, NEXT_BUTTON_COLOR, NEXT_BUTTON_HOVER_COLOR, NEXT_BUTTON_STROKE_COLOR, TEXT_COLOR } from "../utils/Constants";
 import { Settings } from "../utils/Settings";
 
@@ -11,13 +13,16 @@ export class ResultsScreen extends PIXI.Container {
     private description: PIXI.Text;
     private descriptionText: string;
     private resultsBar: ResultsBar;
-    private threshold: number;
     private exitButton: TextButton;
+    private testResults: TestResults;
 
-    constructor(threshold: number) {
+    constructor(gameApp: GameApp) {
         super();
+        // reference to game object
+        this.testResults = gameApp.getTestResults();
+
         // round threshold score to 2 decimals
-        this.threshold = Number(threshold.toFixed(2));
+        const threshold: number = Number(this.testResults.threshold.toFixed(2));
 
         // add background color
         this.backgroundColorSprite.width = Settings.WINDOW_WIDTH_PX;
@@ -44,7 +49,7 @@ export class ResultsScreen extends PIXI.Container {
 
         // add score
         const SCORE_FONT_SIZE: number = Settings.FONT_SIZE * 1.5;
-        this.score = new PIXI.Text(`YOUR SCORE: ${this.threshold}`,
+        this.score = new PIXI.Text(`YOUR SCORE: ${threshold}`,
             {
                 fontSize: SCORE_FONT_SIZE,
                 fill: TEXT_COLOR,

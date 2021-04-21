@@ -11,14 +11,15 @@ import { LoadingScreen } from './screens/LoadingScreen';
 import { Screens } from "./interfaces/screens";
 import { ResultsScreen } from './screens/ResultsScreen';
 import { Settings } from './utils/Settings';
+import { TestResults } from './objects/TestResults';
 
 export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;
     public currentScreen: MotionScreen | LandingPageScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
-    private threshold: number;
     private backgroundSprite: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    private testResults: TestResults;
 
     constructor(width: number, height: number) {
         // create root container and renderer
@@ -171,7 +172,7 @@ export class GameApp {
         }
         if (key == "resultsScreen") {
             // create result screen and set it to current screen.
-            this.screens.resultsScreen = new ResultsScreen(this.getThreshold());
+            this.screens.resultsScreen = new ResultsScreen(this);
             this.stage.addChild(this.screens.resultsScreen);
             this.currentScreen = this.screens.resultsScreen;
         } else if (key == "motionScreen") {
@@ -198,11 +199,11 @@ export class GameApp {
         this.renderer.view.style.height = window.innerHeight + "px";
     };
 
-    getThreshold = (): number => {
-        return this.threshold;
+    getTestResults = (): TestResults => {
+        return this.testResults;
     }
 
-    setThreshold = (value: number): void => {
-        this.threshold = value;
+    setTestResults = (testResults: TestResults): void => {
+        this.testResults = testResults;
     }
 }

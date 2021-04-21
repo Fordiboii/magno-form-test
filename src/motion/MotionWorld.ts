@@ -17,7 +17,7 @@ import { MotionScreen } from '../screens/MotionScreen';
 
 export class MotionWorld extends AbstractMotionWorld {
     // reference to motion screen
-    motionScreen: MotionScreen;
+    private motionScreen: MotionScreen;
 
     private feedbackTimer: number = 0;
     private maxFeedbackTime: number = MAX_FEEDBACK_TIME;
