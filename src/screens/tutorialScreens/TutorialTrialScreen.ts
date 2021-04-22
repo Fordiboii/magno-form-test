@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from 'pixi-filters';
-import { GameApp } from '../../app';
+import { MotionApp } from '../../MotionApp';
 import { MotionTutorialTrialWorld } from '../../motion/MotionTutorialTrialWorld';
 import { TextButton } from '../../objects/buttons/TextButton';
 import {
@@ -47,7 +47,7 @@ export class TutorialTrialScreen extends TutorialScreen {
     public glowFilter1: any;
     public glowFilter2: any;
 
-    constructor(gameApp: GameApp) {
+    constructor(gameApp: MotionApp) {
         super(gameApp);
 
         this.maxSteps = Settings.TRIAL_MAX_STEPS;

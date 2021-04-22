@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { GameApp } from '../../app';
+import { MotionApp } from '../../MotionApp';
 import { MotionTutorialWorld } from '../../motion/MotionTutorialWorld';
 import { GREEN_TEXT_COLOR, PATCH_LABEL_COLOR, RED_TEXT_COLOR } from '../../utils/Constants';
 import { Settings } from '../../utils/Settings';
@@ -13,7 +13,7 @@ export class TutorialTaskScreen extends TutorialScreen {
     private patchLeftLabel: PIXI.Text;
     private patchRightLabel: PIXI.Text;
 
-    constructor(gameApp: GameApp) {
+    constructor(gameApp: MotionApp) {
         super(gameApp);
 
         // set header text

@@ -1,12 +1,20 @@
 {
-  "name": "magno-motion-test",
+  "name": "magno-tests",
   "version": "0.0.1",
-  "description": "Motion detection test used for dyslexia research.",
+  "description": "Motion and form tests for use in dyslexia research and detection.",
   "scripts": {
-    "dev": "parcel ./src/index.html --port=8080 --open ",
-    "prebuild": "npx del-cli ./dist",
-    "build": "cross-env NODE_ENV=production parcel build ./src/index.html --public-url .",
-    "deploy": "gh-pages -d dist"
+    "dev:motion": "cross-env TEST_TYPE=MOTION parcel ./src/index.html --port=8080 --open",
+    "dev:form-fixed": "cross-env TEST_TYPE=FORM_FIXED parcel ./src/index.html --port=8080 --open ",
+    "dev:form-random": "cross-env TEST_TYPE=FORM_RANDOM parcel ./src/index.html --port=8080 --open ",
+    "prebuild:motion": "npx del-cli ./dist/motion",
+    "prebuild:form-fixed": "npx del-cli ./dist/form_fixed",
+    "prebuild:form-random": "npx del-cli ./dist/form_random",
+    "build:motion": "cross-env TEST_TYPE=MOTION parcel build ./src/index.html --public-url . --out-dir dist/motion",
+    "build:form-fixed": "cross-env TEST_TYPE=FORM_FIXED parcel build ./src/index.html --public-url . --out-dir dist/form_fixed",
+    "build:form-random": "cross-env TEST_TYPE=FORM_RANDOM parcel build ./src/index.html --public-url . --out-dir dist/form_random",
+    "deploy:motion": "gh-pages -d dist/motion",
+    "deploy:form_fixed": "gh-pages -d dist/form_fixed",
+    "deploy:form_random": "gh-pages -d dist/form_random"
   },
   "author": "Fordiboii",
   "license": "MIT",

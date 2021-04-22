@@ -19,12 +19,12 @@ import {
 import { WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
 import { SpriteButton } from "../objects/buttons/SpriteButton";
-import { GameApp } from '../app';
+import { MotionApp } from '../MotionApp';
 import { Trial } from '../interfaces/trial';
 import { TestResults } from '../objects/TestResults';
 
 export class MotionScreen extends PIXI.Container {
-    private gameApp: GameApp;
+    private gameApp: MotionApp;
 
     private motionWorld: MotionWorld;
 
@@ -56,7 +56,7 @@ export class MotionScreen extends PIXI.Container {
     public glowFilter1: any;
     public glowFilter2: any;
 
-    constructor(gameApp: GameApp) {
+    constructor(gameApp: MotionApp) {
         super();
         // reference to game object
         this.gameApp = gameApp;

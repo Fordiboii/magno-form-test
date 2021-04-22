@@ -13,7 +13,7 @@ import { ResultsScreen } from './screens/ResultsScreen';
 import { Settings } from './utils/Settings';
 import { TestResults } from './objects/TestResults';
 
-export class GameApp {
+export class MotionApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;

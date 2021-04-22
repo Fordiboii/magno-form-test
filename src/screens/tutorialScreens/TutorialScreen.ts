@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { GameApp } from '../../app';
+import { MotionApp } from '../../MotionApp';
 import { SpriteButton } from '../../objects/buttons/SpriteButton';
 import { TextButton } from '../../objects/buttons/TextButton';
 import {
@@ -13,7 +13,7 @@ import {
 import { Settings } from '../../utils/Settings';
 
 export abstract class TutorialScreen extends PIXI.Container {
-    public gameApp: GameApp;
+    public gameApp: MotionApp;
     protected backgroundColorSprite: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     protected header: PIXI.Text;
     protected tutorialText: PIXI.Text;
@@ -33,7 +33,7 @@ export abstract class TutorialScreen extends PIXI.Container {
     protected maxDragDistance: number = Settings.WINDOW_WIDTH_PX / 5;
     protected changeScreenDragDistance: number = Settings.WINDOW_WIDTH_PX / 16;
 
-    constructor(gameApp: GameApp) {
+    constructor(gameApp: MotionApp) {
         super();
         // reference to game object
         this.gameApp = gameApp;
