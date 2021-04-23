@@ -1,6 +1,13 @@
 import { Trial } from "../interfaces/trial";
+import { TestType } from "../utils/Enums";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
+import {
+    ScreenSettings,
+    MotionSettings,
+    FormSettings,
+    StaircaseSettings
+} from "../interfaces/settings";
 
 export class TestResults {
     testType: string;
@@ -13,14 +20,13 @@ export class TestResults {
 
     trials: Array<Trial> = new Array<Trial>();
     reversalValues: Array<number> = new Array<number>();
-    screenSettings: Array<string> = new Array<string>();
-    motionSettings: Array<string> = new Array<string>();
-    formSettings: Array<string> = new Array<string>();
-    staircaseSettings: Array<string> = new Array<string>();
-    inputSettings: Array<string> = new Array<string>();
+    screenSettings: ScreenSettings;
+    motionSettings: MotionSettings;
+    formSettings: FormSettings;
+    staircaseSettings: StaircaseSettings;
 
-    constructor(testType: "motion" | "form random" | "form fixed", trials: Array<Trial>, reversalPoints: Array<number>, correctAnswers: number, wrongAnswers: number) {
-        this.testType = testType;
+    constructor(testType: TestType, trials: Array<Trial>, reversalPoints: Array<number>, correctAnswers: number, wrongAnswers: number) {
+        this.testType = TestType[testType];
         this.trials = trials;
 
         this.correctAnswers = correctAnswers;
@@ -35,34 +41,55 @@ export class TestResults {
             this.reversalValues.push(reversalPoints[i]);
         }
 
-        this.screenSettings.push("screen_w_mm: " + Settings.WINDOW_WIDTH_MM);
-        this.screenSettings.push("screen_h_mm: " + Settings.WINDOW_HEIGHT_MM);
-        this.screenSettings.push("screen_w_px: " + Settings.WINDOW_WIDTH_PX);
-        this.screenSettings.push("screen_h_px: " + Settings.WINDOW_HEIGHT_PX);
-        this.screenSettings.push("viewing_distance: " + Settings.SCREEN_VIEWING_DISTANCE_MM);
-        this.screenSettings.push("patch_width: " + Settings.PATCH_WIDTH);
-        this.screenSettings.push("patch_height: " + Settings.PATCH_HEIGHT);
-        this.screenSettings.push("patch_gap: " + Settings.PATCH_GAP);
-
-        if (testType == "motion") {
-            this.motionSettings.push("dot_amount: " + Settings.DOT_TOTAL_AMOUNT);
-            this.motionSettings.push("dot_radius: " + Settings.DOT_RADIUS);
-            this.motionSettings.push("dot_spacing: " + Settings.DOT_SPACING);
-            this.motionSettings.push("dot_velocity: " + Settings.DOT_VELOCITY);
-            this.motionSettings.push("dot_coherency: " + Settings.DOT_COHERENCE_PERCENTAGE);
-            this.motionSettings.push("dot_animation_time: " + Settings.DOT_MAX_ANIMATION_TIME);
-            this.motionSettings.push("dot_max_life_time: " + Settings.DOT_MAX_ALIVE_TIME);
-            this.motionSettings.push("dot_kill_percentage: " + Settings.DOT_KILL_PERCENTAGE);
-            this.motionSettings.push("dot_horizontal_reversal_time: " + Settings.DOT_HORIZONTAL_REVERSAL_TIME);
-            this.motionSettings.push("dot_random_direction_time: " + Settings.DOT_RANDOM_DIRECTION_TIME);
-        } else {
-            //TODO: add form settings
+        // add screen settings
+        this.screenSettings = {
+            screen_w_mm: Settings.WINDOW_WIDTH_MM,
+            screen_w_px: Settings.WINDOW_WIDTH_PX,
+            screen_h_mm: Settings.WINDOW_HEIGHT_MM,
+            screen_h_px: Settings.WINDOW_HEIGHT_PX,
+            viewing_distance: Settings.SCREEN_VIEWING_DISTANCE_MM,
+            patch_width: Settings.PATCH_WIDTH,
+            patch_height: Settings.PATCH_HEIGHT,
+            patch_gap: Settings.PATCH_GAP
         }
 
-        this.staircaseSettings.push("stair_correct_db: " + Settings.STAIRCASE_CORRECT_ANSWER_DB);
-        this.staircaseSettings.push("stair_wrong_db: " + Settings.STAIRCASE_WRONG_ANSWER_DB);
-        this.staircaseSettings.push("stair_max_tries: " + Settings.STAIRCASE_MAX_ATTEMPTS);
-        this.staircaseSettings.push("stair_reversal_points: " + Settings.STAIRCASE_REVERSAL_POINTS);
-        this.staircaseSettings.push("stair_mean_from_last: " + Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN);
+        // add motion or form settings
+        if (testType == TestType.MOTION) {
+            this.motionSettings = {
+                dot_amount: Settings.DOT_TOTAL_AMOUNT,
+                dot_radius: Settings.DOT_RADIUS,
+                dot_spacing: Settings.DOT_SPACING,
+                dot_velocity: Settings.DOT_VELOCITY,
+                dot_coherency: Settings.DOT_COHERENCE_PERCENTAGE,
+                dot_animation_time: Settings.DOT_MAX_ANIMATION_TIME,
+                dot_max_life_time: Settings.DOT_MAX_ALIVE_TIME,
+                dot_kill_percentage: Settings.DOT_KILL_PERCENTAGE,
+                dot_horizontal_reversal_time: Settings.DOT_HORIZONTAL_REVERSAL_TIME,
+                dot_random_direction_time: Settings.DOT_RANDOM_DIRECTION_TIME
+            }
+        } else {
+            this.formSettings = {
+                form_auto_mode: Settings.FORM_AUTO_MODE,
+                form_circle_gap: Settings.FORM_CIRCLES_GAP,
+                form_coherency: Settings.FORM_COHERENCY_PERCENTAGE,
+                form_diameter_wb: Settings.FORM_DIAMETER_WB,
+                form_line_amount: Settings.FORM_MAX_AMOUNT,
+                form_line_gap: Settings.FORM_LINE_GAP,
+                form_line_height: Settings.FORM_LINE_HEIGHT,
+                form_line_length: Settings.FORM_LINE_LENGTH,
+                form_nr_of_circles: Settings.FORM_CIRCLES,
+                form_fixed_detection_time: Settings.FORM_FIXED_DETECTION_TIME,
+                form_random_detection_time: Settings.FORM_RANDOM_DETECTION_TIME
+            }
+        }
+
+        // add staircase settings
+        this.staircaseSettings = {
+            stair_correct_db: Settings.STAIRCASE_CORRECT_ANSWER_DB,
+            stair_wrong_db: Settings.STAIRCASE_WRONG_ANSWER_DB,
+            stair_max_tries: Settings.STAIRCASE_MAX_ATTEMPTS,
+            stair_reversal_points: Settings.STAIRCASE_REVERSAL_POINTS,
+            stair_mean_from_last: Settings.STAIRCASE_REVERSALS_TO_CALCULATE_MEAN
+        }
     }
 }
