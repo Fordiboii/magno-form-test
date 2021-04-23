@@ -13,16 +13,16 @@ import {
     PATCH_OUTLINE_COLOR,
     PATCH_OUTLINE_THICKNESS
 } from '../utils/Constants';
-import { MotionScreen } from '../screens/MotionScreen';
+import { TestScreen } from '../screens/TestScreen';
 
 export class MotionWorld extends AbstractMotionWorld {
     // reference to motion screen
-    private motionScreen: MotionScreen;
+    private motionScreen: TestScreen;
 
     private feedbackTimer: number = 0;
     private maxFeedbackTime: number = MAX_FEEDBACK_TIME;
 
-    constructor(motionScreen: MotionScreen) {
+    constructor(motionScreen: TestScreen) {
         super();
         this.motionScreen = motionScreen;
 

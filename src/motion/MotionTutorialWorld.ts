@@ -41,8 +41,8 @@ export class MotionTutorialWorld extends AbstractMotionWorld {
         this.createDots();
 
         // show dots
-        this.dotsLeftContainer.visible = true;
-        this.dotsRightContainer.visible = true;
+        this.patchLeftObjectsContainer.visible = true;
+        this.patchRightObjectsContainer.visible = true;
 
         // set state to running
         this.setState(WorldState.RUNNING);

@@ -9,8 +9,8 @@ import { Settings } from "../utils/Settings";
 export abstract class AbstractMotionWorld extends PIXI.Container {
     protected currentState: WorldState;
 
-    public dotsLeftContainer: PIXI.Container = new PIXI.Container();
-    public dotsRightContainer: PIXI.Container = new PIXI.Container();
+    public patchLeftObjectsContainer: PIXI.Container = new PIXI.Container();
+    public patchRightObjectsContainer: PIXI.Container = new PIXI.Container();
     public dotsLeftParticleContainer: PIXI.ParticleContainer = new PIXI.ParticleContainer();
     public dotsRightParticleContainer: PIXI.ParticleContainer = new PIXI.ParticleContainer();
     public dotsLeft: Array<Dot>;
@@ -75,12 +75,12 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.dotMaxAliveTime = Settings.DOT_MAX_ALIVE_TIME;
 
         // use particle container for faster rendering. 
-        this.dotsLeftContainer.addChild(this.dotsLeftParticleContainer);
-        this.dotsRightContainer.addChild(this.dotsRightParticleContainer);
+        this.patchLeftObjectsContainer.addChild(this.dotsLeftParticleContainer);
+        this.patchRightObjectsContainer.addChild(this.dotsRightParticleContainer);
 
         // make dot containers hidden
-        this.dotsLeftContainer.visible = false;
-        this.dotsRightContainer.visible = false;
+        this.patchLeftObjectsContainer.visible = false;
+        this.patchRightObjectsContainer.visible = false;
     }
 
     abstract update(delta: number): void;
@@ -244,9 +244,9 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
             )
             .endFill()
 
-        this.dotsLeftContainer.mask = this.patchLeftMask;
-        this.dotsRightContainer.mask = this.patchRightMask;
-        this.addChild(this.dotsLeftContainer, this.dotsRightContainer);
+        this.patchLeftObjectsContainer.mask = this.patchLeftMask;
+        this.patchRightObjectsContainer.mask = this.patchRightMask;
+        this.addChild(this.patchLeftObjectsContainer, this.patchRightObjectsContainer);
     }
 
     /**
