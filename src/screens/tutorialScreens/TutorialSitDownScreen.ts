@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
-import { MotionApp } from '../../MotionApp';
+import { GameApp } from '../../app';
 import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialSitDownScreen extends TutorialScreen {
     private tutorialImage: PIXI.Sprite;
 
-    constructor(gameApp: MotionApp) {
+    constructor(gameApp: GameApp) {
         super(gameApp);
 
         // set header text

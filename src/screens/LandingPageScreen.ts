@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
-import { MotionApp } from '../MotionApp';
+import { GameApp } from '../app';
 import { Settings } from '../utils/Settings';
 import { TutorialScreen } from './tutorialScreens/TutorialScreen';
 
 export class LandingPageScreen extends TutorialScreen {
     logo: PIXI.Sprite;
 
-    constructor(gameApp: MotionApp) {
+    constructor(gameApp: GameApp) {
         super(gameApp);
 
         // add logo

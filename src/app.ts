@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import MainLoop from 'mainloop.js';
 import { BACKGROUND_COLOR, SIMULATION_TIMESTEP } from './utils/Constants';
 import { MobileScreen } from './screens/MobileScreen';
-import { MotionScreen } from './screens/MotionScreen';
+import { TestScreen } from './screens/TestScreen';
 import { LandingPageScreen } from './screens/LandingPageScreen';
 import { TutorialSitDownScreen } from './screens/tutorialScreens/TutorialSitDownScreen';
 import { TutorialTaskScreen } from './screens/tutorialScreens/TutorialTaskScreen';
@@ -12,16 +12,20 @@ import { Screens } from "./interfaces/screens";
 import { ResultsScreen } from './screens/ResultsScreen';
 import { Settings } from './utils/Settings';
 import { TestResults } from './objects/TestResults';
+import { TestType } from './utils/Enums';
 
-export class MotionApp {
+export class GameApp {
     public renderer: PIXI.Renderer;
     public stage: PIXI.Container;
     public screens: Screens;
-    public currentScreen: MotionScreen | LandingPageScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
+    public currentScreen: TestScreen | LandingPageScreen | TutorialSitDownScreen | TutorialTaskScreen | TutorialTrialScreen | LoadingScreen | ResultsScreen | MobileScreen;
     private backgroundSprite: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     private testResults: TestResults;
+    public testType: TestType;
 
-    constructor(width: number, height: number) {
+    constructor(width: number, height: number, testType: TestType) {
+        this.testType = testType;
+
         // create root container and renderer
         this.stage = new PIXI.Container();
         this.renderer = PIXI.autoDetectRenderer({
@@ -89,6 +93,7 @@ export class MotionApp {
         });
         loader
             .add('dot', './assets/sprites/dot.png')
+            .add('line', './assets/sprites/line.png')
             .add('backArrow', './assets/sprites/backArrow.png')
             .add('circleHollow', './assets/sprites/circle_hollow.png')
             .add('circleFilled', './assets/sprites/circle_filled.png')
@@ -113,14 +118,14 @@ export class MotionApp {
         const tutorialSitDownScreen: TutorialSitDownScreen = new TutorialSitDownScreen(this);
         const tutorialTaskScreen: TutorialTaskScreen = new TutorialTaskScreen(this);
         const tutorialTrialScreen: TutorialTrialScreen = new TutorialTrialScreen(this);
-        const motionScreen: MotionScreen = new MotionScreen(this);
+        const motionScreen: TestScreen = new TestScreen(this, this.testType);
 
         this.screens = {
             landingPageScreen: landingPageScreen,
             tutorialSitDownScreen: tutorialSitDownScreen,
             tutorialTaskScreen: tutorialTaskScreen,
             tutorialTrialScreen: tutorialTrialScreen,
-            motionScreen: motionScreen,
+            testScreen: motionScreen,
             resultsScreen: undefined
         };
 
@@ -137,7 +142,7 @@ export class MotionApp {
         this.screens.tutorialSitDownScreen.visible = false;
         this.screens.tutorialTaskScreen.visible = false;
         this.screens.tutorialTrialScreen.visible = false;
-        this.screens.motionScreen.visible = false;
+        this.screens.testScreen.visible = false;
         this.changeScreen("landingPageScreen");
     }
 
@@ -154,16 +159,16 @@ export class MotionApp {
      * Sets the current screen. 
      * @param key string referring to a key in the Screens interface.
      */
-    public changeScreen = (key: "landingPageScreen" | "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "motionScreen" | "resultsScreen"): void => {
+    public changeScreen = (key: "landingPageScreen" | "tutorialSitDownScreen" | "tutorialTaskScreen" | "tutorialTrialScreen" | "testScreen" | "resultsScreen"): void => {
         // disable current screen and remove event listeners
         this.currentScreen.visible = false;
         this.currentScreen.removeEventListeners();
         // create new instances of MotionScreen and TutorialTrialScreen if navigated back to
-        if (this.currentScreen === this.screens.motionScreen) {
-            this.stage.removeChild(this.screens.motionScreen);
-            this.screens.motionScreen = new MotionScreen(this);
-            this.screens.motionScreen.visible = false;
-            this.stage.addChild(this.screens.motionScreen);
+        if (this.currentScreen === this.screens.testScreen) {
+            this.stage.removeChild(this.screens.testScreen);
+            this.screens.testScreen = new TestScreen(this, this.testType);
+            this.screens.testScreen.visible = false;
+            this.stage.addChild(this.screens.testScreen);
         } else if (this.currentScreen === this.screens.tutorialTrialScreen) {
             this.stage.removeChild(this.screens.tutorialTrialScreen);
             this.screens.tutorialTrialScreen = new TutorialTrialScreen(this);
@@ -175,7 +180,7 @@ export class MotionApp {
             this.screens.resultsScreen = new ResultsScreen(this);
             this.stage.addChild(this.screens.resultsScreen);
             this.currentScreen = this.screens.resultsScreen;
-        } else if (key == "motionScreen") {
+        } else if (key == "testScreen") {
             // hide background
             this.backgroundSprite.visible = false;
             // change to new screen

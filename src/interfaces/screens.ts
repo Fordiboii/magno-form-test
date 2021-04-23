@@ -1,7 +1,7 @@
 import { TutorialSitDownScreen } from "../screens/tutorialScreens/TutorialSitDownScreen";
 import { TutorialTaskScreen } from "../screens/tutorialScreens/TutorialTaskScreen";
 import { TutorialTrialScreen } from "../screens/tutorialScreens/TutorialTrialScreen";
-import { MotionScreen } from "../screens/MotionScreen";
+import { TestScreen } from "../screens/TestScreen";
 import { ResultsScreen } from "../screens/ResultsScreen";
 import { LandingPageScreen } from "../screens/LandingPageScreen";
 
@@ -10,6 +10,6 @@ export interface Screens {
     tutorialSitDownScreen: TutorialSitDownScreen,
     tutorialTaskScreen: TutorialTaskScreen,
     tutorialTrialScreen: TutorialTrialScreen,
-    motionScreen: MotionScreen,
+    testScreen: TestScreen,
     resultsScreen: ResultsScreen | undefined
 }

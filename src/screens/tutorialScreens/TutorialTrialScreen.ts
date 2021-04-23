@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from 'pixi-filters';
-import { MotionApp } from '../../MotionApp';
+import { GameApp } from '../../app';
 import { MotionTutorialTrialWorld } from '../../motion/MotionTutorialTrialWorld';
 import { TextButton } from '../../objects/buttons/TextButton';
 import {
@@ -47,7 +47,7 @@ export class TutorialTrialScreen extends TutorialScreen {
     public glowFilter1: any;
     public glowFilter2: any;
 
-    constructor(gameApp: MotionApp) {
+    constructor(gameApp: GameApp) {
         super(gameApp);
 
         this.maxSteps = Settings.TRIAL_MAX_STEPS;
@@ -333,8 +333,8 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.startButton.visible = false;
         this.motionTutorialTrialWorld.patchLeft.interactive = true;
         this.motionTutorialTrialWorld.patchRight.interactive = true;
-        this.motionTutorialTrialWorld.dotsLeftContainer.visible = true;
-        this.motionTutorialTrialWorld.dotsRightContainer.visible = true;
+        this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = true;
+        this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = true;
         this.motionTutorialTrialWorld.setState(WorldState.RUNNING);
     }
 
@@ -350,8 +350,8 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.startButton.visible = false;
         this.motionTutorialTrialWorld.patchLeft.interactive = true;
         this.motionTutorialTrialWorld.patchRight.interactive = true;
-        this.motionTutorialTrialWorld.dotsLeftContainer.visible = true;
-        this.motionTutorialTrialWorld.dotsRightContainer.visible = true;
+        this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = true;
+        this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = true;
         this.motionTutorialTrialWorld.setState(WorldState.RUNNING);
     }
 
@@ -360,12 +360,12 @@ export class TutorialTrialScreen extends TutorialScreen {
     }
 
     nextButtonClickHandler = (): void => {
-        this.gameApp.changeScreen("motionScreen");
+        this.gameApp.changeScreen("testScreen");
     }
 
     hideDots = (): void => {
-        this.motionTutorialTrialWorld.dotsLeftContainer.visible = false;
-        this.motionTutorialTrialWorld.dotsRightContainer.visible = false;
+        this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = false;
+        this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = false;
     }
 
     touchEndHandler = (e: PIXI.InteractionEvent): void => {
@@ -374,14 +374,14 @@ export class TutorialTrialScreen extends TutorialScreen {
 
         if (xAbs > this.changeScreenDragDistance) {
             if (finalPoint.x < this.initialPoint.x)
-                this.gameApp.changeScreen("motionScreen");
+                this.gameApp.changeScreen("testScreen");
             else
                 this.gameApp.changeScreen("tutorialTaskScreen");
         }
 
         if (this.motionTutorialTrialWorld.getState() != WorldState.PAUSED) {
-            this.motionTutorialTrialWorld.dotsLeftContainer.visible = true;
-            this.motionTutorialTrialWorld.dotsRightContainer.visible = true;
+            this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = true;
+            this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = true;
         }
     }
 

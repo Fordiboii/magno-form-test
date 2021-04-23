@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from "pixi-filters";
 import { MotionWorld } from "../motion/MotionWorld";
+import { FormWorld } from "../form/FormWorld";
 import { Psychophysics } from "../utils/Psychophysics";
 import { Settings } from "../utils/Settings";
 import {
@@ -16,17 +17,18 @@ import {
     GLOW_FILTER_DISTANCE,
     GLOW_FILTER_QUALITY,
 } from "../utils/Constants";
-import { WorldState } from "../utils/Enums";
+import { TestType, WorldState } from "../utils/Enums";
 import { TextButton } from "../objects/buttons/TextButton";
 import { SpriteButton } from "../objects/buttons/SpriteButton";
-import { MotionApp } from '../MotionApp';
+import { GameApp } from '../app';
 import { Trial } from '../interfaces/trial';
 import { TestResults } from '../objects/TestResults';
 
-export class MotionScreen extends PIXI.Container {
-    private gameApp: MotionApp;
+export class TestScreen extends PIXI.Container {
+    private gameApp: GameApp;
+    private testType: TestType;
 
-    private motionWorld: MotionWorld;
+    private world: MotionWorld | FormWorld;
 
     public reversalPoints: number;
     public maxSteps: number;
@@ -56,10 +58,12 @@ export class MotionScreen extends PIXI.Container {
     public glowFilter1: any;
     public glowFilter2: any;
 
-    constructor(gameApp: MotionApp) {
+    constructor(gameApp: GameApp, testType: TestType) {
         super();
         // reference to game object
         this.gameApp = gameApp;
+
+        this.testType = testType;
 
         this.reversalPoints = Settings.STAIRCASE_REVERSAL_POINTS;
         this.maxSteps = Settings.STAIRCASE_MAX_ATTEMPTS;
@@ -80,9 +84,15 @@ export class MotionScreen extends PIXI.Container {
     }
 
     setup = (): void => {
-        // create motion world and add to container
-        this.motionWorld = new MotionWorld(this);
-        this.addChild(this.motionWorld);
+        // create motion or form world and add to container
+        if (this.testType == TestType.MOTION) {
+            this.world = new MotionWorld(this);
+        } else if (this.testType == TestType.FORM_FIXED) {
+            this.world = new FormWorld(this, true);
+        } else if (this.testType == TestType.FORM_RANDOM) {
+            this.world = new FormWorld(this, false);
+        }
+        this.addChild(this.world);
 
         // create glow filters for animating patch click
         this.glowFilter1 = new GlowFilter({
@@ -97,8 +107,8 @@ export class MotionScreen extends PIXI.Container {
         });
         this.glowFilter1.enabled = false;
         this.glowFilter2.enabled = false;
-        this.motionWorld.patchLeft.filters = [this.glowFilter1];
-        this.motionWorld.patchRight.filters = [this.glowFilter2];
+        this.world.patchLeft.filters = [this.glowFilter1];
+        this.world.patchRight.filters = [this.glowFilter2];
 
         // create patch labels and add to container
         this.patchLeftLabel = new PIXI.Text("1", {
@@ -108,8 +118,8 @@ export class MotionScreen extends PIXI.Container {
         });
         this.patchLeftLabel.anchor.set(0.5);
         this.patchLeftLabel.roundPixels = true;
-        this.patchLeftLabel.x = this.motionWorld.patchLeft.x + this.motionWorld.patchLeft.width / 2;
-        this.patchLeftLabel.y = this.motionWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.patchLeftLabel.x = this.world.patchLeft.x + this.world.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.world.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchLeftLabel);
 
         this.patchRightLabel = new PIXI.Text("2", {
@@ -119,8 +129,8 @@ export class MotionScreen extends PIXI.Container {
         });
         this.patchRightLabel.anchor.set(0.5);
         this.patchRightLabel.roundPixels = true;
-        this.patchRightLabel.x = this.motionWorld.patchRight.x + this.motionWorld.patchRight.width / 2;
-        this.patchRightLabel.y = this.motionWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.patchRightLabel.x = this.world.patchRight.x + this.world.patchRight.width / 2;
+        this.patchRightLabel.y = this.world.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
 
         // add text shown when animation is paused
@@ -132,7 +142,7 @@ export class MotionScreen extends PIXI.Container {
         this.pauseText.anchor.set(0.5, 0);
         this.pauseText.roundPixels = true;
         this.pauseText.x = Settings.WINDOW_WIDTH_PX / 2;
-        this.pauseText.y = Settings.WINDOW_HEIGHT_PX / 2 + this.motionWorld.patchLeft.height / 1.5;
+        this.pauseText.y = Settings.WINDOW_HEIGHT_PX / 2 + this.world.patchLeft.height / 1.5;
         this.pauseText.visible = false;
         this.addChild(this.pauseText);
 
@@ -167,30 +177,31 @@ export class MotionScreen extends PIXI.Container {
     }
 
     update = (delta: number): void => {
-        if (this.motionWorld.getState() == WorldState.FINISHED) {
+        if (this.world.getState() == WorldState.FINISHED) {
             // hide pause text
             this.pauseText.visible = false;
             // create test results
-            const testResults: TestResults = new TestResults("motion", this.trials, this.reversalValues, this.correctAnswerCounter, this.wrongAnswerCounter);
+            const testResults: TestResults = new TestResults(this.gameApp.testType, this.trials, this.reversalValues, this.correctAnswerCounter, this.wrongAnswerCounter);
+            console.log(testResults)
             this.gameApp.setTestResults(testResults);
             // change screen
             this.gameApp.changeScreen("resultsScreen");
-        } else if (this.motionWorld.getState() == WorldState.PAUSED) {
+        } else if (this.world.getState() == WorldState.PAUSED) {
             // show pause text if start button isn't visible, meaning the test has started and is paused.
             if (!this.startButton.visible) {
                 this.pauseText.visible = true;
             }
             // update motion world
-            this.motionWorld.update(delta);
+            this.world.update(delta);
         } else {
             // hide pause text
             this.pauseText.visible = false;
             // update motion world
-            this.motionWorld.update(delta);
+            this.world.update(delta);
         }
 
         // update timer
-        if (this.motionWorld.getState() == WorldState.RUNNING) {
+        if (this.world.getState() == WorldState.RUNNING) {
             this.selectionTimer += delta;
         }
     }
@@ -200,22 +211,22 @@ export class MotionScreen extends PIXI.Container {
         if (event.repeat) return
 
         let currentStep: boolean = true;
-        let reversalValue: number = this.motionWorld.getCoherencePercent();
-        let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
+        let reversalValue: number = this.world.getCoherencePercent();
+        let coherentPatchSide: string = this.world.getCoherentPatchSide();
 
         if (event.code == KEY_LEFT) {
             // get current state
-            const currentState: WorldState = this.motionWorld.getState();
+            const currentState: WorldState = this.world.getState();
             // only register input if state is RUNNING or PAUSED
             if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
                 // set state to PATCH_SELECTED
-                this.motionWorld.setState(WorldState.PATCH_SELECTED);
+                this.world.setState(WorldState.PATCH_SELECTED);
                 // enable glow filter on the selected patch
                 this.glowFilter1.enabled = true;
 
                 // update coherency and counters
                 if (coherentPatchSide == "LEFT") {
-                    this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
+                    this.world.updateCoherency(this.correctAnswerFactor, true);
                     this.correctAnswerCounter++;
                     // add trial data to results
                     this.trials.push({
@@ -227,7 +238,7 @@ export class MotionScreen extends PIXI.Container {
                         currentCoherency: reversalValue
                     });
                 } else {
-                    this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
+                    this.world.updateCoherency(this.wrongAnswerFactor, false);
                     this.wrongAnswerCounter++;
                     currentStep = false;
                     // add trial data to results
@@ -253,17 +264,17 @@ export class MotionScreen extends PIXI.Container {
             }
         } else if (event.code == KEY_RIGHT) {
             // get current state
-            const currentState: WorldState = this.motionWorld.getState();
+            const currentState: WorldState = this.world.getState();
             // only register input if state is RUNNING or PAUSED
             if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
                 // set state to PATCH_SELECTED
-                this.motionWorld.setState(WorldState.PATCH_SELECTED);
+                this.world.setState(WorldState.PATCH_SELECTED);
                 // enable glow filter on the selected patch
                 this.glowFilter2.enabled = true;
 
                 // update coherency and counters
                 if (coherentPatchSide == "RIGHT") {
-                    this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
+                    this.world.updateCoherency(this.correctAnswerFactor, true);
                     this.correctAnswerCounter++;
                     // add trial data to results
                     this.trials.push({
@@ -275,7 +286,7 @@ export class MotionScreen extends PIXI.Container {
                         currentCoherency: reversalValue
                     });
                 } else {
-                    this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
+                    this.world.updateCoherency(this.wrongAnswerFactor, false);
                     this.wrongAnswerCounter++;
                     currentStep = false;
                     // add trial data to results
@@ -311,15 +322,15 @@ export class MotionScreen extends PIXI.Container {
 
     mouseDownHandler = (patch: string, e: PIXI.InteractionEvent): void => {
         // get current state
-        const currentState: WorldState = this.motionWorld.getState();
+        const currentState: WorldState = this.world.getState();
         // only register input if state is RUNNING or PAUSED
         if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
             let currentStep: boolean = true;
-            let reversalValue: number = this.motionWorld.getCoherencePercent();
-            let coherentPatchSide: string = this.motionWorld.getCoherentPatchSide();
+            let reversalValue: number = this.world.getCoherencePercent();
+            let coherentPatchSide: string = this.world.getCoherentPatchSide();
 
             // set state to PATCH_SELECTED
-            this.motionWorld.setState(WorldState.PATCH_SELECTED);
+            this.world.setState(WorldState.PATCH_SELECTED);
             // enable glow filter on the selected patch
             if (patch == "LEFT") {
                 this.glowFilter1.enabled = true;
@@ -329,7 +340,7 @@ export class MotionScreen extends PIXI.Container {
 
             // update coherency and counters
             if (patch == coherentPatchSide) {
-                this.motionWorld.updateCoherency(this.correctAnswerFactor, true);
+                this.world.updateCoherency(this.correctAnswerFactor, true);
                 this.correctAnswerCounter++;
 
                 // add trial data to results
@@ -353,7 +364,7 @@ export class MotionScreen extends PIXI.Container {
                     });
                 }
             } else {
-                this.motionWorld.updateCoherency(this.wrongAnswerFactor, false);
+                this.world.updateCoherency(this.wrongAnswerFactor, false);
                 this.wrongAnswerCounter++;
                 currentStep = false;
 
@@ -388,47 +399,45 @@ export class MotionScreen extends PIXI.Container {
             this.prevStep = currentStep;
             this.stepCounter++;
             this.selectionTimer = 0;
-
-            console.log(this.trials)
         }
     }
 
     resetMotionWorld = (): void => {
-        this.motionWorld = new MotionWorld(this);
+        this.world = new MotionWorld(this);
     }
 
     startButtonClickHandler = (): void => {
         // add event handlers
         window.addEventListener("keydown", this.keyLeftRightDownHandler, true);
-        this.motionWorld.patchLeft.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
-        this.motionWorld.patchLeft.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
-        this.motionWorld.patchRight.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
-        this.motionWorld.patchRight.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
+        this.world.patchLeft.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
+        this.world.patchLeft.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
+        this.world.patchRight.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
+        this.world.patchRight.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
 
         // hide start button, make patches interactive and set state to running
         this.startButton.visible = false;
-        this.motionWorld.patchLeft.interactive = true;
-        this.motionWorld.patchRight.interactive = true;
-        this.motionWorld.dotsLeftContainer.visible = true;
-        this.motionWorld.dotsRightContainer.visible = true;
-        this.motionWorld.setState(WorldState.RUNNING);
+        this.world.patchLeft.interactive = true;
+        this.world.patchRight.interactive = true;
+        this.world.patchLeftObjectsContainer.visible = true;
+        this.world.patchRightObjectsContainer.visible = true;
+        this.world.setState(WorldState.RUNNING);
     }
 
     startButtonTouchendHandler = (): void => {
         // add event handlers
         window.addEventListener("keydown", this.keyLeftRightDownHandler, true);
-        this.motionWorld.patchLeft.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
-        this.motionWorld.patchLeft.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
-        this.motionWorld.patchRight.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
-        this.motionWorld.patchRight.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
+        this.world.patchLeft.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
+        this.world.patchLeft.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
+        this.world.patchRight.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
+        this.world.patchRight.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
 
         // hide start button, make patches interactive and set state to running
         this.startButton.visible = false;
-        this.motionWorld.patchLeft.interactive = true;
-        this.motionWorld.patchRight.interactive = true;
-        this.motionWorld.dotsLeftContainer.visible = true;
-        this.motionWorld.dotsRightContainer.visible = true;
-        this.motionWorld.setState(WorldState.RUNNING);
+        this.world.patchLeft.interactive = true;
+        this.world.patchRight.interactive = true;
+        this.world.patchLeftObjectsContainer.visible = true;
+        this.world.patchRightObjectsContainer.visible = true;
+        this.world.setState(WorldState.RUNNING);
 
     }
 
@@ -459,7 +468,7 @@ export class MotionScreen extends PIXI.Container {
         window.removeEventListener("keydown", this.keyLeftRightDownHandler, true);
         this.backButton.removeAllListeners();
         this.startButton.removeAllListeners();
-        this.motionWorld.patchLeft.removeAllListeners();
-        this.motionWorld.patchRight.removeAllListeners();
+        this.world.patchLeft.removeAllListeners();
+        this.world.patchRight.removeAllListeners();
     }
 }

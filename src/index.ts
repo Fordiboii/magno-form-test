@@ -1,14 +1,13 @@
-import { MotionApp } from './MotionApp';
+import { GameApp } from './app';
+import { TestType } from './utils/Enums';
 
 window.onload = () => {
   // create test
   if (process.env.TEST_TYPE == "MOTION") {
-    new MotionApp(window.innerWidth, window.innerHeight);
+    new GameApp(window.innerWidth, window.innerHeight, TestType.MOTION);
   } else if (process.env.TEST_TYPE == "FORM_FIXED") {
-    // TOOD: create FormApp
-    console.log("form fixed")
+    new GameApp(window.innerWidth, window.innerHeight, TestType.FORM_FIXED);
   } else if (process.env.TEST_TYPE == "FORM_RANDOM") {
-    // TODO: create FormApp
-    console.log("form random")
+    new GameApp(window.innerWidth, window.innerHeight, TestType.FORM_RANDOM);
   }
 };

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { MotionApp } from '../../MotionApp';
+import { GameApp } from '../../app';
 import { MotionTutorialWorld } from '../../motion/MotionTutorialWorld';
 import { GREEN_TEXT_COLOR, PATCH_LABEL_COLOR, RED_TEXT_COLOR } from '../../utils/Constants';
 import { Settings } from '../../utils/Settings';
@@ -13,7 +13,7 @@ export class TutorialTaskScreen extends TutorialScreen {
     private patchLeftLabel: PIXI.Text;
     private patchRightLabel: PIXI.Text;
 
-    constructor(gameApp: MotionApp) {
+    constructor(gameApp: GameApp) {
         super(gameApp);
 
         // set header text
@@ -104,8 +104,8 @@ export class TutorialTaskScreen extends TutorialScreen {
     }
 
     hideDots = (): void => {
-        this.motionTutorialWorld.dotsLeftContainer.visible = false;
-        this.motionTutorialWorld.dotsRightContainer.visible = false;
+        this.motionTutorialWorld.patchLeftObjectsContainer.visible = false;
+        this.motionTutorialWorld.patchRightObjectsContainer.visible = false;
     }
 
     touchEndHandler = (e: PIXI.InteractionEvent): void => {
@@ -119,8 +119,8 @@ export class TutorialTaskScreen extends TutorialScreen {
                 this.gameApp.changeScreen("tutorialSitDownScreen");
         }
 
-        this.motionTutorialWorld.dotsLeftContainer.visible = true;
-        this.motionTutorialWorld.dotsRightContainer.visible = true;
+        this.motionTutorialWorld.patchLeftObjectsContainer.visible = true;
+        this.motionTutorialWorld.patchRightObjectsContainer.visible = true;
     }
 
     /**

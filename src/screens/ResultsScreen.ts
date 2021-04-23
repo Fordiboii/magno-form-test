@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { MotionApp } from "../MotionApp";
+import { GameApp } from "../app";
 import { TextButton } from "../objects/buttons/TextButton";
 import { ResultsBar } from "../objects/ResultsBar";
 import { TestResults } from "../objects/TestResults";
@@ -16,7 +16,7 @@ export class ResultsScreen extends PIXI.Container {
     private exitButton: TextButton;
     private testResults: TestResults;
 
-    constructor(gameApp: MotionApp) {
+    constructor(gameApp: GameApp) {
         super();
         // reference to game object
         this.testResults = gameApp.getTestResults();
