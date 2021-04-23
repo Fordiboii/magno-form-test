@@ -27,6 +27,19 @@ export abstract class Settings {
     public static DOT_MAX_ANIMATION_TIME: number; // in milliseconds.
     public static DOT_MAX_ALIVE_TIME: number; // in milliseconds.
 
+    // Form settings
+    public static FORM_AUTO_MODE: boolean;
+    public static FORM_MAX_AMOUNT: number;
+    public static FORM_DIAMETER_WB: number;
+    public static FORM_CIRCLES: number;
+    public static FORM_CIRCLES_GAP: number;
+    public static FORM_LINE_LENGTH: number;
+    public static FORM_LINE_HEIGHT: number;
+    public static FORM_LINE_GAP: number;
+    public static FORM_COHERENCY_PERCENTAGE: number;
+    public static FORM_FIXED_DETECTION_TIME: number; // in milliseconds.
+    public static FORM_RANDOM_DETECTION_TIME: number; // in milliseconds.
+
     // Staircase settings
     public static STAIRCASE_CORRECT_ANSWER_DB: number; // in decibel.
     public static STAIRCASE_WRONG_ANSWER_DB: number; // in decibel.
@@ -89,6 +102,19 @@ export abstract class Settings {
         Settings.DOT_KILL_PERCENTAGE = 10;
         Settings.DOT_MAX_ANIMATION_TIME = 5000;
         Settings.DOT_MAX_ALIVE_TIME = 85;
+
+        // Form settings
+        Settings.FORM_AUTO_MODE = true;
+        Settings.FORM_MAX_AMOUNT = 600;
+        Settings.FORM_DIAMETER_WB = 8;
+        Settings.FORM_CIRCLES = 4;
+        Settings.FORM_CIRCLES_GAP = 0.9;
+        Settings.FORM_LINE_LENGTH = 0.4;
+        Settings.FORM_LINE_HEIGHT = 1;
+        Settings.FORM_LINE_GAP = 0.4;
+        Settings.FORM_COHERENCY_PERCENTAGE = 100;
+        Settings.FORM_FIXED_DETECTION_TIME = 4000;
+        Settings.FORM_RANDOM_DETECTION_TIME = 1000000;
 
         // Staircase settings
         Settings.STAIRCASE_CORRECT_ANSWER_DB = 1;
