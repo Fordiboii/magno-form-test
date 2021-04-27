@@ -4,7 +4,6 @@ import { Patch } from "../objects/Patch";
 import { LineSegment } from "../objects/LineSegment";
 import { Settings } from "../utils/Settings";
 import { PATCH_OUTLINE_THICKNESS } from "../utils/Constants";
-import { Psychophysics } from "../utils/Psychophysics";
 import { euclideanDistance } from "../utils/EuclideanDistance";
 
 export abstract class AbstractFormWorld extends PIXI.Container {
@@ -41,6 +40,7 @@ export abstract class AbstractFormWorld extends PIXI.Container {
     public correctAnswerCounter: number = 0;
     public wrongAnswerCounter: number = 0;
 
+
     constructor(isFixed: boolean) {
         super();
         this.isFixed = isFixed;
@@ -53,6 +53,14 @@ export abstract class AbstractFormWorld extends PIXI.Container {
             this.maxRunTime = Settings.FORM_FIXED_DETECTION_TIME;
         else
             this.maxRunTime = Settings.FORM_RANDOM_DETECTION_TIME;
+
+        // add containers
+        this.patchLeftObjectsContainer.addChild(this.lineSegmentsLeftContainer);
+        this.patchRightObjectsContainer.addChild(this.lineSegmentsRightContainer);
+
+        // hide containers by default
+        this.patchLeftObjectsContainer.visible = false;
+        this.patchRightObjectsContainer.visible = false;
     }
 
     calculateMaxMin = (): void => {
@@ -87,84 +95,16 @@ export abstract class AbstractFormWorld extends PIXI.Container {
             )
             .endFill()
 
-        this.lineSegmentsLeftContainer.mask = this.patchLeftMask;
-        this.lineSegmentsRightContainer.mask = this.patchRightMask;
-        this.addChild(this.lineSegmentsLeftContainer, this.lineSegmentsRightContainer);
+        this.patchLeftObjectsContainer.mask = this.patchLeftMask;
+        this.patchRightObjectsContainer.mask = this.patchRightMask;
+        this.addChild(this.patchLeftObjectsContainer, this.patchRightObjectsContainer);
     }
 
     abstract update(delta: number): void;
 
     abstract createPatches(): void;
 
-    /**
-     * Calculates and fetches parameters for creating line segments
-     */
-    createLineSegments(): void {
-        let x: number;
-        let y: number;
-
-        const d: number = Psychophysics.visualAngleToPixels(
-            Settings.FORM_DIAMETER_WB,
-            Settings.SCREEN_VIEWING_DISTANCE_MM,
-            Settings.WINDOW_WIDTH_PX,
-            Settings.WINDOW_WIDTH_MM
-        );
-
-        this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
-        this.patchMinY = (this.patchLeft.y) + (d / 2);
-
-        // randomly choose patch to contain concentric circles
-        // get a random circle center if not fixed, otherwise it's the center of the patch
-        this.coherentPatchSide = Math.round(Math.random()) ? Direction[0] : Direction[1];
-        if (this.coherentPatchSide == "LEFT") {
-            if (this.isFixed) {
-                x = this.patchLeft.x + (this.patchLeft.width / 2);
-                y = this.patchLeft.y + (this.patchLeft.height / 2);
-            } else {
-                this.leftMaxX = (this.patchLeft.x + this.patchLeft.width) - (d / 2);
-                this.leftMinX = (this.patchLeft.x) + (d / 2);
-                x = Math.random() * (this.leftMaxX - this.leftMinX) + this.leftMinX;
-                y = Math.random() * (this.patchMaxY - this.patchMinY) + this.patchMinY;
-            }
-
-        } else {
-            if (this.isFixed) {
-                x = this.patchRight.x + (this.patchRight.width / 2);
-                y = this.patchRight.y + (this.patchRight.height / 2);
-            } else {
-                this.rightMaxX = (this.patchRight.x + this.patchRight.width) - (d / 2);
-                this.rightMinX = (this.patchRight.x) + (d / 2);
-                x = Math.random() * (this.rightMaxX - this.rightMinX) + this.rightMinX;
-                y = Math.random() * (this.patchMaxY - this.patchMinY) + this.patchMinY;
-            }
-        }
-
-        const r: number = d / 2;
-
-        if (!Settings.FORM_AUTO_MODE) {
-            const circleGap: number = Psychophysics.visualAngleToPixels(
-                Settings.FORM_CIRCLES_GAP,
-                Settings.SCREEN_VIEWING_DISTANCE_MM,
-                Settings.WINDOW_WIDTH_PX,
-                Settings.WINDOW_WIDTH_MM
-            );
-            const lineGapOffset: number = Psychophysics.visualAngleToPixels(
-                Settings.FORM_LINE_GAP,
-                Settings.SCREEN_VIEWING_DISTANCE_MM,
-                Settings.WINDOW_WIDTH_PX,
-                Settings.WINDOW_WIDTH_MM
-            );
-            const lineLength: number = Psychophysics.visualAngleToPixels(
-                Settings.FORM_LINE_LENGTH,
-                Settings.SCREEN_VIEWING_DISTANCE_MM,
-                Settings.WINDOW_WIDTH_PX,
-                Settings.WINDOW_WIDTH_MM
-            );
-            this.manualMode(x, y, r, lineLength, lineGapOffset, circleGap);
-        } else {
-            this.autoMode(x, y, r);
-        }
-    }
+    abstract createLineSegments(): void;
 
     /**
      * Creates a set number of concentric circles with the line segments aligned to the tangent of a given circle
@@ -306,8 +246,6 @@ export abstract class AbstractFormWorld extends PIXI.Container {
     paused = (): void => {
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
-            this.lineSegmentsLeftContainer.visible = false;
-            this.lineSegmentsRightContainer.visible = false;
         }
     }
 

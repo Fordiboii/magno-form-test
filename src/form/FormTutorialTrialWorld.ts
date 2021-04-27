@@ -1,27 +1,27 @@
-import { Patch } from "../objects/Patch";
-import { TestScreen } from "../screens/TestScreen";
+import { Direction, WorldState } from '../utils/Enums';
+import { Psychophysics } from '../utils/Psychophysics';
+import { Settings } from '../utils/Settings';
+import { Patch } from '../objects/Patch';
 import {
     GLOW_FILTER_ANIMATION_SPEED,
     GLOW_FILTER_MAX_STRENGTH,
     MAX_FEEDBACK_TIME,
     PATCH_OUTLINE_COLOR,
     PATCH_OUTLINE_THICKNESS
-} from "../utils/Constants";
-import { Direction, WorldState } from "../utils/Enums";
-import { Psychophysics } from "../utils/Psychophysics";
-import { Settings } from "../utils/Settings";
-import { AbstractFormWorld } from "./AbstractFormWorld";
+} from '../utils/Constants';
+import { TutorialTrialScreen } from '../screens/tutorialscreens/TutorialTrialScreen';
+import { AbstractFormWorld } from './AbstractFormWorld';
 
-export class FormWorld extends AbstractFormWorld {
-    // reference to motion screen
-    private testScreen: TestScreen;
-
+export class FormTutorialTrialWorld extends AbstractFormWorld {
     private feedbackTimer: number = 0;
     private maxFeedbackTime: number = MAX_FEEDBACK_TIME;
 
-    constructor(testScreen: TestScreen, isFixed: boolean) {
+    // reference to the screen object
+    private tutorialTrialScreen: TutorialTrialScreen;
+
+    constructor(tutorialTrialScreen: TutorialTrialScreen, isFixed: boolean) {
         super(isFixed);
-        this.testScreen = testScreen;
+        this.tutorialTrialScreen = tutorialTrialScreen;
         this.createPatches();
         this.calculateMaxMin();
         this.createPatchContainerMasks();
@@ -29,15 +29,79 @@ export class FormWorld extends AbstractFormWorld {
     }
 
     /**
-     * Creates the left and right patches for placing line segments
+     * Updates dots.
+     * @param delta time between each frame in ms
+     */
+    update = (delta: number): void => {
+        if (this.currentState == WorldState.RUNNING) {
+            this.running(delta);
+        } else if (this.currentState == WorldState.PAUSED) {
+            this.paused();
+        } else if (this.currentState == WorldState.TRIAL_CORRECT) {
+            this.feedback(delta);
+        } else if (this.currentState == WorldState.TRIAL_INCORRECT) {
+            this.feedback(delta);
+        } else if (this.currentState == WorldState.FINISHED) {
+            this.lineSegmentsLeftContainer.visible = false;
+            this.lineSegmentsRightContainer.visible = false;
+            this.patchLeft.interactive = false;
+            this.patchRight.interactive = false;
+            return;
+        }
+    }
+
+    /**
+     * Creates a new trial and changes the state from TRIAL_CORRECT or TRIAL_INCORRECT to RUNNING if the max feedback time is reached.
+     * If the number of max steps is reached, it changes the state to FINISHED.
+     * @param delta time between each frame in ms
+     */
+    feedback = (delta: number): void => {
+        this.feedbackTimer += delta;
+        // animate glow filters
+        this.tutorialTrialScreen.glowFilter1.outerStrength += (this.tutorialTrialScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        this.tutorialTrialScreen.glowFilter2.outerStrength += (this.tutorialTrialScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        // hide dots
+        this.lineSegmentsLeftContainer.visible = false;
+        this.lineSegmentsRightContainer.visible = false;
+        if (this.feedbackTimer >= this.maxFeedbackTime) {
+            // reset glow filters
+            this.tutorialTrialScreen.glowFilter1.outerStrength = 0;
+            this.tutorialTrialScreen.glowFilter2.outerStrength = 0;
+            // disable glow filters
+            this.tutorialTrialScreen.glowFilter1.enabled = false;
+            this.tutorialTrialScreen.glowFilter2.enabled = false;
+            // check if test is finished
+            if (this.tutorialTrialScreen.stepCounter == this.tutorialTrialScreen.maxSteps) {
+                this.setState(WorldState.FINISHED);
+                this.feedbackTimer = 0;
+                return;
+            }
+            this.feedbackTimer = 0;
+            this.reset();
+            this.lineSegmentsLeftContainer.visible = true;
+            this.lineSegmentsRightContainer.visible = true;
+            this.setState(WorldState.RUNNING);
+        }
+    }
+
+    reset = (): void => {
+        this.runTime = 0;
+        this.lineSegments = [];
+        this.lineSegmentsLeftContainer.removeChildren();
+        this.lineSegmentsRightContainer.removeChildren();
+        this.createLineSegments();
+    }
+
+    /**
+     * Creates the left and right patches for placing dots
      */
     createPatches = (): void => {
-        this.patchGap = Psychophysics.getPatchGapInPixels();
-        const patchWidth: number = Psychophysics.getPatchWidthInPixels();
-        const patchHeight: number = Psychophysics.getPatchHeightInPixels();
+        this.patchGap = Psychophysics.getPatchGapInPixels() / 1.4;
+        const patchWidth: number = Psychophysics.getPatchWidthInPixels() / 1.4;
+        const patchHeight: number = Psychophysics.getPatchHeightInPixels() / 1.4;
 
-        const screenXCenter: number = Settings.WINDOW_WIDTH_PX / 2;
-        const screenYCenter: number = Settings.WINDOW_HEIGHT_PX / 2;
+        const screenXCenter: number = Settings.TRIAL_SCREEN_X;
+        const screenYCenter: number = Settings.TRIAL_SCREEN_Y;
 
         const patchLeftX: number = screenXCenter - patchWidth - (this.patchGap / 2);
         const patchRightX: number = screenXCenter + (this.patchGap / 2);
@@ -119,60 +183,6 @@ export class FormWorld extends AbstractFormWorld {
         } else {
             this.autoMode(x, y, r);
         }
-    }
-
-    update = (delta: number): void => {
-        if (this.currentState == WorldState.FINISHED) {
-            return;
-        } else if (this.currentState == WorldState.PAUSED) {
-            this.paused();
-        } else if (this.currentState == WorldState.PATCH_SELECTED) {
-            this.feedback(delta);
-        } else if (this.currentState == WorldState.RUNNING) {
-            this.running(delta);
-        }
-    }
-
-    /**
-     * Creates a new trial and changes the state from PATCH_SELECTED to RUNNING if the max feedback time is reached.
-     * If the number of max steps is reached, it changes the state to FINISHED.
-     * @param delta time between each frame in ms
-     */
-    feedback = (delta: number): void => {
-        this.feedbackTimer += delta;
-        // animate glow filters
-        this.testScreen.glowFilter1.outerStrength += (this.testScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
-        this.testScreen.glowFilter2.outerStrength += (this.testScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
-        // hide lines
-        this.lineSegmentsLeftContainer.visible = false;
-        this.lineSegmentsRightContainer.visible = false;
-        if (this.feedbackTimer >= this.maxFeedbackTime / 2.5) {
-            // reset glow filters
-            this.testScreen.glowFilter1.outerStrength = 0;
-            this.testScreen.glowFilter2.outerStrength = 0;
-            // disable glow filters
-            this.testScreen.glowFilter1.enabled = false;
-            this.testScreen.glowFilter2.enabled = false;
-            // check if test is finished
-            if (this.testScreen.stepCounter == this.testScreen.maxSteps || this.testScreen.reversalCounter == this.testScreen.reversalPoints) {
-                this.setState(WorldState.FINISHED);
-                this.feedbackTimer = 0;
-                return;
-            }
-            this.feedbackTimer = 0;
-            this.reset();
-            this.lineSegmentsLeftContainer.visible = true;
-            this.lineSegmentsRightContainer.visible = true;
-            this.setState(WorldState.RUNNING);
-        }
-    }
-
-    reset = (): void => {
-        this.runTime = 0;
-        this.lineSegments = [];
-        this.lineSegmentsLeftContainer.removeChildren();
-        this.lineSegmentsRightContainer.removeChildren();
-        this.createLineSegments();
     }
 
     /**

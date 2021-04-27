@@ -78,7 +78,7 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
         this.patchLeftObjectsContainer.addChild(this.dotsLeftParticleContainer);
         this.patchRightObjectsContainer.addChild(this.dotsRightParticleContainer);
 
-        // make dot containers hidden
+        // make object containers hidden
         this.patchLeftObjectsContainer.visible = false;
         this.patchRightObjectsContainer.visible = false;
     }
@@ -97,8 +97,6 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     paused = (): void => {
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
-            this.dotsLeftParticleContainer.visible = false;
-            this.dotsRightParticleContainer.visible = false;
         }
     }
 

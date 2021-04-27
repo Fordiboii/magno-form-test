@@ -17,14 +17,14 @@ import { TestScreen } from '../screens/TestScreen';
 
 export class MotionWorld extends AbstractMotionWorld {
     // reference to motion screen
-    private motionScreen: TestScreen;
+    private testScreen: TestScreen;
 
     private feedbackTimer: number = 0;
     private maxFeedbackTime: number = MAX_FEEDBACK_TIME;
 
-    constructor(motionScreen: TestScreen) {
+    constructor(testScreen: TestScreen) {
         super();
-        this.motionScreen = motionScreen;
+        this.testScreen = testScreen;
 
         this.createPatches();
 
@@ -77,20 +77,20 @@ export class MotionWorld extends AbstractMotionWorld {
     feedback = (delta: number): void => {
         this.feedbackTimer += delta;
         // animate glow filters
-        this.motionScreen.glowFilter1.outerStrength += (this.motionScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
-        this.motionScreen.glowFilter2.outerStrength += (this.motionScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        this.testScreen.glowFilter1.outerStrength += (this.testScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
+        this.testScreen.glowFilter2.outerStrength += (this.testScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
         // hide dots
         this.dotsLeftParticleContainer.visible = false;
         this.dotsRightParticleContainer.visible = false;
         if (this.feedbackTimer >= this.maxFeedbackTime / 2.5) {
             // reset glow filters
-            this.motionScreen.glowFilter1.outerStrength = 0;
-            this.motionScreen.glowFilter2.outerStrength = 0;
+            this.testScreen.glowFilter1.outerStrength = 0;
+            this.testScreen.glowFilter2.outerStrength = 0;
             // disable glow filters
-            this.motionScreen.glowFilter1.enabled = false;
-            this.motionScreen.glowFilter2.enabled = false;
+            this.testScreen.glowFilter1.enabled = false;
+            this.testScreen.glowFilter2.enabled = false;
             // check if test is finished
-            if (this.motionScreen.stepCounter == this.motionScreen.maxSteps || this.motionScreen.reversalCounter == this.motionScreen.reversalPoints) {
+            if (this.testScreen.stepCounter == this.testScreen.maxSteps || this.testScreen.reversalCounter == this.testScreen.reversalPoints) {
                 this.setState(WorldState.FINISHED);
                 this.feedbackTimer = 0;
                 return;

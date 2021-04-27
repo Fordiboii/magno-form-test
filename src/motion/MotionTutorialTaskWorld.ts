@@ -11,7 +11,7 @@ import {
     PATCH_OUTLINE_THICKNESS
 } from '../utils/Constants';
 
-export class MotionTutorialWorld extends AbstractMotionWorld {
+export class MotionTutorialTaskWorld extends AbstractMotionWorld {
     constructor() {
         super();
         this.createPatches();

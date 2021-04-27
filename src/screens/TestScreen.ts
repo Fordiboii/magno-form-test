@@ -190,6 +190,11 @@ export class TestScreen extends PIXI.Container {
             // show pause text if start button isn't visible, meaning the test has started and is paused.
             if (!this.startButton.visible) {
                 this.pauseText.visible = true;
+                // hide objects if test type is FORM_FIXED or MOTION
+                if (this.testType == TestType.FORM_FIXED || this.testType == TestType.MOTION) {
+                    this.world.patchLeftObjectsContainer.visible = false;
+                    this.world.patchRightObjectsContainer.visible = false;
+                }
             }
             // update motion world
             this.world.update(delta);

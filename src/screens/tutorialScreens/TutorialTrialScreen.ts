@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { GlowFilter } from 'pixi-filters';
 import { GameApp } from '../../app';
 import { MotionTutorialTrialWorld } from '../../motion/MotionTutorialTrialWorld';
+import { FormTutorialTrialWorld } from '../../form/FormTutorialTrialWorld';
 import { TextButton } from '../../objects/buttons/TextButton';
 import {
     BLUE_TEXT_COLOR,
@@ -17,7 +18,7 @@ import {
     START_BUTTON_STROKE_COLOR,
     TEXT_COLOR
 } from '../../utils/Constants';
-import { WorldState } from '../../utils/Enums';
+import { TestType, WorldState } from '../../utils/Enums';
 import { Psychophysics } from '../../utils/Psychophysics';
 import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
@@ -28,8 +29,8 @@ export class TutorialTrialScreen extends TutorialScreen {
     private correctAnswerFactor: number;
     private wrongAnswerFactor: number;
 
-    private motionTutorialTrialWorld: MotionTutorialTrialWorld;
-    private motionTutorialTrialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    private tutorialTrialWorld: MotionTutorialTrialWorld | FormTutorialTrialWorld;
+    private tutorialTrialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
 
     private startButton: TextButton;
 
@@ -47,7 +48,7 @@ export class TutorialTrialScreen extends TutorialScreen {
     public glowFilter1: any;
     public glowFilter2: any;
 
-    constructor(gameApp: GameApp) {
+    constructor(gameApp: GameApp, testType: TestType) {
         super(gameApp);
 
         this.maxSteps = Settings.TRIAL_MAX_STEPS;
@@ -55,21 +56,29 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.correctAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_CORRECT_ANSWER_DB);
         this.wrongAnswerFactor = Psychophysics.decibelToFactor(Settings.STAIRCASE_WRONG_ANSWER_DB);
 
-        // set header text
-        this.header.text = "MOTION TEST TUTORIAL";
+        // set header text and tutorial world based on test type
+        if (testType == TestType.MOTION) {
+            this.header.text = "MOTION TEST TUTORIAL";
+            this.tutorialTrialWorld = new MotionTutorialTrialWorld(this);
+        } else if (testType == TestType.FORM_FIXED) {
+            this.header.text = "FORM FIXED TEST TUTORIAL";
+            this.tutorialTrialWorld = new FormTutorialTrialWorld(this, true);
+        } else if (testType == TestType.FORM_RANDOM) {
+            this.header.text = "FORM RANDOM TEST TUTORIAL";
+            this.tutorialTrialWorld = new FormTutorialTrialWorld(this, false);
+        }
 
         // add motion tutorial world background
-        this.motionTutorialTrialWorldContainer.tint = 0;
-        this.motionTutorialTrialWorldContainer.anchor.set(0.5, 0)
-        this.motionTutorialTrialWorldContainer.x = this.contentX;
-        this.motionTutorialTrialWorldContainer.y = this.contentY + Settings.WINDOW_HEIGHT_PX / 32;
-        this.motionTutorialTrialWorldContainer.width = Settings.WINDOW_WIDTH_PX;
-        this.motionTutorialTrialWorldContainer.height = Settings.WINDOW_HEIGHT_PX / 2.2;
-        this.addChild(this.motionTutorialTrialWorldContainer);
+        this.tutorialTrialWorldContainer.tint = 0;
+        this.tutorialTrialWorldContainer.anchor.set(0.5, 0)
+        this.tutorialTrialWorldContainer.x = this.contentX;
+        this.tutorialTrialWorldContainer.y = this.contentY + Settings.WINDOW_HEIGHT_PX / 32;
+        this.tutorialTrialWorldContainer.width = Settings.WINDOW_WIDTH_PX;
+        this.tutorialTrialWorldContainer.height = Settings.WINDOW_HEIGHT_PX / 2.2;
+        this.addChild(this.tutorialTrialWorldContainer);
 
-        // add motion tutorial world
-        this.motionTutorialTrialWorld = new MotionTutorialTrialWorld(this);
-        this.addChild(this.motionTutorialTrialWorld);
+        // add tutorial trial world
+        this.addChild(this.tutorialTrialWorld);
 
         // create glow filters for animating patch click
         this.glowFilter1 = new GlowFilter({
@@ -84,8 +93,8 @@ export class TutorialTrialScreen extends TutorialScreen {
         });
         this.glowFilter1.enabled = false;
         this.glowFilter2.enabled = false;
-        this.motionTutorialTrialWorld.patchLeft.filters = [this.glowFilter1];
-        this.motionTutorialTrialWorld.patchRight.filters = [this.glowFilter2];
+        this.tutorialTrialWorld.patchLeft.filters = [this.glowFilter1];
+        this.tutorialTrialWorld.patchRight.filters = [this.glowFilter2];
 
         // add patch labels
         this.patchLeftLabel = new PIXI.Text("1", {
@@ -95,8 +104,8 @@ export class TutorialTrialScreen extends TutorialScreen {
         });
         this.patchLeftLabel.anchor.set(0.5);
         this.patchLeftLabel.roundPixels = true;
-        this.patchLeftLabel.x = this.motionTutorialTrialWorld.patchLeft.x + this.motionTutorialTrialWorld.patchLeft.width / 2;
-        this.patchLeftLabel.y = this.motionTutorialTrialWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.patchLeftLabel.x = this.tutorialTrialWorld.patchLeft.x + this.tutorialTrialWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.tutorialTrialWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchLeftLabel);
 
         this.patchRightLabel = new PIXI.Text("2", {
@@ -106,8 +115,8 @@ export class TutorialTrialScreen extends TutorialScreen {
         });
         this.patchRightLabel.anchor.set(0.5);
         this.patchRightLabel.roundPixels = true;
-        this.patchRightLabel.x = this.motionTutorialTrialWorld.patchRight.x + this.motionTutorialTrialWorld.patchRight.width / 2;
-        this.patchRightLabel.y = this.motionTutorialTrialWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.patchRightLabel.x = this.tutorialTrialWorld.patchRight.x + this.tutorialTrialWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.tutorialTrialWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
 
         // add text shown when animation is paused
@@ -119,7 +128,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.pauseText.anchor.set(0.5, 0);
         this.pauseText.roundPixels = true;
         this.pauseText.x = Settings.WINDOW_WIDTH_PX / 2;
-        this.pauseText.y = Settings.TRIAL_SCREEN_Y + this.motionTutorialTrialWorld.patchLeft.height / 1.5;
+        this.pauseText.y = Settings.TRIAL_SCREEN_Y + this.tutorialTrialWorld.patchLeft.height / 1.5;
         this.pauseText.visible = false;
         this.addChild(this.pauseText);
 
@@ -149,7 +158,7 @@ export class TutorialTrialScreen extends TutorialScreen {
 
         // add trial texts
         const TRIAL_TEXT_X: number = Settings.WINDOW_WIDTH_PX / 2;
-        const TRIAL_TEXT_Y: number = Settings.TRIAL_SCREEN_Y + this.motionTutorialTrialWorld.patchLeft.height / 1.1;
+        const TRIAL_TEXT_Y: number = Settings.TRIAL_SCREEN_Y + this.tutorialTrialWorld.patchLeft.height / 1.1;
 
         this.trialCorrectText = new PIXI.Text("Correct",
             {
@@ -213,7 +222,7 @@ export class TutorialTrialScreen extends TutorialScreen {
     }
 
     update = (delta: number): void => {
-        if (this.motionTutorialTrialWorld.getState() == WorldState.TRIAL_CORRECT) {
+        if (this.tutorialTrialWorld.getState() == WorldState.TRIAL_CORRECT) {
             this.trialCorrectText.visible = true;
 
             this.trialTextBackgroundColor.x = this.trialCorrectText.x;
@@ -223,7 +232,7 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialTextContainer.visible = true;
 
             this.pauseText.visible = false;
-        } else if (this.motionTutorialTrialWorld.getState() == WorldState.TRIAL_INCORRECT) {
+        } else if (this.tutorialTrialWorld.getState() == WorldState.TRIAL_INCORRECT) {
             this.trialIncorrectText.visible = true;
 
             this.trialTextBackgroundColor.x = this.trialIncorrectText.x;
@@ -233,7 +242,7 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialTextContainer.visible = true;
 
             this.pauseText.visible = false;
-        } else if (this.motionTutorialTrialWorld.getState() == WorldState.FINISHED) {
+        } else if (this.tutorialTrialWorld.getState() == WorldState.FINISHED) {
             this.trialCorrectText.visible = false;
             this.trialIncorrectText.visible = false;
             this.trialFinishedText.visible = true;
@@ -245,7 +254,7 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialTextContainer.visible = true;
 
             this.pauseText.visible = false;
-        } else if (this.motionTutorialTrialWorld.getState() == WorldState.PAUSED && !this.startButton.visible) {
+        } else if (this.tutorialTrialWorld.getState() == WorldState.PAUSED && !this.startButton.visible) {
             this.pauseText.visible = true;
         } else {
             this.trialCorrectText.visible = false;
@@ -253,16 +262,16 @@ export class TutorialTrialScreen extends TutorialScreen {
             this.trialFinishedText.visible = false;
             this.trialTextContainer.visible = false;
         }
-        this.motionTutorialTrialWorld.update(delta);
+        this.tutorialTrialWorld.update(delta);
     }
 
     keyDownHandler = (event: KeyboardEvent): void => {
         if (event.repeat) return
 
-        const currentState: WorldState = this.motionTutorialTrialWorld.getState();
+        const currentState: WorldState = this.tutorialTrialWorld.getState();
         if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
 
-            let coherentPatchSide: string = this.motionTutorialTrialWorld.getCoherentPatchSide();
+            let coherentPatchSide: string = this.tutorialTrialWorld.getCoherentPatchSide();
 
             if (event.code == KEY_LEFT) {
                 // enable glow filter on the selected patch
@@ -270,11 +279,11 @@ export class TutorialTrialScreen extends TutorialScreen {
 
                 // update coherency
                 if (coherentPatchSide == "LEFT") {
-                    this.motionTutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
-                    this.motionTutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
+                    this.tutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
+                    this.tutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
                 } else {
-                    this.motionTutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
-                    this.motionTutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
+                    this.tutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
+                    this.tutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
                 }
 
                 this.stepCounter++;
@@ -284,11 +293,11 @@ export class TutorialTrialScreen extends TutorialScreen {
 
                 // update coherency and state
                 if (coherentPatchSide == "RIGHT") {
-                    this.motionTutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
-                    this.motionTutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
+                    this.tutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
+                    this.tutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
                 } else {
-                    this.motionTutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
-                    this.motionTutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
+                    this.tutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
+                    this.tutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
                 }
 
                 this.stepCounter++;
@@ -297,9 +306,9 @@ export class TutorialTrialScreen extends TutorialScreen {
     }
 
     mouseDownHandler = (patch: string): void => {
-        const currentState: WorldState = this.motionTutorialTrialWorld.getState();
+        const currentState: WorldState = this.tutorialTrialWorld.getState();
         if (currentState == WorldState.RUNNING || currentState == WorldState.PAUSED) {
-            let coherentPatchSide: string = this.motionTutorialTrialWorld.getCoherentPatchSide();
+            let coherentPatchSide: string = this.tutorialTrialWorld.getCoherentPatchSide();
 
             // enable glow filter on the selected patch
             if (patch == "LEFT") {
@@ -310,11 +319,11 @@ export class TutorialTrialScreen extends TutorialScreen {
 
             // update coherency and state
             if (patch == coherentPatchSide) {
-                this.motionTutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
-                this.motionTutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
+                this.tutorialTrialWorld.updateCoherency(this.correctAnswerFactor, true);
+                this.tutorialTrialWorld.setState(WorldState.TRIAL_CORRECT);
             } else {
-                this.motionTutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
-                this.motionTutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
+                this.tutorialTrialWorld.updateCoherency(this.wrongAnswerFactor, false);
+                this.tutorialTrialWorld.setState(WorldState.TRIAL_INCORRECT);
             }
 
             this.stepCounter++;
@@ -324,35 +333,35 @@ export class TutorialTrialScreen extends TutorialScreen {
     startButtonClickHandler = (): void => {
         // add event handlers
         window.addEventListener("keydown", this.keyDownHandler);
-        this.motionTutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
-        this.motionTutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
-        this.motionTutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
-        this.motionTutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+        this.tutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.tutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.tutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.tutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
         // hide start button, make patches interactive and set state to running
         this.startButton.visible = false;
-        this.motionTutorialTrialWorld.patchLeft.interactive = true;
-        this.motionTutorialTrialWorld.patchRight.interactive = true;
-        this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = true;
-        this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = true;
-        this.motionTutorialTrialWorld.setState(WorldState.RUNNING);
+        this.tutorialTrialWorld.patchLeft.interactive = true;
+        this.tutorialTrialWorld.patchRight.interactive = true;
+        this.tutorialTrialWorld.patchLeftObjectsContainer.visible = true;
+        this.tutorialTrialWorld.patchRightObjectsContainer.visible = true;
+        this.tutorialTrialWorld.setState(WorldState.RUNNING);
     }
 
     startButtonTouchendHandler = (): void => {
         // add event handlers
         window.addEventListener("keydown", this.keyDownHandler);
-        this.motionTutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
-        this.motionTutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
-        this.motionTutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
-        this.motionTutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+        this.tutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.tutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.tutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.tutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
         // hide start button, make patches interactive and set state to running
         this.startButton.visible = false;
-        this.motionTutorialTrialWorld.patchLeft.interactive = true;
-        this.motionTutorialTrialWorld.patchRight.interactive = true;
-        this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = true;
-        this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = true;
-        this.motionTutorialTrialWorld.setState(WorldState.RUNNING);
+        this.tutorialTrialWorld.patchLeft.interactive = true;
+        this.tutorialTrialWorld.patchRight.interactive = true;
+        this.tutorialTrialWorld.patchLeftObjectsContainer.visible = true;
+        this.tutorialTrialWorld.patchRightObjectsContainer.visible = true;
+        this.tutorialTrialWorld.setState(WorldState.RUNNING);
     }
 
     backButtonClickHandler = (): void => {
@@ -363,9 +372,9 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.gameApp.changeScreen("testScreen");
     }
 
-    hideDots = (): void => {
-        this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = false;
-        this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = false;
+    hideObjects = (): void => {
+        this.tutorialTrialWorld.patchLeftObjectsContainer.visible = false;
+        this.tutorialTrialWorld.patchRightObjectsContainer.visible = false;
     }
 
     touchEndHandler = (e: PIXI.InteractionEvent): void => {
@@ -379,9 +388,9 @@ export class TutorialTrialScreen extends TutorialScreen {
                 this.gameApp.changeScreen("tutorialTaskScreen");
         }
 
-        if (this.motionTutorialTrialWorld.getState() != WorldState.PAUSED) {
-            this.motionTutorialTrialWorld.patchLeftObjectsContainer.visible = true;
-            this.motionTutorialTrialWorld.patchRightObjectsContainer.visible = true;
+        if (this.tutorialTrialWorld.getState() != WorldState.PAUSED) {
+            this.tutorialTrialWorld.patchLeftObjectsContainer.visible = true;
+            this.tutorialTrialWorld.patchRightObjectsContainer.visible = true;
         }
     }
 
@@ -389,7 +398,7 @@ export class TutorialTrialScreen extends TutorialScreen {
      * Adds all custom event listeners
      */
     addEventListeners = (): void => {
-        this.on("touchmove", this.hideDots);
+        this.on("touchmove", this.hideObjects);
         this.on("touchend", this.touchEndHandler);
         this.on("touchendoutside", this.touchEndHandler);
         this.startButton.on("click", this.startButtonClickHandler);
@@ -404,10 +413,10 @@ export class TutorialTrialScreen extends TutorialScreen {
      * Removes all custom event listeners
      */
     removeEventListeners = (): void => {
-        this.motionTutorialTrialWorld.patchLeft.off("mousedown", (): void => this.mouseDownHandler("LEFT"));
-        this.motionTutorialTrialWorld.patchLeft.off("touchstart", (): void => this.mouseDownHandler("LEFT"));
-        this.motionTutorialTrialWorld.patchRight.off("mousedown", (): void => this.mouseDownHandler("RIGHT"));
-        this.motionTutorialTrialWorld.patchRight.off("touchstart", (): void => this.mouseDownHandler("RIGHT"));
+        this.tutorialTrialWorld.patchLeft.off("mousedown", (): void => this.mouseDownHandler("LEFT"));
+        this.tutorialTrialWorld.patchLeft.off("touchstart", (): void => this.mouseDownHandler("LEFT"));
+        this.tutorialTrialWorld.patchRight.off("mousedown", (): void => this.mouseDownHandler("RIGHT"));
+        this.tutorialTrialWorld.patchRight.off("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
         this.startButton.off("click", this.startButtonClickHandler);
         this.startButton.off("touchend", this.startButtonTouchendHandler);
@@ -416,7 +425,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.nextButton.off("click", this.nextButtonClickHandler);
         this.nextButton.off("touchend", this.nextButtonClickHandler);
 
-        this.off("touchmove", this.hideDots);
+        this.off("touchmove", this.hideObjects);
         this.off("touchend", this.touchEndHandler);
         this.off("touchendoutside", this.touchEndHandler);
     }

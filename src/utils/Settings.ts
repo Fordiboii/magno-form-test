@@ -114,7 +114,7 @@ export abstract class Settings {
         Settings.FORM_LINE_GAP = 0.4;
         Settings.FORM_COHERENCY_PERCENTAGE = 100;
         Settings.FORM_FIXED_DETECTION_TIME = 4000;
-        Settings.FORM_RANDOM_DETECTION_TIME = 1000000;
+        Settings.FORM_RANDOM_DETECTION_TIME = 6000;
 
         // Staircase settings
         Settings.STAIRCASE_CORRECT_ANSWER_DB = 1;

@@ -74,12 +74,12 @@ export abstract class TutorialScreen extends PIXI.Container {
         this.contentX = Settings.WINDOW_WIDTH_PX / 2;
         this.contentY = Settings.WINDOW_HEIGHT_PX / 12 + this.header.height;
         this.tutorialTextX = Settings.WINDOW_WIDTH_PX / 2;
-        this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 1.95;
+        this.tutorialTextY = this.contentY + Settings.WINDOW_HEIGHT_PX / 2;
 
         // add tutorial text
         this.tutorialText = new PIXI.Text("",
             {
-                fontSize: Settings.FONT_SIZE,
+                fontSize: Settings.FONT_SIZE * 0.9,
                 fill: TEXT_COLOR,
                 align: 'left',
                 wordWrap: true,

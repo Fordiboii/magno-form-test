@@ -1,16 +1,23 @@
 import * as PIXI from 'pixi.js';
 import { GameApp } from '../../app';
+import { TestType } from '../../utils/Enums';
 import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 
 export class TutorialSitDownScreen extends TutorialScreen {
     private tutorialImage: PIXI.Sprite;
 
-    constructor(gameApp: GameApp) {
+    constructor(gameApp: GameApp, testType: TestType) {
         super(gameApp);
 
-        // set header text
-        this.header.text = "MOTION TEST TUTORIAL";
+        // set header text based on test type
+        if (testType == TestType.MOTION) {
+            this.header.text = "MOTION TEST TUTORIAL";
+        } else if (testType == TestType.FORM_FIXED) {
+            this.header.text = "FORM FIXED TEST TUTORIAL";
+        } else if (testType == TestType.FORM_RANDOM) {
+            this.header.text = "FORM RANDOM TEST TUTORIAL";
+        }
 
         // add tutorial image
         const tutorialImageTexture: PIXI.Texture = PIXI.Loader.shared.resources['sitDownImage'].texture;
