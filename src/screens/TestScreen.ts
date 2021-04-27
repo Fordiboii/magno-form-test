@@ -182,7 +182,6 @@ export class TestScreen extends PIXI.Container {
             this.pauseText.visible = false;
             // create test results
             const testResults: TestResults = new TestResults(this.gameApp.testType, this.trials, this.reversalValues, this.correctAnswerCounter, this.wrongAnswerCounter);
-            console.log(testResults)
             this.gameApp.setTestResults(testResults);
             // change screen
             this.gameApp.changeScreen("resultsScreen");
