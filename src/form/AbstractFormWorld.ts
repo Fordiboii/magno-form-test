@@ -65,13 +65,13 @@ export abstract class AbstractFormWorld extends PIXI.Container {
 
     calculateMaxMin = (): void => {
         this.leftMinX = this.patchLeft.x + PATCH_OUTLINE_THICKNESS;
-        this.leftMaxX = (this.patchLeft.x + this.patchLeft.width) - (3 * PATCH_OUTLINE_THICKNESS);
+        this.leftMaxX = this.patchLeft.x + this.patchLeft.width - PATCH_OUTLINE_THICKNESS;
 
         this.patchMinY = this.patchLeft.y + PATCH_OUTLINE_THICKNESS;
-        this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - PATCH_OUTLINE_THICKNESS;
+        this.patchMaxY = this.patchLeft.y + this.patchLeft.height - PATCH_OUTLINE_THICKNESS;
 
         this.rightMinX = this.patchRight.x + PATCH_OUTLINE_THICKNESS;
-        this.rightMaxX = (this.patchRight.x + this.patchRight.width) - (3 * PATCH_OUTLINE_THICKNESS);
+        this.rightMaxX = this.patchRight.x + this.patchRight.width - PATCH_OUTLINE_THICKNESS;
     }
 
     createPatchContainerMasks = () => {
@@ -244,6 +244,8 @@ export abstract class AbstractFormWorld extends PIXI.Container {
     }
 
     paused = (): void => {
+        this.patchLeftObjectsContainer.visible = false;
+        this.patchRightObjectsContainer.visible = false;
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
         }

@@ -42,8 +42,8 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
         } else if (this.currentState == WorldState.TRIAL_INCORRECT) {
             this.feedback(delta);
         } else if (this.currentState == WorldState.FINISHED) {
-            this.lineSegmentsLeftContainer.visible = false;
-            this.lineSegmentsRightContainer.visible = false;
+            this.patchLeftObjectsContainer.visible = false;
+            this.patchRightObjectsContainer.visible = false;
             this.patchLeft.interactive = false;
             this.patchRight.interactive = false;
             return;
@@ -61,8 +61,8 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
         this.tutorialTrialScreen.glowFilter1.outerStrength += (this.tutorialTrialScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
         this.tutorialTrialScreen.glowFilter2.outerStrength += (this.tutorialTrialScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
         // hide dots
-        this.lineSegmentsLeftContainer.visible = false;
-        this.lineSegmentsRightContainer.visible = false;
+        this.patchLeftObjectsContainer.visible = false;
+        this.patchRightObjectsContainer.visible = false;
         if (this.feedbackTimer >= this.maxFeedbackTime) {
             // reset glow filters
             this.tutorialTrialScreen.glowFilter1.outerStrength = 0;
@@ -78,8 +78,8 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
             }
             this.feedbackTimer = 0;
             this.reset();
-            this.lineSegmentsLeftContainer.visible = true;
-            this.lineSegmentsRightContainer.visible = true;
+            this.patchLeftObjectsContainer.visible = true;
+            this.patchRightObjectsContainer.visible = true;
             this.setState(WorldState.RUNNING);
         }
     }
@@ -129,9 +129,6 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
             Settings.WINDOW_WIDTH_MM
         );
 
-        this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
-        this.patchMinY = (this.patchLeft.y) + (d / 2);
-
         // randomly choose patch to contain concentric circles
         // get a random circle center if not fixed, otherwise it's the center of the patch
         this.coherentPatchSide = Math.round(Math.random()) ? Direction[0] : Direction[1];
@@ -140,10 +137,12 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
                 x = this.patchLeft.x + (this.patchLeft.width / 2);
                 y = this.patchLeft.y + (this.patchLeft.height / 2);
             } else {
-                this.leftMaxX = (this.patchLeft.x + this.patchLeft.width) - (d / 2);
-                this.leftMinX = (this.patchLeft.x) + (d / 2);
-                x = Math.random() * (this.leftMaxX - this.leftMinX) + this.leftMinX;
-                y = Math.random() * (this.patchMaxY - this.patchMinY) + this.patchMinY;
+                const leftMaxX: number = (this.patchLeft.x + this.patchLeft.width) - (d / 2);
+                const leftMinX: number = (this.patchLeft.x) + (d / 2);
+                const patchMaxY: number = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
+                const patchMinY: number = (this.patchLeft.y) + (d / 2);
+                x = Math.random() * (leftMaxX - leftMinX) + leftMinX;
+                y = Math.random() * (patchMaxY - patchMinY) + patchMinY;
             }
 
         } else {
@@ -151,10 +150,12 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
                 x = this.patchRight.x + (this.patchRight.width / 2);
                 y = this.patchRight.y + (this.patchRight.height / 2);
             } else {
-                this.rightMaxX = (this.patchRight.x + this.patchRight.width) - (d / 2);
-                this.rightMinX = (this.patchRight.x) + (d / 2);
-                x = Math.random() * (this.rightMaxX - this.rightMinX) + this.rightMinX;
-                y = Math.random() * (this.patchMaxY - this.patchMinY) + this.patchMinY;
+                const rightMaxX: number = (this.patchRight.x + this.patchRight.width) - (d / 2);
+                const rightMinX: number = (this.patchRight.x) + (d / 2);
+                const patchMaxY: number = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
+                const patchMinY: number = (this.patchLeft.y) + (d / 2);
+                x = Math.random() * (rightMaxX - rightMinX) + rightMinX;
+                y = Math.random() * (patchMaxY - patchMinY) + patchMinY;
             }
         }
 
@@ -208,5 +209,35 @@ export class FormTutorialTrialWorld extends AbstractFormWorld {
                 this.coherencePercent = temp;
             }
         }
+    }
+
+    resize = () => {
+        // get old max values
+        const currentLeftMaxX: number = this.leftMaxX.valueOf();
+        const currentPatchMaxY: number = this.patchMaxY.valueOf();
+        const currentRightMaxX: number = this.rightMaxX.valueOf();
+
+        // remove old patches
+        this.patchLeft.destroy();
+        this.patchRight.destroy();
+
+        // create new patches, quadtree and bounds
+        this.createPatches();
+        this.calculateMaxMin();
+        this.createPatchContainerMasks();
+
+        // add glow filter to new patch
+        this.patchLeft.filters = [this.tutorialTrialScreen.glowFilter1];
+        this.patchRight.filters = [this.tutorialTrialScreen.glowFilter2];
+
+        // update line segment positions
+        this.lineSegmentsLeftContainer.children.forEach(line => {
+            line.x += this.leftMaxX - currentLeftMaxX;
+            line.y += this.patchMaxY - currentPatchMaxY;
+        });
+        this.lineSegmentsRightContainer.children.forEach(line => {
+            line.x += this.rightMaxX - currentRightMaxX;
+            line.y += this.patchMaxY - currentPatchMaxY;
+        });
     }
 }

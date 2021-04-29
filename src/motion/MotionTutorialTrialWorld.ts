@@ -67,8 +67,8 @@ export class MotionTutorialTrialWorld extends AbstractMotionWorld {
         } else if (this.currentState == WorldState.TRIAL_INCORRECT) {
             this.feedback(delta);
         } else if (this.currentState == WorldState.FINISHED) {
-            this.dotsLeftParticleContainer.visible = false;
-            this.dotsRightParticleContainer.visible = false;
+            this.patchLeftObjectsContainer.visible = false;
+            this.patchRightObjectsContainer.visible = false;
             this.patchLeft.interactive = false;
             this.patchRight.interactive = false;
             return;

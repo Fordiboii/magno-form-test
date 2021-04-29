@@ -55,9 +55,6 @@ export class FormTutorialTaskWorld extends AbstractFormWorld {
             Settings.WINDOW_WIDTH_MM
         );
 
-        this.patchMaxY = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
-        this.patchMinY = (this.patchLeft.y) + (d / 2);
-
         // Sets the right patch to contain concentric circles
         // get a random circle center if not fixed, otherwise it's the center of the patch
         this.coherentPatchSide = Direction[1];
@@ -66,10 +63,12 @@ export class FormTutorialTaskWorld extends AbstractFormWorld {
                 x = this.patchLeft.x + (this.patchLeft.width / 2);
                 y = this.patchLeft.y + (this.patchLeft.height / 2);
             } else {
-                this.leftMaxX = (this.patchLeft.x + this.patchLeft.width) - (d / 2);
-                this.leftMinX = (this.patchLeft.x) + (d / 2);
-                x = Math.random() * (this.leftMaxX - this.leftMinX) + this.leftMinX;
-                y = Math.random() * (this.patchMaxY - this.patchMinY) + this.patchMinY;
+                const leftMaxX: number = (this.patchLeft.x + this.patchLeft.width) - (d / 2);
+                const leftMinX: number = (this.patchLeft.x) + (d / 2);
+                const patchMaxY: number = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
+                const patchMinY: number = (this.patchLeft.y) + (d / 2);
+                x = Math.random() * (leftMaxX - leftMinX) + leftMinX;
+                y = Math.random() * (patchMaxY - patchMinY) + patchMinY;
             }
 
         } else {
@@ -77,10 +76,12 @@ export class FormTutorialTaskWorld extends AbstractFormWorld {
                 x = this.patchRight.x + (this.patchRight.width / 2);
                 y = this.patchRight.y + (this.patchRight.height / 2);
             } else {
-                this.rightMaxX = (this.patchRight.x + this.patchRight.width) - (d / 2);
-                this.rightMinX = (this.patchRight.x) + (d / 2);
-                x = Math.random() * (this.rightMaxX - this.rightMinX) + this.rightMinX;
-                y = Math.random() * (this.patchMaxY - this.patchMinY) + this.patchMinY;
+                const rightMaxX: number = (this.patchRight.x + this.patchRight.width) - (d / 2);
+                const rightMinX: number = (this.patchRight.x) + (d / 2);
+                const patchMaxY: number = (this.patchLeft.y + this.patchLeft.height) - (d / 2);
+                const patchMinY: number = (this.patchLeft.y) + (d / 2);
+                x = Math.random() * (rightMaxX - rightMinX) + rightMinX;
+                y = Math.random() * (patchMaxY - patchMinY) + patchMinY;
             }
         }
 
@@ -113,5 +114,31 @@ export class FormTutorialTaskWorld extends AbstractFormWorld {
 
     update = (delta: number): void => {
         return;
+    }
+
+    resize = () => {
+        // get old max values
+        const currentLeftMaxX: number = this.leftMaxX.valueOf();
+        const currentPatchMaxY: number = this.patchMaxY.valueOf();
+        const currentRightMaxX: number = this.rightMaxX.valueOf();
+
+        // remove old patches
+        this.patchLeft.destroy();
+        this.patchRight.destroy();
+
+        // create new patches, quadtree and bounds
+        this.createPatches();
+        this.calculateMaxMin();
+        this.createPatchContainerMasks();
+
+        // update line segment positions
+        this.lineSegmentsLeftContainer.children.forEach(line => {
+            line.x += this.leftMaxX - currentLeftMaxX;
+            line.y += this.patchMaxY - currentPatchMaxY;
+        });
+        this.lineSegmentsRightContainer.children.forEach(line => {
+            line.x += this.rightMaxX - currentRightMaxX;
+            line.y += this.patchMaxY - currentPatchMaxY;
+        });
     }
 }
