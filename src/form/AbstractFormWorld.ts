@@ -244,8 +244,11 @@ export abstract class AbstractFormWorld extends PIXI.Container {
     }
 
     paused = (): void => {
-        this.patchLeftObjectsContainer.visible = false;
-        this.patchRightObjectsContainer.visible = false;
+        // only hide line segments if test type is fixed
+        if (this.isFixed) {
+            this.patchLeftObjectsContainer.visible = false;
+            this.patchRightObjectsContainer.visible = false;
+        }
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
         }
