@@ -2,13 +2,22 @@ import * as PIXI from 'pixi.js';
 import { GameApp } from '../../app';
 import { MotionTutorialTaskWorld } from '../../motion/MotionTutorialTaskWorld';
 import { FormTutorialTaskWorld } from '../../form/FormTutorialTaskWorld';
-import { GREEN_TEXT_COLOR, PATCH_LABEL_COLOR, RED_TEXT_COLOR } from '../../utils/Constants';
+import {
+    GREEN_TEXT_COLOR,
+    NEXT_BUTTON_COLOR,
+    NEXT_BUTTON_HOVER_COLOR,
+    NEXT_BUTTON_STROKE_COLOR,
+    PATCH_LABEL_COLOR,
+    RED_TEXT_COLOR,
+    TEXT_COLOR
+} from '../../utils/Constants';
 import { Settings } from '../../utils/Settings';
 import { TutorialScreen } from './TutorialScreen';
 import { TestType } from '../../utils/Enums';
+import { TextButton } from '../../objects/buttons/TextButton';
 
 export class TutorialTaskScreen extends TutorialScreen {
-    private tutorialWorld: MotionTutorialTaskWorld | FormTutorialTaskWorld;
+    private tutorialTaskWorld: MotionTutorialTaskWorld | FormTutorialTaskWorld;
     private tutorialWorldContainer: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
     private greenCheckmark: PIXI.Sprite;
     private redCross: PIXI.Sprite;
@@ -21,13 +30,13 @@ export class TutorialTaskScreen extends TutorialScreen {
         // set header text and tutorial world based on test type
         if (testType == TestType.MOTION) {
             this.header.text = "MOTION TEST TUTORIAL";
-            this.tutorialWorld = new MotionTutorialTaskWorld();
+            this.tutorialTaskWorld = new MotionTutorialTaskWorld();
         } else if (testType == TestType.FORM_FIXED) {
             this.header.text = "FORM FIXED TEST TUTORIAL";
-            this.tutorialWorld = new FormTutorialTaskWorld(true);
+            this.tutorialTaskWorld = new FormTutorialTaskWorld(true);
         } else if (testType == TestType.FORM_RANDOM) {
             this.header.text = "FORM RANDOM TEST TUTORIAL";
-            this.tutorialWorld = new FormTutorialTaskWorld(false);
+            this.tutorialTaskWorld = new FormTutorialTaskWorld(false);
         }
 
         // add motion tutorial world container
@@ -40,7 +49,7 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.addChild(this.tutorialWorldContainer);
 
         // add motion tutorial world
-        this.addChild(this.tutorialWorld);
+        this.addChild(this.tutorialTaskWorld);
 
         // add patch labels
         this.patchLeftLabel = new PIXI.Text("1", {
@@ -50,8 +59,8 @@ export class TutorialTaskScreen extends TutorialScreen {
         });
         this.patchLeftLabel.anchor.set(0.5);
         this.patchLeftLabel.roundPixels = true;
-        this.patchLeftLabel.x = this.tutorialWorld.patchLeft.x + this.tutorialWorld.patchLeft.width / 2;
-        this.patchLeftLabel.y = this.tutorialWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.patchLeftLabel.x = this.tutorialTaskWorld.patchLeft.x + this.tutorialTaskWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.tutorialTaskWorld.patchLeft.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchLeftLabel);
 
         this.patchRightLabel = new PIXI.Text("2", {
@@ -61,8 +70,8 @@ export class TutorialTaskScreen extends TutorialScreen {
         });
         this.patchRightLabel.anchor.set(0.5);
         this.patchRightLabel.roundPixels = true;
-        this.patchRightLabel.x = this.tutorialWorld.patchRight.x + this.tutorialWorld.patchRight.width / 2;
-        this.patchRightLabel.y = this.tutorialWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
+        this.patchRightLabel.x = this.tutorialTaskWorld.patchRight.x + this.tutorialTaskWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.tutorialTaskWorld.patchRight.y - Settings.WINDOW_HEIGHT_PX / 16;
         this.addChild(this.patchRightLabel);
 
         // add checkmark
@@ -71,8 +80,8 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.greenCheckmark.anchor.set(0.5, 1);
         this.greenCheckmark.width = this.greenCheckmark.height = Settings.WINDOW_WIDTH_PX > Settings.WINDOW_HEIGHT_PX ? Settings.WINDOW_WIDTH_PX / 34 : Settings.WINDOW_HEIGHT_PX / 26;
         this.greenCheckmark.roundPixels = true;
-        this.greenCheckmark.x = this.tutorialWorld.patchRight.x + this.tutorialWorld.patchRight.width / 2;
-        this.greenCheckmark.y = Settings.TRIAL_SCREEN_Y + this.tutorialWorld.patchLeft.height / 1.1;
+        this.greenCheckmark.x = this.tutorialTaskWorld.patchRight.x + this.tutorialTaskWorld.patchRight.width / 2;
+        this.greenCheckmark.y = Settings.TRIAL_SCREEN_Y + this.tutorialTaskWorld.patchLeft.height / 1.1;
         this.greenCheckmark.tint = GREEN_TEXT_COLOR;
         this.addChild(this.greenCheckmark);
 
@@ -82,8 +91,8 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.redCross.anchor.set(0.5, 1);
         this.redCross.width = this.redCross.height = Settings.WINDOW_WIDTH_PX > Settings.WINDOW_HEIGHT_PX ? Settings.WINDOW_WIDTH_PX / 34 : Settings.WINDOW_HEIGHT_PX / 26;
         this.redCross.roundPixels = true;
-        this.redCross.x = this.tutorialWorld.patchLeft.x + this.tutorialWorld.patchLeft.width / 2;
-        this.redCross.y = Settings.TRIAL_SCREEN_Y + this.tutorialWorld.patchLeft.height / 1.1;
+        this.redCross.x = this.tutorialTaskWorld.patchLeft.x + this.tutorialTaskWorld.patchLeft.width / 2;
+        this.redCross.y = Settings.TRIAL_SCREEN_Y + this.tutorialTaskWorld.patchLeft.height / 1.1;
         this.redCross.tint = RED_TEXT_COLOR;
         this.addChild(this.redCross);
 
@@ -122,7 +131,7 @@ export class TutorialTaskScreen extends TutorialScreen {
     }
 
     update = (delta: number): void => {
-        this.tutorialWorld.update(delta);
+        this.tutorialTaskWorld.update(delta);
     }
 
     backButtonClickHandler = (): void => {
@@ -134,8 +143,8 @@ export class TutorialTaskScreen extends TutorialScreen {
     }
 
     hideDots = (): void => {
-        this.tutorialWorld.patchLeftObjectsContainer.visible = false;
-        this.tutorialWorld.patchRightObjectsContainer.visible = false;
+        this.tutorialTaskWorld.patchLeftObjectsContainer.visible = false;
+        this.tutorialTaskWorld.patchRightObjectsContainer.visible = false;
     }
 
     touchEndHandler = (e: PIXI.InteractionEvent): void => {
@@ -149,8 +158,8 @@ export class TutorialTaskScreen extends TutorialScreen {
                 this.gameApp.changeScreen("tutorialSitDownScreen");
         }
 
-        this.tutorialWorld.patchLeftObjectsContainer.visible = true;
-        this.tutorialWorld.patchRightObjectsContainer.visible = true;
+        this.tutorialTaskWorld.patchLeftObjectsContainer.visible = true;
+        this.tutorialTaskWorld.patchRightObjectsContainer.visible = true;
     }
 
     /**
@@ -177,5 +186,107 @@ export class TutorialTaskScreen extends TutorialScreen {
         this.backButton.off("touchend", this.backButtonClickHandler);
         this.nextButton.off("click", this.nextButtonClickHandler);
         this.nextButton.off("touchend", this.nextButtonClickHandler);
+    }
+
+    resize = (width: number, height: number) => {
+        // button positions
+        const backButtonX: number = width / 2 - Settings.NEXT_BACK_BUTTON_SPACING;
+        const nextButtonX: number = width / 2 + Settings.NEXT_BACK_BUTTON_SPACING;
+        const backAndNextButtonY: number = height - 1.3 * Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING - Settings.TEXT_BUTTON_HEIGHT / 2;
+
+        // background color
+        this.backgroundColorSprite.width = width;
+        this.backgroundColorSprite.height = height;
+
+        // header
+        const HEADER_FONT_SIZE: number = Settings.FONT_SIZE * 1.2;
+        this.header.style.fontSize = HEADER_FONT_SIZE;
+        this.header.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.header.x = width / 2;
+        this.header.y = height / 16;
+
+        // content and tutorial text positions
+        this.contentX = width / 2;
+        this.contentY = height / 12 + this.header.height;
+        this.tutorialTextX = this.contentX;
+        this.tutorialTextY = this.contentY + height / 2;
+
+        // tutorial text
+        this.tutorialText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.tutorialText.style.wordWrapWidth = Settings.TUTORIAL_TEXT_WIDTH;
+        this.tutorialText.x = this.tutorialTextX;
+        this.tutorialText.y = this.tutorialTextY;
+
+        // destroy current and create new back button
+        this.backButton.destroy();
+        this.backButton =
+            new TextButton(
+                backButtonX,
+                backAndNextButtonY,
+                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_HEIGHT,
+                NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
+                "BACK",
+                TEXT_COLOR,
+                NEXT_BUTTON_HOVER_COLOR
+            );
+        this.backButton.on("click", this.backButtonClickHandler);
+        this.backButton.on("touchend", this.backButtonClickHandler);
+        this.addChild(this.backButton);
+
+        // destroy current and create new next button
+        this.nextButton.destroy();
+        this.nextButton =
+            new TextButton(
+                nextButtonX,
+                backAndNextButtonY,
+                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_HEIGHT,
+                NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
+                "NEXT",
+                TEXT_COLOR,
+                NEXT_BUTTON_HOVER_COLOR
+            );
+        this.nextButton.on("click", this.nextButtonClickHandler);
+        this.nextButton.on("touchend", this.nextButtonClickHandler);
+        this.addChild(this.nextButton);
+
+        // circles
+        for (let i = 0; i < 4; i++) {
+            this.circles[i].position.set(i * Settings.CIRCLE_BUTTON_WIDTH * 2, 0);
+            this.circles[i].width = this.circles[i].height = Settings.CIRCLE_BUTTON_WIDTH;
+        }
+
+        // circles container
+        this.circleContainer.x = width / 2 - this.circleContainer.getBounds().width / 2;
+        this.circleContainer.y = height - Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING / 1.5;
+
+        // tutorial world container
+        this.tutorialWorldContainer.x = this.contentX;
+        this.tutorialWorldContainer.y = this.contentY + height / 32;
+        this.tutorialWorldContainer.width = width;
+        this.tutorialWorldContainer.height = height / 2.2;
+
+        // tutorial task world
+        this.tutorialTaskWorld.resize();
+
+        // checkmark
+        this.greenCheckmark.width = this.greenCheckmark.height = width > height ? width / 34 : height / 26;
+        this.greenCheckmark.x = this.tutorialTaskWorld.patchRight.x + this.tutorialTaskWorld.patchRight.width / 2;
+        this.greenCheckmark.y = Settings.TRIAL_SCREEN_Y + this.tutorialTaskWorld.patchLeft.height / 1.1;
+
+        // cross
+        this.redCross.width = this.redCross.height = width > height ? width / 34 : height / 26;
+        this.redCross.x = this.tutorialTaskWorld.patchLeft.x + this.tutorialTaskWorld.patchLeft.width / 2;
+        this.redCross.y = Settings.TRIAL_SCREEN_Y + this.tutorialTaskWorld.patchLeft.height / 1.1;
+
+        // patch label
+        this.patchLeftLabel.x = this.tutorialTaskWorld.patchLeft.x + this.tutorialTaskWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.tutorialTaskWorld.patchLeft.y - height / 16;
+        this.patchRightLabel.x = this.tutorialTaskWorld.patchRight.x + this.tutorialTaskWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.tutorialTaskWorld.patchRight.y - height / 16;
+        this.patchLeftLabel.style.fontSize = this.patchRightLabel.style.fontSize = Settings.FONT_SIZE * 1.2;
     }
 }

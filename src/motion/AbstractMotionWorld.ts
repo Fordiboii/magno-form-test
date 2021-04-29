@@ -95,6 +95,8 @@ export abstract class AbstractMotionWorld extends PIXI.Container {
     }
 
     paused = (): void => {
+        this.patchLeftObjectsContainer.visible = false;
+        this.patchRightObjectsContainer.visible = false;
         if (this.runTime >= this.maxRunTime) {
             this.runTime = 0;
         }

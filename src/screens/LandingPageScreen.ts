@@ -1,5 +1,12 @@
 import * as PIXI from 'pixi.js';
 import { GameApp } from '../app';
+import { TextButton } from '../objects/buttons/TextButton';
+import {
+    NEXT_BUTTON_COLOR,
+    NEXT_BUTTON_HOVER_COLOR,
+    NEXT_BUTTON_STROKE_COLOR,
+    TEXT_COLOR
+} from '../utils/Constants';
 import { TestType } from '../utils/Enums';
 import { Settings } from '../utils/Settings';
 import { TutorialScreen } from './tutorialScreens/TutorialScreen';
@@ -94,5 +101,62 @@ export class LandingPageScreen extends TutorialScreen {
         this.off("touchendoutside", this.touchEndHandler);
         this.nextButton.off("click", this.nextButtonClickHandler);
         this.nextButton.off("touchend", this.nextButtonClickHandler);
+    }
+
+    resize = (width: number, height: number) => {
+        // button position
+        const nextButtonY: number = height - 1.3 * Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING - Settings.TEXT_BUTTON_HEIGHT / 2;
+
+        // background color
+        this.backgroundColorSprite.width = width;
+        this.backgroundColorSprite.height = height;
+
+        // initial header y position
+        this.header.y = height / 16;
+
+        // logo
+        this.logo.scale.set(width / 3400);
+        this.logo.position.set(width / 2, this.header.y * 1.5);
+
+        // header
+        const HEADER_FONT_SIZE: number = Settings.FONT_SIZE * 1.2;
+        this.header.style.fontSize = HEADER_FONT_SIZE;
+        this.header.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.header.x = width / 2;
+        this.header.y = this.logo.y + this.logo.height / 2;
+
+        // tutorial text
+        this.tutorialText.x = width / 2;
+        this.tutorialText.y = height / 2;
+        this.tutorialText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.tutorialText.style.wordWrapWidth = Settings.TUTORIAL_TEXT_WIDTH / 1.5;
+
+        // destroy current and create new next button
+        this.nextButton.destroy();
+        this.nextButton =
+            new TextButton(
+                width / 2,
+                nextButtonY,
+                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_HEIGHT,
+                NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
+                "NEXT",
+                TEXT_COLOR,
+                NEXT_BUTTON_HOVER_COLOR
+            );
+        this.nextButton.on("click", this.nextButtonClickHandler);
+        this.nextButton.on("touchend", this.nextButtonClickHandler);
+        this.addChild(this.nextButton);
+
+        // circles
+        for (let i = 0; i < 4; i++) {
+            this.circles[i].position.set(i * Settings.CIRCLE_BUTTON_WIDTH * 2, 0);
+            this.circles[i].width = this.circles[i].height = Settings.CIRCLE_BUTTON_WIDTH;
+        }
+
+        // circles container
+        this.circleContainer.x = width / 2 - this.circleContainer.getBounds().width / 2;
+        this.circleContainer.y = height - Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING / 1.5;
     }
 }

@@ -299,4 +299,34 @@ export class MotionTutorialTaskWorld extends AbstractMotionWorld {
             }
         })
     }
+
+    resize = () => {
+        // get old max values
+        const currentLeftMaxX: number = this.leftMaxX.valueOf();
+        const currentPatchMaxY: number = this.patchMaxY.valueOf();
+        const currentRightMaxX: number = this.rightMaxX.valueOf();
+
+        // remove old patches
+        this.patchLeft.destroy();
+        this.patchRight.destroy();
+
+        // create new patches, quadtree and bounds
+        this.createPatches();
+        this.quadTree = this.createQuadTree(this.patchLeft.x, this.patchLeft.y, this.patchLeft.width * 2 + this.patchGap, this.patchLeft.height);
+        this.calculateMaxMin();
+        this.createDotContainerMasks();
+
+        // update dot positions and insert into quadtree
+        this.dotsLeft.forEach(dot => {
+            dot.x += this.leftMaxX - currentLeftMaxX;
+            dot.y += this.patchMaxY - currentPatchMaxY;
+            this.quadTree.insert(dot);
+        });
+
+        this.dotsRight.forEach(dot => {
+            dot.x += this.rightMaxX - currentRightMaxX;
+            dot.y += this.patchMaxY - currentPatchMaxY;
+            this.quadTree.insert(dot);
+        });
+    }
 }

@@ -86,8 +86,8 @@ export class MotionTutorialTrialWorld extends AbstractMotionWorld {
         this.tutorialTrialScreen.glowFilter1.outerStrength += (this.tutorialTrialScreen.glowFilter1.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
         this.tutorialTrialScreen.glowFilter2.outerStrength += (this.tutorialTrialScreen.glowFilter2.outerStrength <= GLOW_FILTER_MAX_STRENGTH) ? GLOW_FILTER_ANIMATION_SPEED : 0;
         // hide dots
-        this.dotsLeftParticleContainer.visible = false;
-        this.dotsRightParticleContainer.visible = false;
+        this.patchLeftObjectsContainer.visible = false;
+        this.patchRightObjectsContainer.visible = false;
         if (this.feedbackTimer >= this.maxFeedbackTime) {
             // reset glow filters
             this.tutorialTrialScreen.glowFilter1.outerStrength = 0;
@@ -96,15 +96,15 @@ export class MotionTutorialTrialWorld extends AbstractMotionWorld {
             this.tutorialTrialScreen.glowFilter1.enabled = false;
             this.tutorialTrialScreen.glowFilter2.enabled = false;
             // check if test is finished
-            if (this.tutorialTrialScreen.stepCounter == this.tutorialTrialScreen.maxSteps) {
+            if (this.tutorialTrialScreen.stepCounter >= this.tutorialTrialScreen.maxSteps) {
                 this.setState(WorldState.FINISHED);
                 this.feedbackTimer = 0;
                 return;
             }
             this.feedbackTimer = 0;
             this.reset();
-            this.dotsLeftParticleContainer.visible = true;
-            this.dotsRightParticleContainer.visible = true;
+            this.patchLeftObjectsContainer.visible = true;
+            this.patchRightObjectsContainer.visible = true;
             this.setState(WorldState.RUNNING);
         }
     }
@@ -364,5 +364,57 @@ export class MotionTutorialTrialWorld extends AbstractMotionWorld {
             }
         }
         return gridPoints
+    }
+
+    resize = () => {
+        // get old max values
+        const currentLeftMaxX: number = this.leftMaxX.valueOf();
+        const currentPatchMaxY: number = this.patchMaxY.valueOf();
+        const currentRightMaxX: number = this.rightMaxX.valueOf();
+
+        // remove old patches
+        this.patchLeft.destroy();
+        this.patchRight.destroy();
+
+        // create new patches, quadtree and bounds
+        this.createPatches();
+        this.quadTree = this.createQuadTree(this.patchLeft.x, this.patchLeft.y, this.patchLeft.width * 2 + this.patchGap, this.patchLeft.height);
+        this.calculateMaxMin();
+        this.createDotContainerMasks();
+
+        // create new grid points
+        this.leftGridPoints =
+            this.createGridPoints(
+                this.leftMinX + this.dotRadius,
+                this.leftMaxX - this.dotRadius,
+                this.patchMinY + this.dotRadius,
+                this.patchMaxY - this.dotRadius,
+                this.dotSpawnSeparationDistance
+            );
+        this.rightGridPoints =
+            this.createGridPoints(
+                this.rightMinX + this.dotRadius,
+                this.rightMaxX - this.dotRadius,
+                this.patchMinY + this.dotRadius,
+                this.patchMaxY - this.dotRadius,
+                this.dotSpawnSeparationDistance
+            );
+
+        // add glow filter to new patch
+        this.patchLeft.filters = [this.tutorialTrialScreen.glowFilter1];
+        this.patchRight.filters = [this.tutorialTrialScreen.glowFilter2];
+
+        // update dot positions and add to quadtree
+        this.dotsLeft.forEach(dot => {
+            dot.x += this.leftMaxX - currentLeftMaxX;
+            dot.y += this.patchMaxY - currentPatchMaxY;
+            this.quadTree.insert(dot);
+        });
+
+        this.dotsRight.forEach(dot => {
+            dot.x += this.rightMaxX - currentRightMaxX;
+            dot.y += this.patchMaxY - currentPatchMaxY;
+            this.quadTree.insert(dot);
+        });
     }
 }

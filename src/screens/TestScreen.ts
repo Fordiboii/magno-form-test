@@ -427,22 +427,13 @@ export class TestScreen extends PIXI.Container {
         this.world.setState(WorldState.RUNNING);
     }
 
-    startButtonTouchendHandler = (): void => {
-        // add event handlers
-        window.addEventListener("keydown", this.keyLeftRightDownHandler, true);
+    resizeEventHandler = (): void => {
         this.world.patchLeft.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
         this.world.patchLeft.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("LEFT", e));
         this.world.patchRight.on("mousedown", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
         this.world.patchRight.on("touchstart", (e: PIXI.InteractionEvent): void => this.mouseDownHandler("RIGHT", e));
-
-        // hide start button, make patches interactive and set state to running
-        this.startButton.visible = false;
         this.world.patchLeft.interactive = true;
         this.world.patchRight.interactive = true;
-        this.world.patchLeftObjectsContainer.visible = true;
-        this.world.patchRightObjectsContainer.visible = true;
-        this.world.setState(WorldState.RUNNING);
-
     }
 
     backButtonClickHandler = (): void => {
@@ -459,7 +450,7 @@ export class TestScreen extends PIXI.Container {
     addEventListeners = (): void => {
         window.addEventListener("keydown", this.keyBackspaceDownHandler, true);
         this.startButton.on("click", this.startButtonClickHandler);
-        this.startButton.on("touchend", this.startButtonTouchendHandler);
+        this.startButton.on("touchend", this.startButtonClickHandler);
         this.backButton.on("click", this.backButtonClickHandler);
         this.backButton.on("touchend", this.backButtonTouchendHandler);
     }
@@ -474,5 +465,51 @@ export class TestScreen extends PIXI.Container {
         this.startButton.removeAllListeners();
         this.world.patchLeft.removeAllListeners();
         this.world.patchRight.removeAllListeners();
+    }
+
+    resize = (width: number, height: number) => {
+        // world
+        this.world.resize();
+
+        // back button
+        this.backButton.x = width / 32;
+        this.backButton.y = height / 32;
+        this.backButton.width = width / 40;
+        this.backButton.height = width / 40;
+
+        // destroy current and create new start button if not already clicked
+        if (this.startButton.visible) {
+            this.startButton.destroy();
+            this.startButton =
+                new TextButton(
+                    width / 2,
+                    height / 2,
+                    Settings.TEXT_BUTTON_WIDTH,
+                    Settings.TEXT_BUTTON_HEIGHT,
+                    START_BUTTON_COLOR,
+                    START_BUTTON_STROKE_COLOR,
+                    "START TEST",
+                    TEXT_COLOR,
+                    START_BUTTON_HOVER_COLOR
+                );
+            this.startButton.on("click", this.startButtonClickHandler);
+            this.startButton.on("touchend", this.startButtonClickHandler);
+            this.addChild(this.startButton);
+        } else {
+            // re-add patch event handlers make them interactive
+            this.resizeEventHandler();
+        }
+
+        // patch label
+        this.patchLeftLabel.x = this.world.patchLeft.x + this.world.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.world.patchLeft.y - height / 16;
+        this.patchRightLabel.x = this.world.patchRight.x + this.world.patchRight.width / 2;
+        this.patchRightLabel.y = this.world.patchRight.y - height / 16;
+        this.patchLeftLabel.style.fontSize = this.patchRightLabel.style.fontSize = Settings.FONT_SIZE * 1.2;
+
+        // pause text
+        this.pauseText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.pauseText.x = width / 2;
+        this.pauseText.y = height / 2 + this.world.patchLeft.height / 1.5;
     }
 }

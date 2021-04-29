@@ -3,7 +3,13 @@ import { GameApp } from "../app";
 import { TextButton } from "../objects/buttons/TextButton";
 import { ResultsBar } from "../objects/ResultsBar";
 import { TestResults } from "../objects/TestResults";
-import { BACKGROUND_COLOR, NEXT_BUTTON_COLOR, NEXT_BUTTON_HOVER_COLOR, NEXT_BUTTON_STROKE_COLOR, TEXT_COLOR } from "../utils/Constants";
+import {
+    BACKGROUND_COLOR,
+    NEXT_BUTTON_COLOR,
+    NEXT_BUTTON_HOVER_COLOR,
+    NEXT_BUTTON_STROKE_COLOR,
+    TEXT_COLOR
+} from "../utils/Constants";
 import { Settings } from "../utils/Settings";
 
 export class ResultsScreen extends PIXI.Container {
@@ -129,5 +135,53 @@ export class ResultsScreen extends PIXI.Container {
      */
     removeEventListeners = (): void => {
         this.exitButton.off("click", this.exitButtonClickHandler);
+    }
+
+    resize = (width: number, height: number): void => {
+        // background color
+        this.backgroundColorSprite.width = width;
+        this.backgroundColorSprite.height = height;
+
+        // header
+        const HEADER_FONT_SIZE: number = Settings.FONT_SIZE * 1.2;
+        this.header.style.fontSize = HEADER_FONT_SIZE;
+        this.header.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.header.x = width / 2;
+        this.header.y = Settings.HEADER_Y_POSITION;
+
+        // score
+        const SCORE_FONT_SIZE: number = Settings.FONT_SIZE * 1.5;
+        this.score.style.fontSize = SCORE_FONT_SIZE;
+        this.score.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.score.x = width / 2;
+        this.score.y = Settings.HEADER_Y_POSITION + height / 6;
+
+        // description
+        this.description.style.fontSize = Settings.FONT_SIZE;
+        this.description.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.description.x = width / 2;
+        this.description.y = Settings.HEADER_Y_POSITION + height / 3;
+
+        // destroy old resultsbar and create new
+        this.resultsBar.destroy();
+        this.resultsBar = new ResultsBar(width / 2, height / 1.5, width * 3 / 5, Settings.TEXT_BUTTON_HEIGHT);
+        const threshold: number = Number(this.testResults.threshold.toFixed(2));
+        this.resultsBar.setMarker(threshold);
+        this.addChild(this.resultsBar);
+
+        // destroy current exit button and create new
+        this.exitButton.destroy();
+        this.exitButton = new TextButton(
+            width / 2,
+            height / 1.1,
+            Settings.TEXT_BUTTON_WIDTH,
+            Settings.TEXT_BUTTON_HEIGHT,
+            NEXT_BUTTON_COLOR,
+            NEXT_BUTTON_STROKE_COLOR,
+            "EXIT",
+            TEXT_COLOR,
+            NEXT_BUTTON_HOVER_COLOR
+        );
+        this.addChild(this.exitButton);
     }
 }

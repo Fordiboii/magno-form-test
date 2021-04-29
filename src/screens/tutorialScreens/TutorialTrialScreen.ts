@@ -11,6 +11,9 @@ import {
     GREEN_TEXT_COLOR,
     KEY_LEFT,
     KEY_RIGHT,
+    NEXT_BUTTON_COLOR,
+    NEXT_BUTTON_HOVER_COLOR,
+    NEXT_BUTTON_STROKE_COLOR,
     PATCH_LABEL_COLOR,
     RED_TEXT_COLOR,
     START_BUTTON_COLOR,
@@ -189,7 +192,6 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.trialIncorrectText.anchor.set(0.5, 1);
         this.trialIncorrectText.x = TRIAL_TEXT_X;
         this.trialIncorrectText.y = TRIAL_TEXT_Y;
-        // this.trialIncorrectText.height = 10;
 
         this.trialFinishedText = new PIXI.Text("Click NEXT to proceed",
             {
@@ -347,21 +349,16 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.tutorialTrialWorld.setState(WorldState.RUNNING);
     }
 
-    startButtonTouchendHandler = (): void => {
+    resizeEventHandler = (): void => {
         // add event handlers
-        window.addEventListener("keydown", this.keyDownHandler);
         this.tutorialTrialWorld.patchLeft.on("mousedown", (): void => this.mouseDownHandler("LEFT"));
         this.tutorialTrialWorld.patchLeft.on("touchstart", (): void => this.mouseDownHandler("LEFT"));
         this.tutorialTrialWorld.patchRight.on("mousedown", (): void => this.mouseDownHandler("RIGHT"));
         this.tutorialTrialWorld.patchRight.on("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
-        // hide start button, make patches interactive and set state to running
-        this.startButton.visible = false;
+        // make the new patches interactive
         this.tutorialTrialWorld.patchLeft.interactive = true;
         this.tutorialTrialWorld.patchRight.interactive = true;
-        this.tutorialTrialWorld.patchLeftObjectsContainer.visible = true;
-        this.tutorialTrialWorld.patchRightObjectsContainer.visible = true;
-        this.tutorialTrialWorld.setState(WorldState.RUNNING);
     }
 
     backButtonClickHandler = (): void => {
@@ -402,7 +399,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.on("touchend", this.touchEndHandler);
         this.on("touchendoutside", this.touchEndHandler);
         this.startButton.on("click", this.startButtonClickHandler);
-        this.startButton.on("touchend", this.startButtonTouchendHandler);
+        this.startButton.on("touchend", this.startButtonClickHandler);
         this.backButton.on("click", this.backButtonClickHandler);
         this.backButton.on("touchend", this.backButtonClickHandler);
         this.nextButton.on("click", this.nextButtonClickHandler);
@@ -419,7 +416,7 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.tutorialTrialWorld.patchRight.off("touchstart", (): void => this.mouseDownHandler("RIGHT"));
 
         this.startButton.off("click", this.startButtonClickHandler);
-        this.startButton.off("touchend", this.startButtonTouchendHandler);
+        this.startButton.off("touchend", this.startButtonClickHandler);
         this.backButton.off("click", this.backButtonClickHandler);
         this.backButton.off("touchend", this.backButtonClickHandler);
         this.nextButton.off("click", this.nextButtonClickHandler);
@@ -428,5 +425,145 @@ export class TutorialTrialScreen extends TutorialScreen {
         this.off("touchmove", this.hideObjects);
         this.off("touchend", this.touchEndHandler);
         this.off("touchendoutside", this.touchEndHandler);
+    }
+
+    resize = (width: number, height: number) => {
+        // button positions
+        const backButtonX: number = width / 2 - Settings.NEXT_BACK_BUTTON_SPACING;
+        const nextButtonX: number = width / 2 + Settings.NEXT_BACK_BUTTON_SPACING;
+        const backAndNextButtonY: number = height - 1.3 * Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING - Settings.TEXT_BUTTON_HEIGHT / 2;
+
+        // background color
+        this.backgroundColorSprite.width = width;
+        this.backgroundColorSprite.height = height;
+
+        // header
+        const HEADER_FONT_SIZE: number = Settings.FONT_SIZE * 1.2;
+        this.header.style.fontSize = HEADER_FONT_SIZE;
+        this.header.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.header.x = width / 2;
+        this.header.y = height / 16;
+
+        // content and tutorial text positions
+        this.contentX = width / 2;
+        this.contentY = height / 12 + this.header.height;
+        this.tutorialTextX = this.contentX;
+        this.tutorialTextY = this.contentY + height / 2;
+
+        // tutorial text
+        this.tutorialText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.tutorialText.style.wordWrapWidth = Settings.TUTORIAL_TEXT_WIDTH;
+        this.tutorialText.x = this.tutorialTextX;
+        this.tutorialText.y = this.tutorialTextY;
+
+        // destroy current and create new back button
+        this.backButton.destroy();
+        this.backButton =
+            new TextButton(
+                backButtonX,
+                backAndNextButtonY,
+                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_HEIGHT,
+                NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
+                "BACK",
+                TEXT_COLOR,
+                NEXT_BUTTON_HOVER_COLOR
+            );
+        this.backButton.on("click", this.backButtonClickHandler);
+        this.backButton.on("touchend", this.backButtonClickHandler);
+        this.addChild(this.backButton);
+
+        // destroy current and create new next button
+        this.nextButton.destroy();
+        this.nextButton =
+            new TextButton(
+                nextButtonX,
+                backAndNextButtonY,
+                Settings.TEXT_BUTTON_WIDTH,
+                Settings.TEXT_BUTTON_HEIGHT,
+                NEXT_BUTTON_COLOR,
+                NEXT_BUTTON_STROKE_COLOR,
+                "NEXT",
+                TEXT_COLOR,
+                NEXT_BUTTON_HOVER_COLOR
+            );
+        this.nextButton.on("click", this.nextButtonClickHandler);
+        this.nextButton.on("touchend", this.nextButtonClickHandler);
+        this.addChild(this.nextButton);
+
+        // circles
+        for (let i = 0; i < 4; i++) {
+            this.circles[i].position.set(i * Settings.CIRCLE_BUTTON_WIDTH * 2, 0);
+            this.circles[i].width = this.circles[i].height = Settings.CIRCLE_BUTTON_WIDTH;
+        }
+        this.circleContainer.x = width / 2 - this.circleContainer.getBounds().width / 2;
+        this.circleContainer.y = height - Settings.CIRCLE_BUTTON_TOP_BOTTOM_PADDING / 1.5;
+
+        // tutorial trial world container
+        this.tutorialTrialWorldContainer.x = this.contentX;
+        this.tutorialTrialWorldContainer.y = this.contentY + height / 32;
+        this.tutorialTrialWorldContainer.width = width;
+        this.tutorialTrialWorldContainer.height = height / 2.2;
+
+        // tutorial trial world
+        this.tutorialTrialWorld.resize();
+
+        // destroy current and create new start button if not already clicked
+        if (this.startButton.visible) {
+            this.startButton.destroy();
+            this.startButton =
+                new TextButton(
+                    width / 2,
+                    Settings.TRIAL_SCREEN_Y,
+                    Settings.TEXT_BUTTON_WIDTH * 1.1,
+                    Settings.TEXT_BUTTON_HEIGHT,
+                    START_BUTTON_COLOR,
+                    START_BUTTON_STROKE_COLOR,
+                    "START TUTORIAL TRIAL",
+                    TEXT_COLOR,
+                    START_BUTTON_HOVER_COLOR,
+                    false,
+                    undefined,
+                    undefined,
+                    Settings.FONT_SIZE * 0.8
+                );
+            this.startButton.on("click", this.startButtonClickHandler);
+            this.startButton.on("touchend", this.startButtonClickHandler);
+            this.addChild(this.startButton);
+        } else {
+            this.resizeEventHandler();
+        }
+
+        // patch label
+        this.patchLeftLabel.x = this.tutorialTrialWorld.patchLeft.x + this.tutorialTrialWorld.patchLeft.width / 2;
+        this.patchLeftLabel.y = this.tutorialTrialWorld.patchLeft.y - height / 16;
+        this.patchRightLabel.x = this.tutorialTrialWorld.patchRight.x + this.tutorialTrialWorld.patchRight.width / 2;
+        this.patchRightLabel.y = this.tutorialTrialWorld.patchRight.y - height / 16;
+        this.patchLeftLabel.style.fontSize = this.patchRightLabel.style.fontSize = Settings.FONT_SIZE * 1.2;
+
+        // pause text
+        this.pauseText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.pauseText.x = width / 2;
+        this.pauseText.y = Settings.TRIAL_SCREEN_Y + this.tutorialTrialWorld.patchLeft.height / 1.5;
+
+        // trial correct, incorrect and finished texts
+        const TRIAL_TEXT_X: number = width / 2;
+        const TRIAL_TEXT_Y: number = Settings.TRIAL_SCREEN_Y + this.tutorialTrialWorld.patchLeft.height / 1.1;
+
+        this.trialCorrectText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.trialCorrectText.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.trialCorrectText.x = TRIAL_TEXT_X;
+        this.trialCorrectText.y = TRIAL_TEXT_Y;
+
+        this.trialIncorrectText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.trialIncorrectText.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.trialIncorrectText.x = TRIAL_TEXT_X;
+        this.trialIncorrectText.y = TRIAL_TEXT_Y;
+
+        this.trialFinishedText.style.fontSize = Settings.FONT_SIZE * 0.9;
+        this.trialFinishedText.style.wordWrapWidth = Settings.HEADER_WIDTH;
+        this.trialFinishedText.x = TRIAL_TEXT_X;
+        this.trialFinishedText.y = TRIAL_TEXT_Y;
     }
 }

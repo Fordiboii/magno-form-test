@@ -47,4 +47,17 @@ export class LoadingScreen extends PIXI.Container {
     removeEventListeners = (): void => {
         return;
     }
+
+    resize = (width: number, height: number): void => {
+        // background color
+        this.backgroundColorSprite.width = width;
+        this.backgroundColorSprite.height = height;
+
+        // logo
+        this.logo.scale.set(width / 2800);
+        this.logo.position.set(width / 2, height / 2 - height / 12);
+
+        // loading spinner
+        this.loadingSpinner.position.set(width / 2, height / 2 + height / 8);
+    }
 }
